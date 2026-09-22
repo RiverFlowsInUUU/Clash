@@ -64,19 +64,20 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 
 ⚠️ 白名单必须留在两条广告清单**之前** —— AWAvenue 与 Jinx 黑名单存在重叠域名，顺序颠倒会把它们误杀。
 
-## 🌐 防泄露原理
+## 🌐 DNS 防泄漏
 
-明文 `UDP:53` 只有三条出口，全由 mihomo 内核收口：
+不依赖系统 DNS 设置 —— 明文查询在这一层就断掉。
 
-| 出口 | 机制 | 堵法 |
-|:----:|:-----|:-----|
-| 🚪 应用直发明文查询 | 应用无视任何设置，直接问 `8.8.8.8:53` | TUN 全量接管 + `dns-hijack: any:53`，查询进内核 DNS 模块 |
-| 🚪 代理域名本地解析 | 本地解析 = 真实域名与 IP 落到本地解析方 | `enhanced-mode: fake-ip`，只回假 IP，真实解析在落地侧完成 |
-| 🚪 节点域名解析打转 | 连节点之前必须先解析节点域名（鸡生蛋） | `proxy-server-nameserver` 单独承担，与主解析器分离 |
+| | |
+|:--|:--|
+| 🚫 应用直发的明文 `:53` | 本地接管，不出网 |
+| 🎭 代理域名 | 本地不做真实解析，解析在落地侧完成 |
+| 🧭 节点域名 | 独立解析通道，不与业务解析混用 |
+| 🔐 解析器 | 全部为加密端点（DoH） |
+| 🔒 路由 | 锁死 TUN，绕行无门 |
+| 📋 实测 | 明文查询清单中零业务域名 |
 
-解析器全部是加密端点（`https://…/dns-query`）；`strict-route` 让流量无法绕开 TUN。
-
-> 🔍 完整推导、逐键说明与实测读数见 [`DetailsReadme`](DetailsReadme/DetailsReadme.md)。
+> 🔍 逐条推导、逐键说明与完整实测读数见 [`DetailsReadme`](DetailsReadme/DetailsReadme.md)。
 
 ## 📁 文件结构
 
