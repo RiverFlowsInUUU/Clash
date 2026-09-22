@@ -15,6 +15,7 @@
   - ✈️ `proxies` 一条 vless + reality 节点占位；`proxy-providers.Airport` 订阅槽位（含健康检查），两个策略组均以 `use: [Airport]` 引入；
   - 🔧 `.min.yaml` 由 `build_clash_lazy.py` 从带注释版剥离生成，两份解析后数据完全一致（脚本断言守着）。
 - 🗓️ **更新日志** —— 本文件，自建仓起记账。
+- 📘 **技术文档立项** —— 新建 `DetailsReadme/DetailsReadme.md`：防泄露三条出口的逐条推导、`dns` 段 15 键逐键说明、五个解析器键的分工、`tun` 段与 `dns-hijack` 语义、明文泄露面实测读数、已知取舍。
 
 ### 变更
 
@@ -36,8 +37,10 @@
     业务域名与节点域名全部走 `443` 加密端点。
   - ✅ 四个 DoH 端点按 DNS-over-HTTPS 协议实发查询，均回 `200` + `application/dns-message`。
 
-- 📝 **README 同步重写** —— 「防泄露原理」按 mihomo 自身机制（TUN 收口 + fake-ip + 解析器分离）重写，并补四个解析器键的分工表。
+- 📝 **README 重写** —— 「防泄露原理」按 mihomo 自身机制（TUN 收口 + fake-ip + 解析器分离）重写。
+- ✂️ **README 瘦身** —— 首页只讲「是什么」：防泄露段只保留三条出口与堵法，逐键说明、解析器分工表、`respect-rules` 连带要求等实测与推导内容移入 `DetailsReadme`。
 
 ### 修复
 
 - ✂️ **README 去掉三处跨仓比对 / 跨仓导流** —— 开头「与 Surge · Egern 同构」整句、分流版「组序与 Egern 对齐」、末尾导流两个姊妹仓的「更多文档」整节。
+- ✏️ **`fake-ip-filter` 注释写准通配语义** —— 实测（`+.example.com` 命中 `example.com` 本域；`*.lan` 不命中 `a.b.lan`）后改为「`+.` 含本域与任意层子域；`*` / `*.` 只匹配一层」，此前只笼统写「含子域」。

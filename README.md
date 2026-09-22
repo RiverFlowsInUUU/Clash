@@ -14,7 +14,7 @@
 
 </div>
 
-🚧 **部分发布** —— 懒人版配置与更新日志已上线，分流版、专题文档与审计脚本在准备中。
+🚧 **部分发布** —— 懒人版配置、更新日志与技术文档已上线，分流版、专题文档与审计脚本在准备中。
 
 ## 📥 两份配置
 
@@ -74,16 +74,9 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 | 🚪 代理域名本地解析 | 本地解析 = 真实域名与 IP 落到本地解析方 | `enhanced-mode: fake-ip`，只回假 IP，真实解析在落地侧完成 |
 | 🚪 节点域名解析打转 | 连节点之前必须先解析节点域名（鸡生蛋） | `proxy-server-nameserver` 单独承担，与主解析器分离 |
 
-另有两点结构保障：`strict-route` 让流量无法绕开 TUN；解析器全部是加密端点（`https://…/dns-query`），四个键各管一段路。
+解析器全部是加密端点（`https://…/dns-query`）；`strict-route` 让流量无法绕开 TUN。
 
-| 键 | 管什么 |
-|:--|:--|
-| 🧭 `nameserver` | 主解析器：需要本地解析出真实 IP 的域名 |
-| 🎯 `nameserver-policy` | 按域名换解析器 —— `geosite:private,cn` 交回国内 DoH |
-| ✈️ `proxy-server-nameserver` | 代理节点域名 |
-| 🚪 `direct-nameserver` | `DIRECT` 出站的域名 —— 直连流量也不碰系统 DNS |
-
-`respect-rules: true` 让 DNS 查询本身也走路由规则（内核强制要求同时给出 `proxy-server-nameserver`）。
+> 🔍 完整推导、逐键说明与实测读数见 [`DetailsReadme`](DetailsReadme/DetailsReadme.md)。
 
 ## 📁 文件结构
 
@@ -97,7 +90,7 @@ Clash/
 └── 🧪 skill/           # 审计脚本 + 回归测试
 ```
 
-🔜 除 `profiles/` 与 `CHANGELOG.md` 外，以上目录尚未创建。
+🔜 除 `profiles/`、`DetailsReadme/` 与 `CHANGELOG.md` 外，以上目录尚未创建。
 
 ## 📚 规则来源
 

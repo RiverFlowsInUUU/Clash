@@ -188,7 +188,7 @@ dns:
   use-hosts: true
   use-system-hosts: false
   # ⚠️ 下列域名**跳过 fake-ip**、走真实解析 —— NTP / 游戏机 / 局域网 / 微软联网探测
-  #    这类东西拿到假 IP 会直接失效。`+.` 含子域、`*` 只占一个标签。
+  #    这类东西拿到假 IP 会直接失效。通配语义：`+.` 含本域与任意层子域；`*` / `*.` 只匹配一层。
   fake-ip-filter:
     - "*.lan"
     - "*.local"
