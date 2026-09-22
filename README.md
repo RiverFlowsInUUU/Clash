@@ -18,8 +18,6 @@
 
 ## 📥 两份配置
 
-与 [Surge](https://github.com/RiverFlowsInUUU/Surge) · [Egern](https://github.com/RiverFlowsInUUU/Egern) 同构：懒人版一个出口，分流版按应用 + 按地区。
-
 🪶 **懒人版** · 一个出口
 
 ```
@@ -48,7 +46,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 
 ## 🧭 分流版
 
-🔜 骨架与 Surge / Egern 的分流版对齐：总入口 → 应用组 → 地区组 → 精选 → 兜底，组序与 Egern 对齐。组数与规则数待配置落地后回填。
+🔜 待发布。结构：总入口 → 应用组 → 地区组 → 精选 → 兜底；组数与规则数待配置落地后回填。
 
 ## 📋 规则顺序
 
@@ -99,13 +97,6 @@ Clash/
 - 🗺️ [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) —— `GEOIP` · `GEOSITE` 数据库
 - 🧩 [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script) —— 应用规则集（分流版待用）
 - 🎨 [Koolson/Qure](https://github.com/Koolson/Qure) · [lobehub/lobe-icons](https://github.com/lobehub/lobe-icons) —— 策略组图标
-
-## 📖 更多文档
-
-🔜 暂无。文档与配置同步发布；其间的原理与取舍可先看两个姐妹仓：
-
-- 📘 [Surge](https://github.com/RiverFlowsInUUU/Surge) —— DNS 防泄露 · 分流版设计 · 审计读数
-- 📘 [Egern](https://github.com/RiverFlowsInUUU/Egern) —— 加固清单 18 项 · 泄露机制推导
 
 ---
 
