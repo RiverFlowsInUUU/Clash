@@ -81,17 +81,16 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 
 ## 📁 文件结构
 
-```
-Clash/
-├── 📁 profiles/        # 配置：懒人版 ×2（带注释 / 纯配置）；分流版待发布
-├── 🖼️ icons/           # 策略组图标
-├── 📚 docs/            # 专题文档
-├── 📘 DetailsReadme/   # 完整技术文档
-├── 🗓️ CHANGELOG.md
-└── 🧪 skill/           # 审计脚本 + 回归测试
-```
+| | 路径 | 内容 |
+|:--:|:-----|:-----|
+| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2（带注释 / 纯配置）；分流版待发布 |
+| 🖼️ | `icons/` | 策略组图标 |
+| 📚 | `docs/` | 专题文档 |
+| 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |
+| 🗓️ | [`CHANGELOG.md`](CHANGELOG.md) | 版本记录 |
+| 🧪 | `skill/` | 审计脚本 + 回归测试 |
 
-🔜 除 `profiles/`、`DetailsReadme/` 与 `CHANGELOG.md` 外，以上目录尚未创建。
+路径为链接者可直接点开跳转；显示为行内代码者尚未创建。
 
 ## 📚 规则来源
 
