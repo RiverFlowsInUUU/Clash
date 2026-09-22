@@ -88,13 +88,46 @@ proxy-providers:
 
 dns:
   enable: true
+  ipv6: false
+  listen: 0.0.0.0:7874
   enhanced-mode: fake-ip
-  nameserver:
-    - system
+  fake-ip-range: 198.18.0.1/16
+  prefer-h3: false
+  respect-rules: true
+  use-hosts: true
+  use-system-hosts: false
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.localdomain"
+    - "*.home.arpa"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "localhost.ptlogin2.qq.com"
+    - "+.srv.nintendo.net"
+    - "+.stun.playstation.net"
+    - "+.xboxlive.com"
+    - "stun.*"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.pool.ntp.org"
+    - "+.market.xiaomi.com"
   default-nameserver:
-    - system
+    - 223.5.5.5
+    - 119.29.29.29
   proxy-server-nameserver:
-    - system
+    - https://223.5.5.5/dns-query
+    - https://120.53.53.53/dns-query
+  direct-nameserver:
+    - https://223.5.5.5/dns-query
+    - https://120.53.53.53/dns-query
+  nameserver:
+    - https://dns.cloudflare.com/dns-query
+    - https://dns.google/dns-query
+  nameserver-policy:
+    "geosite:private,cn":
+      - https://223.5.5.5/dns-query
+      - https://120.53.53.53/dns-query
 
 tun:
   enable: true
