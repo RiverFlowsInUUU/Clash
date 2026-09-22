@@ -2,9 +2,7 @@
 
 # 🛡️ Clash 配置模板
 
-**🪶 懒人版 · 🧭 分流版**
-
-*不绑节点，不绑订阅 · 让 DNS 无处可漏*
+*让 DNS 无处可漏*
 
 [![Clash](https://img.shields.io/badge/Clash-Meta%20%7C%20mihomo-1f6feb?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![Profiles](https://img.shields.io/badge/Profiles-lazy%20%7C%20routing-0969da?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
@@ -16,37 +14,30 @@
 
 🚧 **部分发布** —— 懒人版配置、更新日志、专题文档与技术文档已上线，分流版与审计脚本在准备中。
 
-## 📥 两份配置
+## 📥 两全其美，皆合心意
 
-🪶 **懒人版** · 一个出口
+🪶 **懒人版** · 至简 · 省心
 
 ```
 https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.yaml
 ```
 
-🧭 **分流版** · 按应用 + 按地区
+🧭 **分流版** · 可控 · 随心
 
 🔜 待发布。
 
-选中一条，点右上角复制 → 客户端的「从 URL 导入 / 新建配置」→ 粘贴。
+## 🧭 井然有序
 
-## 🪶 懒人版
+懒人版 3 组，自上而下：
 
-`profiles/lazy.yaml` · `profiles/lazy.min.yaml`
+| 组 | 🪶 懒人版 | 🧭 分流版 |
+|:---|:---:|:---:|
+| 🚀 `Proxy` | ✅ | - |
+| 🤖 `AI` | ✅ | - |
+| 🛑 `AD` | ✅ | - |
 
-3 组 / 9 条规则。全部流量走一个出口。
-
-| | |
-|:--|:--|
-| ✈️ 节点 | `proxies` 里一条 vless + reality 占位 |
-| 📡 订阅 | `Airport` —— `proxy-providers` 订阅槽位，换掉 `url` 即用 |
-| 🧭 `Proxy` | 主出口 |
-| 🤖 `AI` | AI 流量独立出口 |
-| 🛑 `AD` | 手动开关（`REJECT` / `PASS` / `DIRECT`） |
-
-## 🧭 分流版
-
-🔜 待发布。结构：总入口 → 应用组 → 地区组 → 精选 → 兜底；组数与规则数待配置落地后回填。
+> 🪶 懒人版含 1 个订阅槽位（`Airport`，换 `url` 即用）与 1 条节点占位，长期沿用无版本号。
+> 🔜 分流版（按应用 + 按地区）待发布，组结构与选路见 [DetailsReadme](DetailsReadme/DetailsReadme.md)。
 
 ## 📋 分流顺序
 
@@ -63,7 +54,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 
 ⚠️ 白名单必须留在两条广告清单**之前** —— 两份黑名单存在重叠域名，顺序颠倒会把它们误杀。
 
-## 🌐 DNS 防泄漏
+## 🌐 隐私至上 · 无 DNS 泄露
 
 不依赖系统 DNS 设置 —— 明文查询在这一层就断掉。
 
