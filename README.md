@@ -14,7 +14,7 @@
 
 </div>
 
-🚧 **部分发布** —— 懒人版配置、更新日志与技术文档已上线，分流版、专题文档与审计脚本在准备中。
+🚧 **部分发布** —— 懒人版配置、更新日志、专题文档与技术文档已上线，分流版与审计脚本在准备中。
 
 ## 📥 两份配置
 
@@ -48,21 +48,20 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 
 🔜 待发布。结构：总入口 → 应用组 → 地区组 → 精选 → 兜底；组数与规则数待配置落地后回填。
 
-## 📋 规则顺序
+## 📋 分流顺序
 
-懒人版自上而下匹配，第一条命中即决定去向。
+流量自上而下匹配，第一条命中即决定去向。
 
-| # | 规则 | 去向 |
+| # | 匹配什么 | 去向 |
 |:-:|:-----|:-----|
-| 🛡️ | 白名单 `jinx-white-guard` | `DIRECT` |
-| 🚫 | 广告拦截 `jinx-ads` | `AD` |
-| 🚫 | 广告拦截 `AWAvenue-Ads` | `AD` |
-| 🏠 | 内网 `GEOIP,private` · `GEOSITE,private` | `DIRECT` |
-| 🤖 | AI 域名 `GEOSITE,category-ai-chat-!cn` | `AI` |
-| 🇨🇳 | 国内域名 `GEOSITE,cn` · 国内 IP `GEOIP,cn` | `DIRECT` |
-| 🌐 | 兜底 `MATCH` | `Proxy` |
+| 🛡️ | 白名单域名 | `DIRECT` |
+| 🚫 | 广告域名 | `AD` |
+| 🏠 | 内网地址 | `DIRECT` |
+| 🤖 | AI 服务 | `AI` |
+| 🇨🇳 | 国内域名 · 国内 IP | `DIRECT` |
+| 🌐 | 其余全部 | `Proxy` |
 
-⚠️ 白名单必须留在两条广告清单**之前** —— AWAvenue 与 Jinx 黑名单存在重叠域名，顺序颠倒会把它们误杀。
+⚠️ 白名单必须留在两条广告清单**之前** —— 两份黑名单存在重叠域名，顺序颠倒会把它们误杀。
 
 ## 🌐 DNS 防泄漏
 
@@ -85,20 +84,18 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 |:--:|:-----|:-----|
 | 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2（带注释 / 纯配置）；分流版待发布 |
 | 🖼️ | `icons/` | 策略组图标 |
-| 📚 | `docs/` | 专题文档 |
+| 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |
 | 🗓️ | [`CHANGELOG.md`](CHANGELOG.md) | 版本记录 |
 | 🧪 | `skill/` | 审计脚本 + 回归测试 |
 
 路径为链接者可直接点开跳转；显示为行内代码者尚未创建。
 
-## 📚 规则来源
+## 📖 更多文档
 
-- 🛑 [Jinx](https://github.com/RiverFlowsInUUU/Jinx) —— 广告拦截 · 白名单
-- 🍂 [TG-Twilight/AWAvenue-Ads-Rule](https://github.com/TG-Twilight/AWAvenue-Ads-Rule) —— 广告拦截（第二条，**`.mrs` 版**）
-- 🗺️ [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) —— `GEOIP` · `GEOSITE` 数据库
-- 🧩 [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script) —— 应用规则集（分流版待用）
-- 🎨 [Koolson/Qure](https://github.com/Koolson/Qure) · [lobehub/lobe-icons](https://github.com/lobehub/lobe-icons) —— 策略组图标
+- 📘 [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) —— 逐段详解 · 原理推导 · 实测读数 · 已知取舍
+- 📚 [`docs/01`](docs/01-规则集与来源.md) —— 规则集与来源
+- 🗓️ [`CHANGELOG.md`](CHANGELOG.md)
 
 ---
 
