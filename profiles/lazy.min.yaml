@@ -1,0 +1,106 @@
+proxy-groups:
+  - name: Proxy
+    type: select
+    proxies: []
+    use:
+      - Airport
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+    include-all: true
+    include-all-proxies: true
+  - name: AI
+    type: select
+    proxies: []
+    use:
+      - Airport
+    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/openai.png
+    include-all: true
+    include-all-proxies: true
+  - name: AD
+    type: select
+    proxies:
+      - REJECT
+      - PASS
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+
+rule-providers:
+  AWAvenue-Ads:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
+    path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
+    interval: 86400
+  jinx-ads:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-ads.yaml
+    path: ./rule_provider/jinx-ads-delta.yaml
+    interval: 86400
+  jinx-white-guard:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-white-guard.yaml
+    path: ./rule_provider/jinx-white-guard.yaml
+    interval: 86400
+
+rules:
+  - RULE-SET,jinx-white-guard,DIRECT
+  - RULE-SET,jinx-ads,AD
+  - RULE-SET,AWAvenue-Ads,AD
+  - GEOIP,private,DIRECT
+  - GEOSITE,private,DIRECT
+  - GEOSITE,category-ai-chat-!cn,AI
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT
+  - MATCH,Proxy
+
+proxies:
+  - name: "节点模版"
+    type: vless
+    server: SERVER
+    port: 443
+    uuid: 00000000-0000-4000-8000-000000000000
+    network: tcp
+    tls: true
+    udp: true
+    flow: xtls-rprx-vision
+    servername: SNI
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      short-id: "0123456789abcdef"
+    encryption: none
+    xudp: true
+
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
+dns:
+  enable: true
+  enhanced-mode: fake-ip
+  nameserver:
+    - system
+  default-nameserver:
+    - system
+  proxy-server-nameserver:
+    - system
+
+tun:
+  enable: true
+  stack: mips
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true

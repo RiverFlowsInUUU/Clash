@@ -1,0 +1,199 @@
+# ============================================================================
+# lazy · 懒人版
+#
+# 3 个策略组（Proxy / AI / AD）+ 9 条规则
+# （白名单 / 广告拦截 ×2 / 内网直连 / AI 分流 / 国内直连 / 兜底）。
+# 全部流量走一个出口。
+#
+# ⚠️ 导入前要动两处：
+#   ① `proxy-providers.Airport.url` —— 换成你自己的订阅地址；
+#   ② `proxies` 里那条「节点模版」—— 按实际协议替换占位符，或整条删掉（只用订阅）。
+#      注意 `uuid` / `public-key` / `short-id` 三个值内核会做格式校验（UUID 形状、
+#      x25519 公钥、十六进制）。所以这三个填的是「合法哑值」而不是 `SERVER` 那种
+#      占位串 —— 不换成真实值，配置连语法门禁 `clash_meta -t` 都过不去。
+#
+# 📌 本文件没有版本号，是长期沿用的「懒人版」入口。
+#    「分流版」（按应用 + 按地区）另开一条线，尚未发布。
+# ============================================================================
+
+# ============================================================================
+# 策略组：3 个
+#   Proxy  主出口，面板上手动选
+#   AI     AI 域名的独立出口
+#   AD     广告拦截开关，手动三档：REJECT / PASS / DIRECT
+#
+# 组的节点来源由两块拼起来：
+#   · `include-all-proxies: true` —— 把 `proxies` 里的本机节点全部并进来；
+#   · `use` —— 把 `proxy-providers` 里的订阅节点并进来。本配置只挂了一个订阅槽位
+#     `Airport`，订阅地址没填或拉取失败时，这个组就只剩 `proxies` 里的本机节点。
+# ⚠️ mihomo 里 `include-all: true` 会把 `use` 覆盖成「全部 provider」。只有一个
+#    provider 时两者等价；日后加了第二个 provider 又只想用其中一个，就去掉
+#    `include-all`、只留 `use`。
+# ============================================================================
+proxy-groups:
+  - name: Proxy
+    type: select
+    proxies: []
+    use:
+      - Airport
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+    include-all: true
+    include-all-proxies: true
+  - name: AI
+    type: select
+    proxies: []
+    use:
+      - Airport
+    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/openai.png
+    include-all: true
+    include-all-proxies: true
+  - name: AD
+    type: select
+    proxies:
+      - REJECT
+      - PASS
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+
+# ============================================================================
+# 规则集：只负责「广告拦截 + 白名单」，共 3 份。
+#   jinx-white-guard  白名单（classical）
+#   jinx-ads          广告拦截主清单（classical）
+#   AWAvenue-Ads      广告拦截第 2 条（.mrs，mihomo 规则集二进制格式）
+# 三份都落盘到本地、24 小时刷新一次，节点侧不依赖在线下载。
+# ============================================================================
+rule-providers:
+  AWAvenue-Ads:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
+    path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
+    interval: 86400
+  jinx-ads:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-ads.yaml
+    path: ./rule_provider/jinx-ads-delta.yaml
+    interval: 86400
+  jinx-white-guard:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-white-guard.yaml
+    path: ./rule_provider/jinx-white-guard.yaml
+    interval: 86400
+
+# ============================================================================
+# 规则：自上而下匹配，第一条命中即决定去向。
+#   ① 白名单      ② 广告拦截 ×2      ③ 内网      ④ AI 分流
+#   ⑤ 国内域名 + 国内 IP             ⑥ 兜底
+#
+# ⚠️ ① 必须留在 ② 之前 —— AWAvenue 与 Jinx 黑名单存在重叠域名，
+#    顺序颠倒会把白名单里的功能域误杀。
+# ============================================================================
+rules:
+  # ① 白名单 —— 抢在广告规则之前放行
+  - RULE-SET,jinx-white-guard,DIRECT
+  # ② 广告拦截 —— 两条并列清单，同一出口 AD
+  - RULE-SET,jinx-ads,AD
+  - RULE-SET,AWAvenue-Ads,AD
+  # ③ 内网：私有 IP 段 + 私有域名，一律直连
+  - GEOIP,private,DIRECT
+  - GEOSITE,private,DIRECT
+  # ④ AI 域名集（category-ai-chat-!cn = 非中国大陆的 AI 服务），走 AI 出口
+  - GEOSITE,category-ai-chat-!cn,AI
+  # ⑤ 国内：域名集在前、IP 集在后，都直连
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT
+  # ⑥ 兜底：以上都没命中，走主出口
+  - MATCH,Proxy
+
+# ============================================================================
+# 节点：留一条协议占位给你照着改；只用订阅的话整条删掉即可。
+# 三个「合法哑值」的作用只是让配置能通过内核的离线语法门禁 —— uuid 要 UUID 形状、
+# public-key 要 32 字节 x25519 公钥（base64url）、short-id 要十六进制。
+# ============================================================================
+proxies:
+  # 只保留一个节点模版，请按实际协议替换以下占位符
+  - name: "节点模版"
+    type: vless
+    server: SERVER
+    port: 443
+    uuid: 00000000-0000-4000-8000-000000000000
+    network: tcp
+    tls: true
+    udp: true
+    flow: xtls-rprx-vision
+    servername: SNI
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      short-id: "0123456789abcdef"
+    encryption: none
+    xudp: true
+
+# ============================================================================
+# 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
+# health-check 只影响面板里的延迟读数，不影响可用性。
+# ============================================================================
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
+# ============================================================================
+# dns 段 —— mihomo 的 DNS 是「内核内建」型：解析器在本段指定，查询入口在 tun 段收口。
+#
+# 本配置防泄露靠三件事：
+#   ① 明文 :53 全部被 TUN 收走 —— 见 tun 段的 `dns-hijack`；
+#   ② 命中代理的域名只回假 IP（`enhanced-mode: fake-ip`），真实解析在落地侧完成，
+#      本地压根不产生真实查询；
+#   ③ 节点域名单独交给 `proxy-server-nameserver`，不与主解析器混用。
+#
+# 三个解析器都写 `system` = 交给操作系统当前的 DNS 解析器。含义是：
+#   · 需要本地解析的（直连类）域名，由 mihomo 内核统一发起、按系统 DNS 解析，
+#     而不是各应用各自乱发一份；
+#   · 本段没有任何「域名形式的 DNS 端点」，所以也不存在
+#     「为了解析某个 DNS 端点而先发一次明文查询」这条引导通路。
+# ============================================================================
+dns:
+  enable: true
+  # fake-ip：代理域名只下发假 IP（默认 198.18.0.0/16），真实解析推给落地
+  enhanced-mode: fake-ip
+  # 主解析器：需要本地解析的域名走这里
+  nameserver:
+    - system
+  # 用途是「解析其他 DNS 服务器自己的域名」。本段端点全是 system，这项实际无事可做，
+  # 但 mihomo 要求它至少有一条，不能省。
+  default-nameserver:
+    - system
+  # 只解析代理节点的域名 —— 连节点之前还没有代理可用（鸡生蛋），必须单独一条
+  proxy-server-nameserver:
+    - system
+
+# ============================================================================
+# tun 段 —— dns 段的收口装置。
+#
+# `auto-route` + `strict-route`：把设备全部出站流量强制拉进 TUN，绕不过去；
+# `dns-hijack: any:53`：命中 53 端口的连接不往外发，直接交给内核 DNS 模块应答。
+# 这两条合起来，才是「应用直接问 8.8.8.8:53」也被收住的原因。
+# ⚠️ 官方语义：不写协议前缀时默认 `udp://`，即 `any:53` 收的是 UDP:53；
+#    要把 TCP:53 也收进来，再加一条 `tcp://any:53`。
+# `stack: mips` 是 mihomo 自研的 IP 协议栈（可选值 system / gvisor / mixed / mips）。
+# ============================================================================
+tun:
+  enable: true
+  stack: mips
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
