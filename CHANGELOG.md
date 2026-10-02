@@ -39,14 +39,40 @@
   ② lobe-icons 没有 `grok` / `gemini-color` / `claude-color` 这类，隔壁仓现成；
   ③ 两仓图标同源，风格统一，且省掉一份外部依赖。
   ⚠️ 教训：外部图标 URL 必须逐个 HEAD 实测 —— **404 在面板上表现为破图，语法校验发现不了**。
+- 📌 **`proxies` / `proxy-providers` 提到配置文件最顶部** —— 两份配置统一为
+  `proxies → proxy-providers → proxy-groups → rule-providers → rules → dns → tun`：
+  导入前必改的两处（占位节点、订阅地址）开箱就在第一屏，不用翻到文件末尾。
+- 🧩 **12 个应用组改为「订阅节点摊平」** —— ChatGPT / Gemini / Claude / AI / Spotify /
+  YouTubeMusic / YouTube / GitHub / Google / Microsoft / Telegram / Twitter 全部补
+  `use: [Airport]`，把订阅里的**节点**逐个拉进组当成员（首项仍是各自的默认取向）。
+  效果对齐蓝本的 `flatten: true`（Egern）/ `include-other-group`（Surge）：面板上直接选节点，
+  不用再点进 `Proxy` 组一层。实测印证：`use` 引入 3 个订阅节点后，组员 = `["Proxy", "T-Node-1",
+  "T-Node-2", "T-Node-3"]`。
+  ⚠️ mihomo **没有 `flatten` 字段**（那是 Egern 的概念），等价物就是 `use` ——
+  上一版误用 `include-all-proxies: true`，且把它插在 `proxies:` 与列表项之间，
+  把 12 个组写成了非法 YAML（`proxies:` 空值 + 悬空的 `- Proxy`），`routing.yaml` 无法加载。
+- 🌐 **规则集换到 GeoSite.dat 原生类别，全部移除 blackmatrix7** —— Gemini / Claude /
+  YouTubeMusic / WeChat 四类原先挂在 blackmatrix7 的 classical YAML 上，而该仓应用类目的
+  最后更新停在 **2025-06-17**（`Surge/Anthropic` 更是 2024-02-02），已明显滞后。
+  逐条解析 `geosite.dat`（1552 个类别）后改为：
+  - `google-gemini`（46 条）→ `Gemini` 组；
+  - `anthropic`（8 条）→ `Claude` 组；
+  - `tencent`（683 条）→ `WeChat` 组；
+  - YouTube Music：`geosite.dat` 确无独立类别，改用一条内联 `DOMAIN-SUFFIX,music.youtube.com`
+    （它是 `youtube.com` 的子域，必须排在 `GEOSITE,youtube` 之前才不被抢走）。
+  ⇒ 分流版远程规则集 **7 份 → 3 份**（`jinx-white-guard` / `jinx-ads` / `AWAvenue-Ads`），
+  四类应用规则零远程依赖、跟着数据库日更。
+  ⚠️ 教训：`geosite.dat` 的类别名是**全大写**（`GOOGLE-GEMINI` / `ANTHROPIC` / `TENCENT`），
+  用小写比对会把已有类别误判成「不存在」—— 这正是上一版绕道第三方的根因。
 
 ### 已知取舍
 
 - ⚠️ **mihomo 无低倍率优先加权** —— Surge 的 `policy-priority` / Egern 的 `priorities` 能按节点名
   里的倍率标记给低倍率节点软加权，mihomo 的 url-test 没有对应机制。本配置选择「纯延迟择优」，
   想要低倍率优先可给对应组补 `filter` 硬筛（代价：硬过滤非软偏好，低倍率节点延迟再高也不让位）。
-- ⚠️ **`gemini` / `claude` / `wechat` 无 GEOSITE 类别** —— GeoSite.dat 里没有这三个独立类目，
-  分流版退回 blackmatrix7 的 classical YAML 规则集精确分流（任务要求的三级选型第二层）。
+- ⚠️ **`WeChat` 组的语义是「腾讯」** —— `geosite.dat` 无独立 `wechat` 类，退用 `tencent`（683 条），
+  因此腾讯全家桶（QQ / 腾讯视频 / 腾讯云）都会落进 `WeChat` 组。出口同为直连，扩宽无害；
+  但它不再只是「微信」。
 
 ---
 

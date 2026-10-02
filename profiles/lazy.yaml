@@ -21,6 +21,45 @@
 # ============================================================================
 
 # ============================================================================
+# ① proxies —— 节点。两条占位（与蓝图 lazy_v2.0.1 同构：Node-A 归 Proxy、
+#    Node-B 归 AI）。`203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，
+#    请替换为你的真实信息；server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
+#    协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password`
+#    ≙ 此处 `password`）。只用订阅的话，两条整段删掉即可。
+# ② proxy-providers —— 订阅槽位，见下。
+#
+# ⚡ 导入前至少填一项（两个都不填 ⇒ 所有走代理的流量不通）。
+# ============================================================================
+proxies:
+  - name: Node-A
+    type: hysteria2
+    server: 203.0.113.10
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+  - name: Node-B
+    type: hysteria2
+    server: 203.0.113.11
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+
+# ============================================================================
+# 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
+# health-check 只影响面板里的延迟读数，不影响可用性。
+# ============================================================================
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
+# ============================================================================
 # 策略组：3 个
 #   Proxy  主出口，url-test 自动择优（≙ 蓝图的 smart 组：按延迟自动选，无需手动管）
 #   AI     AI 域名的独立出口，select 手动钉死 —— 蓝图 2026-09-28 的定案：
@@ -153,42 +192,6 @@ rules:
   - GEOIP,cn,DIRECT
   # ⑦ 兜底：以上都没命中，走主出口（蓝图 2026-09-23 起：兜底一跳直连 Proxy，无 Final 中间组）
   - MATCH,Proxy
-
-# ============================================================================
-# 节点：两条占位（与蓝图 lazy_v2.0.1 同构：Node-A 归 Proxy、Node-B 归 AI）。
-# ⚠️ `203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，请替换为你的真实信息；
-#    server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
-# 协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password` ≙ 此处 `password`）。
-# 只用订阅的话两条整段删掉即可。
-# ============================================================================
-proxies:
-  - name: Node-A
-    type: hysteria2
-    server: 203.0.113.10
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-  - name: Node-B
-    type: hysteria2
-    server: 203.0.113.11
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-
-# ============================================================================
-# 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
-# health-check 只影响面板里的延迟读数，不影响可用性。
-# ============================================================================
-proxy-providers:
-  Airport:
-    type: http
-    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
-    path: ./proxy_provider/Airport.yaml
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
 
 # ============================================================================
 # dns 段 —— 防泄露的三个支点，缺一条就漏：

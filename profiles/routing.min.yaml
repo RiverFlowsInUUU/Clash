@@ -1,3 +1,26 @@
+proxies:
+  - name: Node-A
+    type: hysteria2
+    server: 203.0.113.10
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+  - name: Node-B
+    type: hysteria2
+    server: 203.0.113.11
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
 proxy-groups:
   - name: Proxy
     type: select
@@ -23,67 +46,91 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Auto.png
   - name: ChatGPT
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/openai.png
   - name: Gemini
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/gemini-color.png
   - name: Claude
     type: select
+    use:
+      - Airport
     proxies:
       - Taiwan
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/claude-color.png
   - name: AI
     type: select
+    use:
+      - Airport
     proxies:
       - Node-B
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
   - name: Spotify
     type: select
+    use:
+      - Airport
     proxies:
       - USA
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Spotify.png
   - name: YouTubeMusic
     type: select
+    use:
+      - Airport
     proxies:
       - USA
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTubeMusic.png
   - name: YouTube
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTube.png
   - name: GitHub
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/GitHub.png
   - name: Google
     type: select
+    use:
+      - Airport
     proxies:
       - Gemini
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Google.png
   - name: Microsoft
     type: select
+    use:
+      - Airport
     proxies:
       - DIRECT
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Microsoft.png
   - name: Telegram
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Telegram.png
   - name: Twitter
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png
@@ -194,34 +241,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
     path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
     interval: 86400
-  Gemini:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml
-    path: ./rule_provider/Gemini.yaml
-    interval: 86400
-  Claude:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml
-    path: ./rule_provider/Claude.yaml
-    interval: 86400
-  YouTubeMusic:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTubeMusic/YouTubeMusic.yaml
-    path: ./rule_provider/YouTubeMusic.yaml
-    interval: 86400
-  WeChat:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml
-    path: ./rule_provider/WeChat.yaml
-    interval: 86400
 rules:
   - RULE-SET,jinx-white-guard,DIRECT
   - RULE-SET,jinx-ads,AD
@@ -229,11 +248,11 @@ rules:
   - GEOIP,private,DIRECT
   - GEOSITE,private,DIRECT
   - GEOSITE,openai,ChatGPT
-  - RULE-SET,Gemini,Gemini
-  - RULE-SET,Claude,Claude
+  - GEOSITE,google-gemini,Gemini
+  - GEOSITE,anthropic,Claude
   - GEOSITE,category-ai-chat-!cn,AI
   - GEOSITE,spotify,Spotify
-  - RULE-SET,YouTubeMusic,YouTubeMusic
+  - DOMAIN-SUFFIX,music.youtube.com,YouTubeMusic
   - GEOSITE,youtube,YouTube
   - GEOSITE,github,GitHub
   - GEOSITE,google,Google
@@ -241,33 +260,10 @@ rules:
   - GEOSITE,telegram,Telegram
   - GEOSITE,twitter,Twitter
   - GEOSITE,apple,DIRECT
-  - RULE-SET,WeChat,WeChat
+  - GEOSITE,tencent,WeChat
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT
   - MATCH,Final
-proxies:
-  - name: Node-A
-    type: hysteria2
-    server: 203.0.113.10
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-  - name: Node-B
-    type: hysteria2
-    server: 203.0.113.11
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-proxy-providers:
-  Airport:
-    type: http
-    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
-    path: ./proxy_provider/Airport.yaml
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
 dns:
   enable: true
   ipv6: false

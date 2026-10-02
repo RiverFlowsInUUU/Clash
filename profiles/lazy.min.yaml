@@ -1,3 +1,26 @@
+proxies:
+  - name: Node-A
+    type: hysteria2
+    server: 203.0.113.10
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+  - name: Node-B
+    type: hysteria2
+    server: 203.0.113.11
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
 proxy-groups:
   - name: Proxy
     type: url-test
@@ -69,29 +92,6 @@ rules:
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT
   - MATCH,Proxy
-proxies:
-  - name: Node-A
-    type: hysteria2
-    server: 203.0.113.10
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-  - name: Node-B
-    type: hysteria2
-    server: 203.0.113.11
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-proxy-providers:
-  Airport:
-    type: http
-    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
-    path: ./proxy_provider/Airport.yaml
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
 dns:
   enable: true
   ipv6: false

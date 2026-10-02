@@ -1,0 +1,21 @@
+# ── mihomo 运行时产物 ─────────────────────────────────────────────
+# 内核按 `geox-url` 默认值自动下载，跑一次 `-t` 或启动就会落在工作目录。
+# 每个 4–9 MB，不该进仓库。
+GeoSite.dat
+GeoIP.dat
+geoip.dat
+geoip.metadb
+geoip.db
+geosite.db
+country.mmdb
+GeoLite2-ASN.mmdb
+
+# ── 配置里 `path:` 指向的本地落盘缓存 ────────────────────────────
+# rule-providers / proxy-providers 会先落盘再解析（见 docs/01 §1.3）。
+rule_provider/
+proxy_provider/
+
+# ── 系统 ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

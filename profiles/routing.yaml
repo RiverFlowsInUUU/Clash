@@ -1,4 +1,3 @@
-# ============================================================================
 # routing · 分流版
 #
 # 与 lazy.yaml 的分工：
@@ -23,6 +22,46 @@
 # 📌 本文件没有版本号，是长期沿用的「分流版」入口。
 #    「懒人版」（极简）见同目录 `lazy.yaml`。
 # ============================================================================
+# ============================================================================
+# ① proxies —— 节点。两条占位（与蓝图 routing_v4.0.2 同构：Node-A 归 Proxy、
+#    Node-B 归 AI）。`203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，
+#    请替换为你的真实信息；server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
+#    协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password`
+#    ≙ 此处 `password`）。只用订阅的话，两条整段删掉即可。
+# ② proxy-providers —— 订阅槽位，见下。
+#
+# ⚡ 导入前至少填一项（两个都不填 ⇒ 所有走代理的流量不通）。
+# ============================================================================
+proxies:
+  - name: Node-A
+    type: hysteria2
+    server: 203.0.113.10
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+  - name: Node-B
+    type: hysteria2
+    server: 203.0.113.11
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+
+# ============================================================================
+# 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
+# health-check 只影响面板里的延迟读数，不影响可用性。
+# ============================================================================
+
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
 
 # ============================================================================
 # 策略组：总入口 → 应用组 → 订阅槽位 + 开关 → 地区组 → 兜底
@@ -75,8 +114,15 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Auto.png
 
   # --- ② 应用组 -----------------------------------------------------------
-  # 每个应用组 = 「默认取向（有刻意取向时才写）+ 回退 `Proxy` 组」。
-  # mihomo 的 select 组引用另一个组 = 把它当一个成员，面板上可再展开往下选。
+  # 成员 = 「订阅节点池 + 默认取向」：`use: [Airport]` 摊平订阅节点，
+  # `proxies` 里列出默认首项（有刻意取向时才写多个）。
+  #
+  # ⚠️ **mihomo 没有 `flatten` 字段**（flatten 是 Egern 的概念）。三者对照：
+  #      蓝本 Egern  `policies: [Proxy]` + `flatten: true`   ⇒ 把 Proxy 展开成全部节点
+  #      蓝本 Surge  `select, include-other-group="Proxy"`   ⇒ 复制 Proxy 的成员
+  #      mihomo      `use: [Airport]`                        ⇒ 订阅节点直接作为本组成员
+  #    效果一致：面板上直接选节点，不用再点进 Proxy 组一层。
+  #    `use` 拉进来的是订阅里的**节点**，不是把「Airport」当一个成员 —— 这就是摊平。
   #
   # 默认取向与蓝本逐组一致：
   #   Claude 默认 Taiwan（Claude 对台湾线路较友好）；
@@ -91,6 +137,8 @@ proxy-groups:
   # OpenAI / Sora / ChatGPT
   - name: ChatGPT
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/openai.png
@@ -98,6 +146,8 @@ proxy-groups:
   # Google 的 AI 服务。独立成组是因为下面的 `Google` 组首项指向它。
   - name: Gemini
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/gemini-color.png
@@ -106,6 +156,8 @@ proxy-groups:
   # ⚠️ 订阅里没有台湾节点时这一组会空，指向它的规则会断；导入后到面板确认一下。
   - name: Claude
     type: select
+    use:
+      - Airport
     proxies:
       - Taiwan
       - Proxy
@@ -118,6 +170,8 @@ proxy-groups:
   #   只导订阅不填节点时，来面板把本组切到订阅节点即可。
   - name: AI
     type: select
+    use:
+      - Airport
     proxies:
       - Node-B
       - Proxy
@@ -126,6 +180,8 @@ proxy-groups:
   # Spotify —— 默认走 USA；Spotify 的解锁地区以美区为准。
   - name: Spotify
     type: select
+    use:
+      - Airport
     proxies:
       - USA
       - Proxy
@@ -135,6 +191,8 @@ proxy-groups:
   # 用姊妹仓的专属图标（`YouTubeMusic.png`），不与下面的 YouTube 共用。
   - name: YouTubeMusic
     type: select
+    use:
+      - Airport
     proxies:
       - USA
       - Proxy
@@ -143,6 +201,8 @@ proxy-groups:
   # YouTube
   - name: YouTube
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTube.png
@@ -150,6 +210,8 @@ proxy-groups:
   # GitHub
   - name: GitHub
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/GitHub.png
@@ -157,6 +219,8 @@ proxy-groups:
   # Google —— 首项是 `Gemini` 组 ⇒「Google 走 Gemini → Proxy」。
   - name: Google
     type: select
+    use:
+      - Airport
     proxies:
       - Gemini
       - Proxy
@@ -165,6 +229,8 @@ proxy-groups:
   # Microsoft —— 首项是 `DIRECT`（微软服务直连优先，走代理反而慢）。
   - name: Microsoft
     type: select
+    use:
+      - Airport
     proxies:
       - DIRECT
       - Proxy
@@ -173,6 +239,8 @@ proxy-groups:
   # Telegram
   - name: Telegram
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Telegram.png
@@ -180,6 +248,8 @@ proxy-groups:
   # Twitter / X
   - name: Twitter
     type: select
+    use:
+      - Airport
     proxies:
       - Proxy
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png
@@ -312,17 +382,27 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Final.png
 
 # ============================================================================
-# 规则集：按「GEOSITE → 传统规则集」三级选型（与任务要求一致）：
+# 规则集：分成三层，**远程只留 3 份**（自托管或上游活跃维护），能落地的全落 GEOSITE。
 #
-#   ① GEOSITE（内核数据库，最快最省流量）—— 能用的全用它：
-#      openai / github / google / microsoft / youtube / spotify / telegram /
-#      twitter / apple / category-ai-chat-!cn（AI 全家桶）都直接收敛进数据库，
-#      不再挂远程规则集。
-#   ② 传统规则集（classical YAML，blackmatrix7 / Jinx）—— GEOSITE 没有的类别
-#      才退回这里：gemini / claude / wechat 三个类别 GeoSite.dat 里没有独立条目，
-#      用 blackmatrix7 的 classical YAML 精确分流。
-#   ③ MRS（mihomo 二进制规则集）—— 广告拦截用 AWAvenue 的 .mrs（上游提供二进制格式，
-#      省流量、解析快）；白名单与主广告清单用自托管 Jinx 仓的 classical YAML。
+#   ① GEOSITE（内核数据库，最省流量）—— 能用的全部用它。
+#      数据源 = `MetaCubeX/meta-rules-dat` 官方 release 的 `geosite.dat`
+#      （mihomo 的 `geox-url` 默认就指向它，每日更新）。
+#      本文件用到的类别，均已在 `geosite.dat` 中**逐个实测存在**：
+#        openai / google-gemini / anthropic / category-ai-chat-!cn / spotify /
+#        youtube / github / google / microsoft / telegram / twitter /
+#        apple / tencent / cn / private
+#   ② 内联 `DOMAIN-SUFFIX` —— 只有 GeoSite.dat 确实没有的类别才用它，目前仅 1 条：
+#        `music.youtube.com → YouTubeMusic`
+#      （geosite.dat 无独立 ytmusic 类；而 `music.youtube.com` 是 `youtube.com` 的
+#        子域、会被 `GEOSITE,youtube` 抢先命中，所以必须在它之前单独摘出来。）
+#   ③ 远程规则集（`rule-providers`，仅 3 份）：
+#        `jinx-white-guard` / `jinx-ads` —— 自托管 Jinx 仓，功能域白名单与广告主清单；
+#        `AWAvenue-Ads` —— 上游直接提供 `.mrs` 二进制，省流量、解析快。
+#
+# ⚠️ 本文件曾用 `blackmatrix7/ios_rule_script` 承接 Gemini / Claude / YouTubeMusic /
+#    WeChat 四类，**已全部移除**：该仓的应用类目（AI / 媒体 / 社交）最后更新停在
+#    **2025-06-17**（其中 Anthropic 更是 2024-02-02），早已滞后。
+#    这四类现全部改由 GeoSite.dat 原生承接 —— 零远程依赖、跟着数据库日更。
 #
 # 全部落盘到本地、24 小时刷新一次，节点侧不依赖在线下载。
 # ============================================================================
@@ -351,52 +431,22 @@ rule-providers:
     url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
     path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
     interval: 86400
-  # Gemini（classical YAML，blackmatrix7）—— GeoSite.dat 无 gemini 类别，退回传统层
-  Gemini:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml
-    path: ./rule_provider/Gemini.yaml
-    interval: 86400
-  # Claude / Anthropic（classical YAML，blackmatrix7）—— GeoSite.dat 无 claude 类别
-  Claude:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml
-    path: ./rule_provider/Claude.yaml
-    interval: 86400
-  # YouTubeMusic（classical YAML，blackmatrix7）—— 需与 YouTube 分开走 USA，
-  #   GeoSite.dat 无独立 ytmusic 类别，退回传统层精确切分
-  YouTubeMusic:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTubeMusic/YouTubeMusic.yaml
-    path: ./rule_provider/YouTubeMusic.yaml
-    interval: 86400
-  # WeChat（classical YAML，blackmatrix7）—— GeoSite.dat 无 wechat 类别
-  WeChat:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml
-    path: ./rule_provider/WeChat.yaml
-    interval: 86400
 
 # ============================================================================
 # 规则：自上而下匹配，第一条命中即决定去向。
 #   ① 白名单  ② 广告拦截 ×2  ③ 内网 ×2
 #   ④ 应用分流（AI 厂商 → 媒体 → 开发 → 社交）
-#   ⑤ Apple 全量直连  ⑥ 微信直连  ⑦ 国内域名 + 国内 IP  ⑧ 兜底
+#   ⑤ Apple 全量直连  ⑥ 腾讯直连  ⑦ 国内域名 + 国内 IP  ⑧ 兜底
 #
-# ⚠️ ① 必须留在 ② 之前 —— AWAvenue 与 Jinx 黑名单存在重叠域名，
+# ⚠️ ① 必须留在 ② 之前 —— AWAvenue-Ads 与 jinx-ads 存在重叠域名，
 #    顺序颠倒会把白名单里的功能域误杀。
-# ⚠️ 两条 GEOIP（③⑧）**不带 no-resolve**：走到它们的域名会多触发一次本地解析。
+# ⚠️ 两条 GEOIP（private / cn）**不带 no-resolve**：走到它们的域名会多触发一次本地解析。
 #    本地解析走的是加密解析器，不产生明文，代价只是首个请求多一次解析耗时。
 # ⚠️ 应用分流必须在国内直连之前 —— 否则「ChatGPT 但域名恰好被国内清单收录」的场景
 #    会被直连接走。越具体的越靠前。
+# ⚠️ ⑥ 的 `GEOSITE,tencent` 必须排在 ⑦ `GEOSITE,cn` 之前：腾讯域名同属 cn 类，
+#    靠前才能让它走 `WeChat` 组（出口同为直连，只是把「腾讯」从兜底里摘出来，
+#    并保留蓝本 `WeChat` 组的分工）。
 # ============================================================================
 rules:
   # ① 白名单 —— 抢在广告规则之前放行
@@ -411,15 +461,15 @@ rules:
   #    会先被 category-ai-chat-!cn 接走，永远轮不到 ChatGPT / Gemini / Claude 组。
   # 4a. AI 厂商（专属优先）
   - GEOSITE,openai,ChatGPT
-  - RULE-SET,Gemini,Gemini
-  - RULE-SET,Claude,Claude
+  - GEOSITE,google-gemini,Gemini
+  - GEOSITE,anthropic,Claude
   # 4a-补. 通用 AI 兜底：category-ai-chat-!cn 收全家桶
   #   （gemini / claude 的核心域名其实也在这 188 条里，但专属组在前已按家分流；
   #    这里收 grok / perplexity / mistral / huggingface / cursor 等其余 AI 类域名）
   - GEOSITE,category-ai-chat-!cn,AI
   # 4b. 媒体
   - GEOSITE,spotify,Spotify
-  - RULE-SET,YouTubeMusic,YouTubeMusic
+  - DOMAIN-SUFFIX,music.youtube.com,YouTubeMusic
   - GEOSITE,youtube,YouTube
   # 4c. 开发与系统
   # ⚠️ GitHub 必须排在国内直连之前：github.com 同时被白名单和国内清单收录，
@@ -435,50 +485,13 @@ rules:
   #     iCloud / App Store / 推送 / 定位全走直连，不吃代理流量。）
   - GEOSITE,apple,DIRECT
   # ⑥ 微信直连 —— 把微信从兜底里摘出来，避免被 MATCH 送进代理
-  - RULE-SET,WeChat,WeChat
+  - GEOSITE,tencent,WeChat
   # ⑦ 国内：域名集在前、IP 集在后，都直连
   #    GEOSITE,cn（111224 条）是国内域名直连的主承重墙，≙ 蓝图的 direct.txt
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT
   # ⑧ 兜底：以上都没命中，走 Final（→ Proxy）
   - MATCH,Final
-
-# ============================================================================
-# 节点：两条占位（与蓝图 routing_v4.0.2 同构：Node-A 归 Proxy、Node-B 归 AI）。
-# ⚠️ `203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，请替换为你的真实信息；
-#    server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
-# 协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password` ≙ 此处 `password`）。
-# 只用订阅的话两条整段删掉即可。
-# ============================================================================
-proxies:
-  - name: Node-A
-    type: hysteria2
-    server: 203.0.113.10
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-  - name: Node-B
-    type: hysteria2
-    server: 203.0.113.11
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-
-# ============================================================================
-# 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
-# health-check 只影响面板里的延迟读数，不影响可用性。
-# ============================================================================
-proxy-providers:
-  Airport:
-    type: http
-    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
-    path: ./proxy_provider/Airport.yaml
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-
 # ============================================================================
 # dns 段 —— 与 lazy.yaml 逐字相同（防泄露结构两份配置共用一套）。
 # 三个支点，缺一条就漏：
@@ -486,6 +499,7 @@ proxy-providers:
 #   ② 明文入口收口：tun 的 auto-route + strict-route + dns-hijack；
 #   ③ 代理域名只回 fake-ip，真实解析在落地侧完成。
 # ============================================================================
+
 dns:
   enable: true
   ipv6: false
