@@ -6,7 +6,7 @@
 # 全部流量走一个出口。
 #
 # 🧬 结构蓝本 = Self-Configuration 仓库的 lazy_v2.0.1（Surge / Egern 双内核同款拓扑）：
-#    组分工、占位节点（Node-A → Proxy、Node-B → AI）、规则次序逐项对齐；
+#    组分工、占位节点（Node-A → Proxy、Node-B → AI 备选出口）、规则次序逐项对齐；
 #    Surge 的 pre-matching REJECT 与 Egern 的 dns.forward reject 在 mihomo 没有对应物，
 #    广告拦截统一落在规则层（AD 组，与 Egern 侧同形）。
 #
@@ -22,7 +22,8 @@
 
 # ============================================================================
 # ① proxies —— 节点。两条占位（与蓝图 lazy_v2.0.1 同构：Node-A 归 Proxy、
-#    Node-B 归 AI）。`203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，
+#    Node-B 归 AI 但压备选位，不作默认出口）。`203.0.113.0/24` 是 RFC 5737 文档段，
+#    不会指向任何真实主机，
 #    请替换为你的真实信息；server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
 #    协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password`
 #    ≙ 此处 `password`）。只用订阅的话，两条整段删掉即可。
@@ -72,10 +73,11 @@ proxy-providers:
 #          DIRECT 即可，别整组切走（那等于关掉全部拦截）。
 #
 # 组的节点来源由两块拼起来：
-#   · `proxies` —— 本文件的占位节点（Node-A 归 Proxy、Node-B 归 AI）；
+#   · `proxies` —— `Proxy` 的占位节点 `Node-A`；`AI` 的默认出口 `Proxy`（组名可直接
+#                  当成员）与备选占位节点 `Node-B`；
 #   · `use`     —— `proxy-providers` 里订阅 `Airport` 的全部节点。
-# 两个组各自「自己那条节点 + 订阅节点」，AI 刻意**不引用 Proxy**（与蓝图同分工：
-# 两条节点各归一组，订阅节点两组共用）。
+# ⚠️ `AI` 的默认出口由蓝本的 `Node-B` 改为 `Proxy`（url-test 自动择优）—— `Node-B`
+#    是 RFC 5737 文档段、实际不通，当默认出口等于默认断网，故降为备选。
 #
 # ⚠️ mihomo 里 `include-all: true` 会把 `use` 覆盖成「全部 provider」。只有一个
 #    provider 时两者等价；日后加了第二个 provider 又只想用其中一个，就去掉
@@ -95,6 +97,7 @@ proxy-groups:
   - name: AI
     type: select
     proxies:
+      - Proxy
       - Node-B
     use:
       - Airport

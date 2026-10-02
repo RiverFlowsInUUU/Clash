@@ -47,9 +47,9 @@ proxy-groups:
   - name: ChatGPT
     type: select
     proxies:
+      - USA
       - Smart
       - Hong Kong
-      - USA
       - Singapore
       - Taiwan
       - Japan
@@ -60,9 +60,9 @@ proxy-groups:
   - name: Gemini
     type: select
     proxies:
+      - USA
       - Smart
       - Hong Kong
-      - USA
       - Singapore
       - Taiwan
       - Japan
@@ -86,7 +86,6 @@ proxy-groups:
   - name: AI
     type: select
     proxies:
-      - Node-B
       - Smart
       - Hong Kong
       - USA
@@ -96,6 +95,7 @@ proxy-groups:
       - Korea
       - Other Regions
       - Node-A
+      - Node-B
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
   - name: Spotify
     type: select

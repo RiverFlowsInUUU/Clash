@@ -7,7 +7,7 @@
 #                  组内还带地区组（按地区或延迟选优）
 #
 # 🧬 结构蓝本 = Self-Configuration 仓库的 routing_v4.0.2（Surge / Egern 双内核同款拓扑）：
-#    组分工、占位节点（Node-A → Proxy、Node-B → AI）、规则次序、地区组关键词逐项对齐；
+#    组分工、占位节点（Node-A → Proxy、Node-B → AI 组末位备选）、规则次序、地区组关键词逐项对齐；
 #    差异只在内核能力边界（见下）。
 #
 # ⚠️ 两份配置的 DNS 段与防泄露结构**完全一致**（tun + dns 逐字相同），
@@ -24,7 +24,7 @@
 # ============================================================================
 # ============================================================================
 # ① proxies —— 节点。两条占位（与蓝图 routing_v4.0.2 同构：Node-A 归 Proxy、
-#    Node-B 归 AI）。`203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，
+#    Node-B 归 AI 组但压末位，不作默认出口）。`203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，
 #    请替换为你的真实信息；server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
 #    协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password`
 #    ≙ 此处 `password`）。只用订阅的话，两条整段删掉即可。
@@ -112,7 +112,7 @@ proxy-groups:
 
   # 全节点池：url-test 自动择优（≙ 蓝图的 `Smart` 组名；mihomo 无 `smart` 类型，见段首）。
   # `use: [Airport]` 把订阅里的**节点**逐个拉进来测速，而不是把「Airport」当一个组单位。
-  # 它是 `Proxy` 的首项，所以也是「应用组默认取向 = `Proxy` 首项」那几组的默认出口。
+  # 它是 `Proxy` 的首项，也是 YouTube / GitHub / Telegram / Twitter / AI 五组的默认出口。
   - name: Smart
     type: url-test
     proxies: []
@@ -133,24 +133,28 @@ proxy-groups:
   # `proxies` 即可**（组名可以直接作为成员）。
   #   ⇒ 应用组里出现的永远是「分流组」；订阅节点只存在于 `Smart` 与 7 个地区组内部。
   #
-  # 默认取向（＝`proxies` 首项）与蓝本逐组一致：
-  #   Claude 默认 Taiwan（Claude 对台湾线路较友好）；
-  #   Spotify / YouTubeMusic 默认 USA（解锁地区以美区为准）；
-  #   Google 默认 Gemini（Google 走 Gemini → 分流组池）；
-  #   Microsoft 默认 DIRECT（微软服务直连优先，走代理反而慢）；
-  #   AI 默认 Node-B（占位节点），其后才是分流组池；
-  #   其余（ChatGPT / Gemini / YouTube / GitHub / Telegram / Twitter）默认取 `Proxy`
-  #   的首项 `Smart`（url-test 自动择优）。
+  # 默认取向（＝`proxies` 首项）：多数与蓝本逐组一致，三处是刻意偏离。
+  #   ⚠️ 偏离项：
+  #     ChatGPT / Gemini 默认 USA —— 两家都对美区 IP 友好；蓝本原取 `Proxy` 首项 `Smart`。
+  #     AI              默认 `Smart`（自动择优）—— 蓝本原取占位节点 `Node-B`，而已知它是
+  #                     RFC 5737 文档段、**实际不通**，拿它当默认出口等于默认断网，
+  #                     故降为末位备选。
+  #   其余同蓝本：
+  #     Claude 默认 Taiwan（Claude 对台湾线路较友好）；
+  #     Spotify / YouTubeMusic 默认 USA（解锁地区以美区为准）；
+  #     Google 默认 Gemini（Google 走 Gemini → 分流组池）；
+  #     Microsoft 默认 DIRECT（微软服务直连优先，走代理反而慢）；
+  #     YouTube / GitHub / Telegram / Twitter 默认取 `Proxy` 首项 `Smart`。
   #
   # 首项就是默认出口：填好订阅后无需再进面板切，即开即用。
 
-  # OpenAI / Sora / ChatGPT
+  # OpenAI / Sora / ChatGPT —— 默认走 USA 组（对美区 IP 友好）。
   - name: ChatGPT
     type: select
     proxies:
+      - USA
       - Smart
       - Hong Kong
-      - USA
       - Singapore
       - Taiwan
       - Japan
@@ -159,13 +163,13 @@ proxy-groups:
       - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/openai.png
 
-  # Google 的 AI 服务。独立成组是因为下面的 `Google` 组首项指向它。
+  # Google 的 AI 服务。独立成组是因为下面的 `Google` 组首项指向它。默认走 USA 组。
   - name: Gemini
     type: select
     proxies:
+      - USA
       - Smart
       - Hong Kong
-      - USA
       - Singapore
       - Taiwan
       - Japan
@@ -191,14 +195,13 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/claude-color.png
 
   # 其余 AI 类域名（category-ai-chat-!cn 全家桶：grok / perplexity / mistral /
-  # huggingface / cursor / midjourney …）。默认走本文件的 `Node-B`（第二条占位节点），
-  # 其后是 `Proxy` 的成员组（`Smart` + 7 个地区组 + `Node-A`）。
-  # ⇒ 只填两条节点、不导订阅时，`Proxy` / `AI` 两组照样有出口；
-  #   只导订阅不填节点时，来面板把本组切到 `Smart` 或某个地区组即可。
+  # huggingface / cursor / midjourney …）。默认走 `Smart`（url-test 自动择优），
+  # 其后是 `Proxy` 的成员组（7 个地区组 + `Node-A`）。
+  # 占位节点 `Node-B` 压在末位备选 —— 它与 `Node-A` 同为 RFC 5737 文档段、实际不通，
+  # 刻意不作默认出口；不用它可直接从列表删掉。
   - name: AI
     type: select
     proxies:
-      - Node-B
       - Smart
       - Hong Kong
       - USA
@@ -208,6 +211,7 @@ proxy-groups:
       - Korea
       - Other Regions
       - Node-A
+      - Node-B
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
 
   # Spotify —— 默认走 USA；Spotify 的解锁地区以美区为准。

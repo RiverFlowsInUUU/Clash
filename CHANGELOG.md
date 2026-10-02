@@ -16,18 +16,25 @@
   - 📋 **22 条规则**，自上而下：白名单 → 广告拦截 ×2 → 内网 ×2 → AI 厂商 ×3 → AI 兜底 →
     媒体 ×3 → 开发 ×3 → 社交 ×2 → Apple 全量直连 → 微信 → 国内 → 兜底；
   - 🧬 **结构对照 Self-Configuration 仓库 routing_v4.0.2**：组分工、占位节点（Node-A → Proxy、
-    Node-B → AI）、地区组关键词、应用组默认取向逐项对齐；差异只在 mihomo 能力边界
+    Node-B → AI 末位备选）、地区组关键词、应用组默认取向逐项对齐，仅 ChatGPT / Gemini / AI
+    三组默认出口刻意偏离（理由见「变更」首条）；其余差异只在 mihomo 能力边界
     （见下方「变更」）。
 
 ### 变更
 
+- 🎯 **三个应用组的默认出口调整** —— 与蓝本对齐后仅这三处刻意偏离，其余逐组一致：
+  - `ChatGPT` / `Gemini` 首项改为 `USA` —— 两家都对美区 IP 友好（蓝本原取 `Proxy` 首项 `Smart`）；
+  - `AI` 首项改为 `Smart` —— 蓝本原取占位节点 `Node-B`，而它是 RFC 5737 文档段、**实际不通**，
+    拿它当默认出口等于默认断网，故降为末位备选；
+  - 懒人版 `lazy.yaml` 的 `AI` 组同因同改：首项由 `Node-B` 改为 `Proxy`（懒人版的自动择优组，
+    等价于分流版的 `Smart`，懒人版无地区组故不以地区组打头）。
 - 🌐 **懒人版规则选型升级为 GEOSITE 优先** —— `lazy.yaml` 重写，规则集由 3 份远程 + 6 条原生
   升级为「GEOSITE 优先 → MRS → 传统规则集」三级选型（与分流版同口径）：
   - 白名单 / 广告清单维持远程（Jinx 自托管 + AWAvenue 的 .mrs）；
   - AI 分流由 `GEOSITE,category-ai-chat-!cn` 承接，伴生域/宽后缀整合集收敛进数据库；
   - 规则数 9 → 11 条（补 Apple 系统服务直连 + AI 分流拆两条）。
 - 🪶 **懒人版 Proxy 组改为 url-test 自动择优** —— 对齐蓝图的 smart 组语义：
-  主出口按延迟自动选优，无需手动管；AI 组维持 select 手动钉死（账号风控对出口跳变敏感）。
+  主出口按延迟自动选优，无需手动管；AI 组仍是 select 类型，默认出口指向 `Proxy`（自动择优）。
 - ✈️ **占位节点协议由 vless 改为 hysteria2** —— 与 Self-Configuration 双内核的占位节点同协议
   （`password` ≙ Egern 的 `auth` ≙ Surge 的 `password`），占位节点数 1 → 2
   （Node-A 归 Proxy、Node-B 归 AI）。
