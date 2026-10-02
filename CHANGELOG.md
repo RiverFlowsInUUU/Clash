@@ -4,6 +4,44 @@
 
 ---
 
+## 2026-10-02
+
+### 新增
+
+- 🧭 **分流版配置落地** —— `profiles/routing.yaml`（带注释）/ `profiles/routing.min.yaml`（纯配置）：
+  - 🧩 **24 个策略组**：`Proxy`（总入口）· `Smart`（全节点池 url-test 自动择优）·
+    12 个应用组（ChatGPT / Gemini / Claude / AI / Spotify / YouTubeMusic / YouTube /
+    GitHub / Google / Microsoft / Telegram / Twitter）· `WeChat` · `AD` ·
+    7 个地区组（Hong Kong / USA / Japan / Taiwan / Singapore / Korea / Other Regions）· `Final`；
+  - 📋 **22 条规则**，自上而下：白名单 → 广告拦截 ×2 → 内网 ×2 → AI 厂商 ×3 → AI 兜底 →
+    媒体 ×3 → 开发 ×3 → 社交 ×2 → Apple 全量直连 → 微信 → 国内 → 兜底；
+  - 🧬 **结构对照 Self-Configuration 仓库 routing_v4.0.2**：组分工、占位节点（Node-A → Proxy、
+    Node-B → AI）、地区组关键词、应用组默认取向逐项对齐；差异只在 mihomo 能力边界
+    （见下方「变更」）。
+
+### 变更
+
+- 🌐 **懒人版规则选型升级为 GEOSITE 优先** —— `lazy.yaml` 重写，规则集由 3 份远程 + 6 条原生
+  升级为「GEOSITE 优先 → MRS → 传统规则集」三级选型（与分流版同口径）：
+  - 白名单 / 广告清单维持远程（Jinx 自托管 + AWAvenue 的 .mrs）；
+  - AI 分流由 `GEOSITE,category-ai-chat-!cn` 承接，伴生域/宽后缀整合集收敛进数据库；
+  - 规则数 9 → 11 条（补 Apple 系统服务直连 + AI 分流拆两条）。
+- 🪶 **懒人版 Proxy 组改为 url-test 自动择优** —— 对齐蓝图的 smart 组语义：
+  主出口按延迟自动选优，无需手动管；AI 组维持 select 手动钉死（账号风控对出口跳变敏感）。
+- ✈️ **占位节点协议由 vless 改为 hysteria2** —— 与 Self-Configuration 双内核的占位节点同协议
+  （`password` ≙ Egern 的 `auth` ≙ Surge 的 `password`），占位节点数 1 → 2
+  （Node-A 归 Proxy、Node-B 归 AI）。
+
+### 已知取舍
+
+- ⚠️ **mihomo 无低倍率优先加权** —— Surge 的 `policy-priority` / Egern 的 `priorities` 能按节点名
+  里的倍率标记给低倍率节点软加权，mihomo 的 url-test 没有对应机制。本配置选择「纯延迟择优」，
+  想要低倍率优先可给对应组补 `filter` 硬筛（代价：硬过滤非软偏好，低倍率节点延迟再高也不让位）。
+- ⚠️ **`gemini` / `claude` / `wechat` 无 GEOSITE 类别** —— GeoSite.dat 里没有这三个独立类目，
+  分流版退回 blackmatrix7 的 classical YAML 规则集精确分流（任务要求的三级选型第二层）。
+
+---
+
 ## 2026-09-22
 
 ### 新增

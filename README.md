@@ -6,13 +6,11 @@
 
 [![Clash](https://img.shields.io/badge/Clash-Meta%20%7C%20mihomo-1f6feb?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![Profiles](https://img.shields.io/badge/Profiles-lazy%20%7C%20routing-0969da?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
-[![Rules](https://img.shields.io/badge/Rules-9-8250df?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
+[![Rules](https://img.shields.io/badge/Rules-GEOSITE%20%2B-8250df?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![DNS](https://img.shields.io/badge/DNS-Zero%20Leak-2ea043?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![License](https://img.shields.io/badge/License-MIT-dfb317?style=flat-square)](LICENSE)
 
 </div>
-
-🚧 **部分发布** —— 懒人版配置、更新日志、专题文档与技术文档已上线，分流版与审计脚本在准备中。
 
 ## 📥 两全其美，皆合心意
 
@@ -24,20 +22,26 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 
 🧭 **分流版** · 可控 · 随心
 
-🔜 待发布。
+```
+https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/routing.min.yaml
+```
 
 ## 🧭 井然有序
 
-懒人版 3 组，自上而下：
+懒人版 3 组、分流版 24 组，自上而下：
 
 | 组 | 🪶 懒人版 | 🧭 分流版 |
 |:---|:---:|:---:|
-| 🚀 `Proxy` | ✅ | - |
-| 🤖 `AI` | ✅ | - |
-| 🛑 `AD` | ✅ | - |
+| 🚀 `Proxy` | ✅ | ✅ |
+| 🧠 `Smart` | - | ✅ |
+| 🤖 `AI` | ✅ | ✅ |
+| 🛑 `AD` | ✅ | ✅ |
+| 📱 应用组（ChatGPT / Gemini / Claude / Spotify …） | - | ✅ ×12 |
+| 🌍 地区组（香港 / 美国 / 日本 …） | - | ✅ ×7 |
+| 🧩 `Final` | - | ✅ |
 
-> 🪶 懒人版含 1 个订阅槽位（`Airport`，换 `url` 即用）与 1 条节点占位，长期沿用无版本号。
-> 🔜 分流版（按应用 + 按地区）待发布，组结构与选路见 [DetailsReadme](DetailsReadme/DetailsReadme.md)。
+> 🪶 懒人版含 1 个订阅槽位（`Airport`，换 `url` 即用）与 2 条节点占位，长期沿用无版本号。
+> 🧭 分流版按应用 + 按地区选路，组结构与选路见 [DetailsReadme](DetailsReadme/DetailsReadme.md)。
 
 ## 📋 分流顺序
 
@@ -48,7 +52,10 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 | 🛡️ | 白名单域名 | `DIRECT` |
 | 🚫 | 广告域名 | `AD` |
 | 🏠 | 内网地址 | `DIRECT` |
-| 🤖 | AI 服务 | `AI` |
+| 🤖 | AI 服务（OpenAI / Gemini / Claude / AI 全家桶） | 各自应用组 |
+| 📱 | 应用分流（Spotify / YouTube / GitHub / Google …） | 各自应用组 |
+| 🍎 | Apple 服务（分流版全量） | `DIRECT` |
+| 💬 | 微信 | `DIRECT` |
 | 🇨🇳 | 国内域名 · 国内 IP | `DIRECT` |
 | 🌐 | 其余全部 | `Proxy` |
 
@@ -73,7 +80,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 
 | | 路径 | 内容 |
 |:--:|:-----|:-----|
-| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2（带注释 / 纯配置）；分流版待发布 |
+| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2（各带注释 / 纯配置） |
 | 🖼️ | `icons/` | 策略组图标 |
 | 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |

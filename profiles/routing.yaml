@@ -1,0 +1,541 @@
+# ============================================================================
+# routing · 分流版
+#
+# 与 lazy.yaml 的分工：
+#   lazy.yaml      极简 —— 3 个策略组（Proxy / AI / AD）+ 1 个订阅槽位，
+#                  全量流量一个出口，只做「防泄露 + 广告拦截 + AI」
+#   routing.yaml   分流 —— 按应用分组（ChatGPT / Gemini / Claude / AI / …），
+#                  组内还带地区组（按地区或延迟选优）
+#
+# 🧬 结构蓝本 = Self-Configuration 仓库的 routing_v4.0.2（Surge / Egern 双内核同款拓扑）：
+#    组分工、占位节点（Node-A → Proxy、Node-B → AI）、规则次序、地区组关键词逐项对齐；
+#    差异只在内核能力边界（见下）。
+#
+# ⚠️ 两份配置的 DNS 段与防泄露结构**完全一致**（tun + dns 逐字相同），
+#    差别只在策略组粒度与规则数量。选一个用即可，不要叠加。
+#
+# ⚠️ 导入前要动两处（至少填一项，否则所有走代理的流量不通）：
+#   ① `proxy-providers.Airport.url` —— 换成你自己的订阅地址；
+#   ② `proxies` 里两条占位节点 —— 按实际协议替换 `server` / `port` / `password` / `sni`，
+#      或整条删掉（只用订阅）。`203.0.113.0/24` 是 RFC 5737 文档段，不会指向真实主机；
+#      server 写 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
+#
+# 📌 本文件没有版本号，是长期沿用的「分流版」入口。
+#    「懒人版」（极简）见同目录 `lazy.yaml`。
+# ============================================================================
+
+# ============================================================================
+# 策略组：总入口 → 应用组 → 订阅槽位 + 开关 → 地区组 → 兜底
+#
+# 组顺序按「先写引用别人的，后写被引用的」排列：
+#   读配置时先看到"谁在用"，再看"节点从哪来"，不用来回跳。
+#
+# mihomo 与 Surge / Egern 的能力对照（这是本文件与蓝本最大的差异点，务必先读）：
+#   Surge smart / Egern smart  ≈  mihomo url-test（按延迟自动择优）
+#   Surge select / Egern select ≈  mihomo select（手动）
+#   Surge include-other-group="X" / Egern flatten:true  ≈  mihomo 的 `use` + `proxies: [组名]`
+#
+# ⚠️ 一处**必须说清的能力缺口**：Surge 的 `policy-priority` / Egern 的 `priorities`
+#    能按「节点名里的倍率标记」给低倍率节点加权（软偏好：低倍率节点比最优慢 6.7 倍内
+#    仍胜出，超出才让位）。mihomo 的 url-test **没有**这个机制 —— 只有两种近似：
+#       A. 纯 url-test：按延迟择优，完全不看倍率（本文件的选择，最省心）；
+#       B. 给组加 `filter` 硬筛低倍率节点：只留「名字里带 0.x 倍率」的节点，但这是
+#          **硬过滤**不是软偏好 —— 低倍率节点延迟再高也不会让位给正常倍率节点。
+#    取舍：懒人版/分流版都以「省心」为先，选 A。想要低倍率优先，把对应 url-test 组
+#    补一行 `filter: "(?<![\\d.])0\\.\\d*[1-9]"` 即可（代价见 B）。
+# ============================================================================
+proxy-groups:
+  # --- ① 总入口 -----------------------------------------------------------
+  # 成员 = 各组名（Smart + 7 个地区组），末位再挂一条本文件的 `Node-A`。
+  # Node-A 挂末位是刻意的：默认首项仍是 `Smart`（自动择优），没有被占位节点顶掉。
+  - name: Proxy
+    type: select
+    proxies:
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+
+  # 全节点池：url-test 自动择优（≙ 蓝图的 smart 组）。
+  # `use: [Airport]` 把订阅节点拉进来逐个测速，而不是把「Airport」当一个组单位。
+  - name: Smart
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+
+  # --- ② 应用组 -----------------------------------------------------------
+  # 每个应用组 = 「默认取向（有刻意取向时才写）+ 回退 `Proxy` 组」。
+  # mihomo 的 select 组引用另一个组 = 把它当一个成员，面板上可再展开往下选。
+  #
+  # 默认取向与蓝本逐组一致：
+  #   Claude 默认 Taiwan（Claude 对台湾线路较友好）；
+  #   Spotify / YouTubeMusic 默认 USA（解锁地区以美区为准）；
+  #   Google 默认 Gemini（Google 走 Gemini → Proxy）；
+  #   Microsoft 默认 DIRECT（微软服务直连优先，走代理反而慢）；
+  #   AI 默认 Node-B（占位节点），其后才是 Proxy；
+  #   其余（ChatGPT / Gemini / YouTube / GitHub / Telegram / Twitter）默认 Proxy。
+  #
+  # 首项就是默认出口：填好订阅后无需再进面板切，即开即用。
+
+  # OpenAI / Sora / ChatGPT
+  - name: ChatGPT
+    type: select
+    proxies:
+      - Proxy
+    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/openai.png
+
+  # Google 的 AI 服务。独立成组是因为下面的 `Google` 组首项指向它。
+  - name: Gemini
+    type: select
+    proxies:
+      - Proxy
+    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/gemini.png
+
+  # Anthropic / Claude —— 默认走台湾组。
+  # ⚠️ 订阅里没有台湾节点时这一组会空，指向它的规则会断；导入后到面板确认一下。
+  - name: Claude
+    type: select
+    proxies:
+      - Taiwan
+      - Proxy
+    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/claude.png
+
+  # 其余 AI 类域名（category-ai-chat-!cn 全家桶：grok / perplexity / mistral /
+  # huggingface / cursor / midjourney …）。默认走本文件的 `Node-B`（第二条占位节点），
+  # 其后才是 `Proxy` 组。
+  # ⇒ 只填两条节点、不导订阅时，`Proxy` / `AI` 两组照样有出口；
+  #   只导订阅不填节点时，来面板把本组切到订阅节点即可。
+  - name: AI
+    type: select
+    proxies:
+      - Node-B
+      - Proxy
+    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/mistral.png
+
+  # Spotify —— 默认走 USA；Spotify 的解锁地区以美区为准。
+  - name: Spotify
+    type: select
+    proxies:
+      - USA
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
+
+  # YouTube Music —— 默认走 USA（与 Spotify 同）。
+  - name: YouTubeMusic
+    type: select
+    proxies:
+      - USA
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+
+  # YouTube
+  - name: YouTube
+    type: select
+    proxies:
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+
+  # GitHub
+  - name: GitHub
+    type: select
+    proxies:
+      - Proxy
+    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/github.png
+
+  # Google —— 首项是 `Gemini` 组 ⇒「Google 走 Gemini → Proxy」。
+  - name: Google
+    type: select
+    proxies:
+      - Gemini
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png
+
+  # Microsoft —— 首项是 `DIRECT`（微软服务直连优先，走代理反而慢）。
+  - name: Microsoft
+    type: select
+    proxies:
+      - DIRECT
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
+
+  # Telegram
+  - name: Telegram
+    type: select
+    proxies:
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+
+  # Twitter / X
+  - name: Twitter
+    type: select
+    proxies:
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png
+
+  # --- ③ 开关 -------------------------------------------------------------
+  # 微信直连：成员**只有 `DIRECT`**。真正作用是把微信从兜底里摘出来，
+  # 避免它被 `MATCH` 送进代理。刻意不给其它出口（与蓝本的 `select, policies:[DIRECT]` 一致）。
+  - name: WeChat
+    type: select
+    proxies:
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/WeChat.png
+
+  # 广告拦截开关。只有一个子策略 REJECT（与蓝本两内核一致）——
+  # 想临时放行某个广告域名，在 rules 里加一条更靠前的 domain 规则指向
+  # DIRECT 即可，别整组切走（那等于关掉全部拦截）。
+  - name: AD
+    type: select
+    proxies:
+      - REJECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+
+  # --- ④ 地区组 -----------------------------------------------------------
+  # 每个地区组 = 「订阅节点」+「filter 正则只保留该地区」，url-test 自动择优。
+  # `filter` 只对 `use` 引入的订阅节点生效（对显式写死的 `proxies` 成员无效），
+  # 所以地区组刻意只 `use: [Airport]`、不写 `proxies`。
+  #
+  # ⚠️ 地区名是**两份拷贝**：每个地区组写自己的 filter，而 `Other Regions` 的负向断言
+  #    把其它 6 个组的关键词又抄了一遍。**改任何一个地区组，都要同步改 Other Regions。**
+  # ⚠️ 空组是允许的（订阅里没有该地区的节点时就会空）。mihomo 不会因此拒绝加载，
+  #    但如果某条规则指向了空组，那条规则的流量会断。导入后到面板上看一眼。
+
+  # 香港（含「深港 / 沪港 / 京港 / 广港」这类中转写法）
+  - name: Hong Kong
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    filter: "(?i)🇭🇰|香港|Hong\\s*Kong|\\bHKG?\\b|(?:深|沪|京|广)港"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/HK.png
+
+  # 美国（含主要城市名与机场三字码；`\bUSA?\b` 匹配 US / USA）
+  - name: USA
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    filter: "(?i)🇺🇸|美国|United\\s*States|America|\\bUSA?\\b|洛杉矶|硅谷|西雅图|芝加哥|达拉斯|凤凰城|阿什本|纽约|迈阿密|波士顿|休斯顿|亚特兰大|拉斯维加斯|圣地亚哥|盐湖城|奥斯汀|波特兰|丹佛|奥克兰|安大略|圣安娜|\\b(?:LAX|SJC|SFO|SEA|ORD|JFK|DFW|IAD|PHX|ATL|BOS|MIA|EWR|LGA|IAH|HOU|DEN|OAK|ONT|SNA|LAS|PDX|DAL|SAN|SLC|MSP)\\b"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/UnitedStates.png
+
+  # 日本
+  - name: Japan
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    filter: "(?i)🇯🇵|日本|东京|大阪|Japan|\\b(?:JPN?|NRT|HND|KIX|FUK|NGO|OSA|CTS|SDJ|OKA)\\b"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+
+  # 中国台湾
+  - name: Taiwan
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    filter: "(?i)🇹🇼|台湾|Taiwan|\\b(?:TWN?|TPE|Taipei)\\b"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+
+  # 新加坡
+  - name: Singapore
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    filter: "(?i)🇸🇬|新加坡|狮城|Singapore|\\b(?:SGP?|SIN)\\b"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+
+  # 韩国
+  - name: Korea
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    filter: "(?i)🇰🇷|韩国|首尔|仁川|Korea|South\\s*Korea|\\b(?:KOR|KR|ICN|SEL)\\b"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png
+
+  # 其它地区 —— 用**负向断言**排除上面 6 个地区的全部关键词。
+  # 末尾那串 `倍率|剩余|到期|流量|官网|订阅|测试|有效|禁止|邮箱|客服|地址|网站|群组`
+  # 是为了把订阅里常见的"信息行节点"（「剩余流量：100GB」这种）也排除掉。
+  #
+  # ⚠️ 它的关键词与上面 6 个组**完全重复**，是本文件里最大的一处维护负担。
+  #    mihomo 的 filter 不支持引用变量，消灭不掉 —— 只能靠人工同步。
+  - name: Other Regions
+    type: url-test
+    proxies: []
+    use:
+      - Airport
+    filter: "(?xi)^(?!.*(?:🇭🇰|香港|Hong\\s*Kong|\\bHKG?\\b|(?:深|沪|京|广)港|🇯🇵|日本|东京|大阪|Japan|\\b(?:JPN?|NRT|HND|KIX|FUK|NGO|OSA|CTS|SDJ|OKA)\\b|🇸🇬|新加坡|狮城|Singapore|\\b(?:SGP?|SIN)\\b|🇹🇼|台湾|Taiwan|\\b(?:TWN?|TPE|Taipei)\\b|🇰🇷|韩国|首尔|仁川|Korea|South\\s*Korea|\\b(?:KOR|KR|ICN|SEL)\\b|🇺🇸|美国|United\\s*States|America|\\bUSA?\\b|洛杉矶|硅谷|西雅图|芝加哥|达拉斯|凤凰城|阿什本|纽约|迈阿密|波士顿|休斯顿|亚特兰大|拉斯维加斯|圣地亚哥|盐湖城|奥斯汀|波特兰|丹佛|奥克兰|安大略|圣安娜|\\b(?:LAX|SJC|SFO|SEA|ORD|JFK|DFW|IAD|PHX|ATL|BOS|MIA|EWR|LGA|IAH|HOU|DEN|OAK|ONT|SNA|LAS|PDX|DAL|SAN|SLC|MSP)\\b|倍率|剩余|到期|流量|官网|订阅|测试|有效|禁止|邮箱|客服|地址|网站|群组)).+$"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/WorldMap.png
+
+  # --- ⑤ 兜底 -------------------------------------------------------------
+  # `MATCH` 规则指向本组，而不是直接写 `Proxy` —— 这样面板上还能改兜底去向。
+  # 成员只有 `Proxy` 组名（不加 `include-all`）：兜底要的是「跟随 Proxy 的动态选优」，
+  # 不是钉死在某个具体节点上。
+  - name: Final
+    type: select
+    proxies:
+      - Proxy
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png
+
+# ============================================================================
+# 规则集：按「GEOSITE → 传统规则集」三级选型（与任务要求一致）：
+#
+#   ① GEOSITE（内核数据库，最快最省流量）—— 能用的全用它：
+#      openai / github / google / microsoft / youtube / spotify / telegram /
+#      twitter / apple / category-ai-chat-!cn（AI 全家桶）都直接收敛进数据库，
+#      不再挂远程规则集。
+#   ② 传统规则集（classical YAML，blackmatrix7 / Jinx）—— GEOSITE 没有的类别
+#      才退回这里：gemini / claude / wechat 三个类别 GeoSite.dat 里没有独立条目，
+#      用 blackmatrix7 的 classical YAML 精确分流。
+#   ③ MRS（mihomo 二进制规则集）—— 广告拦截用 AWAvenue 的 .mrs（上游提供二进制格式，
+#      省流量、解析快）；白名单与主广告清单用自托管 Jinx 仓的 classical YAML。
+#
+# 全部落盘到本地、24 小时刷新一次，节点侧不依赖在线下载。
+# ============================================================================
+rule-providers:
+  # 白名单（classical YAML，自托管 Jinx 仓）—— 自定义功能域清单，内核数据库里没有对应物
+  jinx-white-guard:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-white-guard.yaml
+    path: ./rule_provider/jinx-white-guard.yaml
+    interval: 86400
+  # 广告拦截主清单（classical YAML，自托管 Jinx 仓）
+  jinx-ads:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-ads.yaml
+    path: ./rule_provider/jinx-ads-delta.yaml
+    interval: 86400
+  # 广告拦截第 2 条（.mrs 二进制）—— 上游提供 mihomo 二进制格式，优先于文本
+  AWAvenue-Ads:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
+    path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
+    interval: 86400
+  # Gemini（classical YAML，blackmatrix7）—— GeoSite.dat 无 gemini 类别，退回传统层
+  Gemini:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml
+    path: ./rule_provider/Gemini.yaml
+    interval: 86400
+  # Claude / Anthropic（classical YAML，blackmatrix7）—— GeoSite.dat 无 claude 类别
+  Claude:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml
+    path: ./rule_provider/Claude.yaml
+    interval: 86400
+  # YouTubeMusic（classical YAML，blackmatrix7）—— 需与 YouTube 分开走 USA，
+  #   GeoSite.dat 无独立 ytmusic 类别，退回传统层精确切分
+  YouTubeMusic:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTubeMusic/YouTubeMusic.yaml
+    path: ./rule_provider/YouTubeMusic.yaml
+    interval: 86400
+  # WeChat（classical YAML，blackmatrix7）—— GeoSite.dat 无 wechat 类别
+  WeChat:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml
+    path: ./rule_provider/WeChat.yaml
+    interval: 86400
+
+# ============================================================================
+# 规则：自上而下匹配，第一条命中即决定去向。
+#   ① 白名单  ② 广告拦截 ×2  ③ 内网 ×2
+#   ④ 应用分流（AI 厂商 → 媒体 → 开发 → 社交）
+#   ⑤ Apple 全量直连  ⑥ 微信直连  ⑦ 国内域名 + 国内 IP  ⑧ 兜底
+#
+# ⚠️ ① 必须留在 ② 之前 —— AWAvenue 与 Jinx 黑名单存在重叠域名，
+#    顺序颠倒会把白名单里的功能域误杀。
+# ⚠️ 两条 GEOIP（③⑧）**不带 no-resolve**：走到它们的域名会多触发一次本地解析。
+#    本地解析走的是加密解析器，不产生明文，代价只是首个请求多一次解析耗时。
+# ⚠️ 应用分流必须在国内直连之前 —— 否则「ChatGPT 但域名恰好被国内清单收录」的场景
+#    会被直连接走。越具体的越靠前。
+# ============================================================================
+rules:
+  # ① 白名单 —— 抢在广告规则之前放行
+  - RULE-SET,jinx-white-guard,DIRECT
+  # ② 广告拦截 —— 两条并列清单，同一出口 AD
+  - RULE-SET,jinx-ads,AD
+  - RULE-SET,AWAvenue-Ads,AD
+  # ③ 内网：私有 IP 段 + 私有域名，一律直连（≙ 蓝图 Lan.list + private.txt 两条）
+  - GEOIP,private,DIRECT
+  - GEOSITE,private,DIRECT
+  # ④ 应用分流 —— AI 厂商专属规则必须排在通用 AI 兜底之前，否则 AI 域名
+  #    会先被 category-ai-chat-!cn 接走，永远轮不到 ChatGPT / Gemini / Claude 组。
+  # 4a. AI 厂商（专属优先）
+  - GEOSITE,openai,ChatGPT
+  - RULE-SET,Gemini,Gemini
+  - RULE-SET,Claude,Claude
+  # 4a-补. 通用 AI 兜底：category-ai-chat-!cn 收全家桶
+  #   （gemini / claude 的核心域名其实也在这 188 条里，但专属组在前已按家分流；
+  #    这里收 grok / perplexity / mistral / huggingface / cursor 等其余 AI 类域名）
+  - GEOSITE,category-ai-chat-!cn,AI
+  # 4b. 媒体
+  - GEOSITE,spotify,Spotify
+  - RULE-SET,YouTubeMusic,YouTubeMusic
+  - GEOSITE,youtube,YouTube
+  # 4c. 开发与系统
+  # ⚠️ GitHub 必须排在国内直连之前：github.com 同时被白名单和国内清单收录，
+  #    而 GitHub 组默认走 Proxy —— 这正是"应用分流"要生效的地方。
+  - GEOSITE,github,GitHub
+  - GEOSITE,google,Google
+  - GEOSITE,microsoft,Microsoft
+  # 4d. 社交
+  - GEOSITE,telegram,Telegram
+  - GEOSITE,twitter,Twitter
+  # ⑤ Apple 全量直连 —— GEOSITE,apple（1792 条）覆盖全量 Apple 域名。
+  #    （懒人版是「系统服务直连」，分流版对齐蓝本做「全量 Apple 直连」：
+  #     iCloud / App Store / 推送 / 定位全走直连，不吃代理流量。）
+  - GEOSITE,apple,DIRECT
+  # ⑥ 微信直连 —— 把微信从兜底里摘出来，避免被 MATCH 送进代理
+  - RULE-SET,WeChat,WeChat
+  # ⑦ 国内：域名集在前、IP 集在后，都直连
+  #    GEOSITE,cn（111224 条）是国内域名直连的主承重墙，≙ 蓝图的 direct.txt
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT
+  # ⑧ 兜底：以上都没命中，走 Final（→ Proxy）
+  - MATCH,Final
+
+# ============================================================================
+# 节点：两条占位（与蓝图 routing_v4.0.2 同构：Node-A 归 Proxy、Node-B 归 AI）。
+# ⚠️ `203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，请替换为你的真实信息；
+#    server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
+# 协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password` ≙ 此处 `password`）。
+# 只用订阅的话两条整段删掉即可。
+# ============================================================================
+proxies:
+  - name: Node-A
+    type: hysteria2
+    server: 203.0.113.10
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+  - name: Node-B
+    type: hysteria2
+    server: 203.0.113.11
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+
+# ============================================================================
+# 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
+# health-check 只影响面板里的延迟读数，不影响可用性。
+# ============================================================================
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
+# ============================================================================
+# dns 段 —— 与 lazy.yaml 逐字相同（防泄露结构两份配置共用一套）。
+# 三个支点，缺一条就漏：
+#   ① 解析器全部加密（DoH，443），没有一条明文递归；
+#   ② 明文入口收口：tun 的 auto-route + strict-route + dns-hijack；
+#   ③ 代理域名只回 fake-ip，真实解析在落地侧完成。
+# ============================================================================
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:7874
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  prefer-h3: false
+  respect-rules: true
+  use-hosts: true
+  use-system-hosts: false
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.localdomain"
+    - "*.home.arpa"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "localhost.ptlogin2.qq.com"
+    - "+.srv.nintendo.net"
+    - "+.stun.playstation.net"
+    - "+.xboxlive.com"
+    - "stun.*"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.pool.ntp.org"
+    - "+.market.xiaomi.com"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - https://223.5.5.5/dns-query
+    - https://120.53.53.53/dns-query
+  direct-nameserver:
+    - https://223.5.5.5/dns-query
+    - https://120.53.53.53/dns-query
+  nameserver:
+    - https://dns.cloudflare.com/dns-query
+    - https://dns.google/dns-query
+  nameserver-policy:
+    "geosite:private,cn":
+      - https://223.5.5.5/dns-query
+      - https://120.53.53.53/dns-query
+
+# ============================================================================
+# tun 段 —— dns 段的收口装置（与 lazy.yaml 逐字相同）。
+# ============================================================================
+tun:
+  enable: true
+  stack: mips
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true

@@ -1,66 +1,82 @@
 # ============================================================================
 # lazy · 懒人版
 #
-# 3 个策略组（Proxy / AI / AD）+ 9 条规则
-# （白名单 / 广告拦截 ×2 / 内网直连 / AI 分流 / 国内直连 / 兜底）。
+# 3 个策略组（Proxy / AI / AD）+ 1 个隐藏订阅槽位（Airport）+ 11 条规则
+# （白名单 / 广告拦截 ×2 / 内网 ×2 / Apple 系统服务 / AI 分流 ×2 / 国内直连 ×2 / 兜底）。
 # 全部流量走一个出口。
 #
-# ⚠️ 导入前要动两处：
+# 🧬 结构蓝本 = Self-Configuration 仓库的 lazy_v2.0.1（Surge / Egern 双内核同款拓扑）：
+#    组分工、占位节点（Node-A → Proxy、Node-B → AI）、规则次序逐项对齐；
+#    Surge 的 pre-matching REJECT 与 Egern 的 dns.forward reject 在 mihomo 没有对应物，
+#    广告拦截统一落在规则层（AD 组，与 Egern 侧同形）。
+#
+# ⚠️ 导入前要动两处（至少填一项，否则所有走代理的流量不通）：
 #   ① `proxy-providers.Airport.url` —— 换成你自己的订阅地址；
-#   ② `proxies` 里那条「节点模版」—— 按实际协议替换占位符，或整条删掉（只用订阅）。
-#      注意 `uuid` / `public-key` / `short-id` 三个值内核会做格式校验（UUID 形状、
-#      x25519 公钥、十六进制）。所以这三个填的是「合法哑值」而不是 `SERVER` 那种
-#      占位串 —— 不换成真实值，配置连语法门禁 `clash_meta -t` 都过不去。
+#   ② `proxies` 里两条占位节点 —— 按实际协议替换 `server` / `port` / `password` / `sni`，
+#      或整条删掉（只用订阅）。`203.0.113.0/24` 是 RFC 5737 文档段，不会指向真实主机；
+#      server 写 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
 #
 # 📌 本文件没有版本号，是长期沿用的「懒人版」入口。
-#    「分流版」（按应用 + 按地区）另开一条线，尚未发布。
+#    「分流版」（按应用 + 按地区）见同目录 `routing.yaml`。
 # ============================================================================
 
 # ============================================================================
 # 策略组：3 个
-#   Proxy  主出口，面板上手动选
-#   AI     AI 域名的独立出口
-#   AD     广告拦截开关，手动三档：REJECT / PASS / DIRECT
+#   Proxy  主出口，url-test 自动择优（≙ 蓝图的 smart 组：按延迟自动选，无需手动管）
+#   AI     AI 域名的独立出口，select 手动钉死 —— 蓝图 2026-09-28 的定案：
+#          自动测速会让出口 IP 在订阅池里漂移，而 Google/OpenAI 的账号风控对
+#          出口频繁跳变极敏感，AI 流量必须手动固定。
+#   AD     广告拦截开关。只有一个子策略 REJECT（与蓝图两内核一致）——
+#          想临时放行某个广告域名，在 rules 里加一条更靠前的 domain 规则指向
+#          DIRECT 即可，别整组切走（那等于关掉全部拦截）。
 #
 # 组的节点来源由两块拼起来：
-#   · `include-all-proxies: true` —— 把 `proxies` 里的本机节点全部并进来；
-#   · `use` —— 把 `proxy-providers` 里的订阅节点并进来。本配置只挂了一个订阅槽位
-#     `Airport`，订阅地址没填或拉取失败时，这个组就只剩 `proxies` 里的本机节点。
+#   · `proxies` —— 本文件的占位节点（Node-A 归 Proxy、Node-B 归 AI）；
+#   · `use`     —— `proxy-providers` 里订阅 `Airport` 的全部节点。
+# 两个组各自「自己那条节点 + 订阅节点」，AI 刻意**不引用 Proxy**（与蓝图同分工：
+# 两条节点各归一组，订阅节点两组共用）。
+#
 # ⚠️ mihomo 里 `include-all: true` 会把 `use` 覆盖成「全部 provider」。只有一个
 #    provider 时两者等价；日后加了第二个 provider 又只想用其中一个，就去掉
 #    `include-all`、只留 `use`。
 # ============================================================================
 proxy-groups:
   - name: Proxy
-    type: select
-    proxies: []
+    type: url-test
+    proxies:
+      - Node-A
     use:
       - Airport
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
-    include-all: true
-    include-all-proxies: true
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
   - name: AI
     type: select
-    proxies: []
+    proxies:
+      - Node-B
     use:
       - Airport
     icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/openai.png
-    include-all: true
-    include-all-proxies: true
   - name: AD
     type: select
     proxies:
       - REJECT
-      - PASS
-      - DIRECT
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
 
 # ============================================================================
-# 规则集：只负责「广告拦截 + 白名单」，共 3 份。
-#   jinx-white-guard  白名单（classical）
-#   jinx-ads          广告拦截主清单（classical）
-#   AWAvenue-Ads      广告拦截第 2 条（.mrs，mihomo 规则集二进制格式）
-# 三份都落盘到本地、24 小时刷新一次，节点侧不依赖在线下载。
+# 规则集：5 份，按「GEOSITE → MRS → 传统规则集」三级选型后落在本层的 3 份：
+#   jinx-white-guard  白名单（classical YAML，自托管 Jinx 仓）—— 自定义功能域清单，
+#                     内核数据库里没有对应物，只能走传统层
+#   jinx-ads          广告拦截主清单（classical YAML，自托管 Jinx 仓）—— 同上
+#   AWAvenue-Ads      广告拦截第 2 条（.mrs）—— 上游提供 mihomo 二进制格式，优先于文本
+#   AI-Domains        AI 伴生域/宽后缀（classical text，自托管于 Self-Configuration 仓）——
+#                     googleapis.com 整域收编这类「导向 AI 组」的自定义去向，
+#                     GEOSITE 的 AI 类目只收 -pa 系 API 端点，接不住整域后缀
+#   apple-system      Apple 系统服务 18 条（classical text，自托管于 Self-Configuration 仓）——
+#                     「只要系统服务、不要全量 Apple」的精确切面没有对应 GEOSITE 类目
+# 全部落盘到本地、24 小时刷新一次，节点侧不依赖在线下载。
+# 其余 6 条规则全部由 GEOSITE / GEOIP 原生数据库承接（见 rules 段注释）。
 # ============================================================================
 rule-providers:
   AWAvenue-Ads:
@@ -84,14 +100,37 @@ rule-providers:
     url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-white-guard.yaml
     path: ./rule_provider/jinx-white-guard.yaml
     interval: 86400
+  AI-Domains:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/rules/AI.list
+    path: ./rule_provider/AI-Domains.list
+    interval: 86400
+  apple-system:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/rules/apple_system.list
+    path: ./rule_provider/apple-system.list
+    interval: 86400
 
 # ============================================================================
-# 规则：自上而下匹配，第一条命中即决定去向。
-#   ① 白名单      ② 广告拦截 ×2      ③ 内网      ④ AI 分流
-#   ⑤ 国内域名 + 国内 IP             ⑥ 兜底
+# 规则：自上而下匹配，第一条命中即决定去向（11 条，与蓝图 lazy_v2.0.1 逐位对应）。
+#   ① 白名单      ② 广告拦截 ×2      ③ 内网 ×2      ④ Apple 系统服务
+#   ⑤ AI 分流 ×2  ⑥ 国内域名 + 国内 IP             ⑦ 兜底
+#
+# 三级选型后落在 GEOSITE / GEOIP 原生层的 6 条：
+#   GEOSITE,private / GEOSITE,cn / GEOSITE,category-ai-chat-!cn —— 蓝图的
+#     private.txt（Lan+Private）、direct.txt（约 11 万条国内域名）、Repcz AI.list
+#     分别与 v2fly 的 private / cn / category-ai-chat-!cn 类目同源同覆盖，
+#     全部收敛进内核数据库，不再挂远程规则集；
+#   GEOIP,private / GEOIP,cn —— 蓝图的 Lan.list IP 段与 geoip CN。
 #
 # ⚠️ ① 必须留在 ② 之前 —— AWAvenue 与 Jinx 黑名单存在重叠域名，
 #    顺序颠倒会把白名单里的功能域误杀。
+# ⚠️ 两条 GEOIP（③⑥）**不带 no-resolve**：走到它们的域名会多触发一次本地解析。
+#    本地解析走的是加密解析器，不产生明文，代价只是首个请求多一次解析耗时。
 # ============================================================================
 rules:
   # ① 白名单 —— 抢在广告规则之前放行
@@ -99,40 +138,42 @@ rules:
   # ② 广告拦截 —— 两条并列清单，同一出口 AD
   - RULE-SET,jinx-ads,AD
   - RULE-SET,AWAvenue-Ads,AD
-  # ③ 内网：私有 IP 段 + 私有域名，一律直连
+  # ③ 内网：私有 IP 段 + 私有域名，一律直连（≙ 蓝图 Lan.list + private.txt 两条）
   - GEOIP,private,DIRECT
   - GEOSITE,private,DIRECT
-  # ④ AI 域名集（category-ai-chat-!cn = 非中国大陆的 AI 服务），走 AI 出口
+  # ④ Apple 系统服务（激活 / 推送 / 定位 / 配对）—— 全量 Apple 不在此列：
+  #    懒人版只有一个出口，Apple 流量「部分直连、部分走代理」的完整切分是分流版的活
+  - RULE-SET,apple-system,DIRECT
+  # ⑤ AI 分流：通用 AI 类目兜底在前收散域名，伴生域/宽后缀随后整域收编
+  #   （googleapis.com / googleusercontent.com 整域归 AI，不漏进国内或兜底）
   - GEOSITE,category-ai-chat-!cn,AI
-  # ⑤ 国内：域名集在前、IP 集在后，都直连
+  - RULE-SET,AI-Domains,AI
+  # ⑥ 国内：域名集在前、IP 集在后，都直连
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT
-  # ⑥ 兜底：以上都没命中，走主出口
+  # ⑦ 兜底：以上都没命中，走主出口（蓝图 2026-09-23 起：兜底一跳直连 Proxy，无 Final 中间组）
   - MATCH,Proxy
 
 # ============================================================================
-# 节点：留一条协议占位给你照着改；只用订阅的话整条删掉即可。
-# 三个「合法哑值」的作用只是让配置能通过内核的离线语法门禁 —— uuid 要 UUID 形状、
-# public-key 要 32 字节 x25519 公钥（base64url）、short-id 要十六进制。
+# 节点：两条占位（与蓝图 lazy_v2.0.1 同构：Node-A 归 Proxy、Node-B 归 AI）。
+# ⚠️ `203.0.113.0/24` 是 RFC 5737 文档段，不会指向任何真实主机，请替换为你的真实信息；
+#    server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
+# 协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password` ≙ 此处 `password`）。
+# 只用订阅的话两条整段删掉即可。
 # ============================================================================
 proxies:
-  # 只保留一个节点模版，请按实际协议替换以下占位符
-  - name: "节点模版"
-    type: vless
-    server: SERVER
-    port: 443
-    uuid: 00000000-0000-4000-8000-000000000000
-    network: tcp
-    tls: true
-    udp: true
-    flow: xtls-rprx-vision
-    servername: SNI
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-      short-id: "0123456789abcdef"
-    encryption: none
-    xudp: true
+  - name: Node-A
+    type: hysteria2
+    server: 203.0.113.10
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
+  - name: Node-B
+    type: hysteria2
+    server: 203.0.113.11
+    port: 52341
+    password: REPLACE_WITH_YOUR_PASSWORD
+    sni: REPLACE_WITH_YOUR_SNI
 
 # ============================================================================
 # 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
