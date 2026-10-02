@@ -54,7 +54,7 @@ proxy-groups:
     proxies:
       - USA
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube_Music.png
   - name: YouTube
     type: select
     proxies:
@@ -116,7 +116,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/UnitedStates.png
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
   - name: Japan
     type: url-test
     proxies: []
@@ -166,7 +166,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/WorldMap.png
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png
   - name: Final
     type: select
     proxies:

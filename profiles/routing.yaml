@@ -132,12 +132,13 @@ proxy-groups:
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
 
   # YouTube Music —— 默认走 USA（与 Spotify 同）。
+  # 用 Qure 的专属图标（`YouTube_Music.png`），不与下面的 YouTube 共用。
   - name: YouTubeMusic
     type: select
     proxies:
       - USA
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube_Music.png
 
   # YouTube
   - name: YouTube
@@ -233,7 +234,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/UnitedStates.png
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
 
   # 日本
   - name: Japan
@@ -298,7 +299,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/WorldMap.png
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png
 
   # --- ⑤ 兜底 -------------------------------------------------------------
   # `MATCH` 规则指向本组，而不是直接写 `Proxy` —— 这样面板上还能改兜底去向。
