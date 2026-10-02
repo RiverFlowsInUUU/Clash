@@ -42,15 +42,27 @@
 - 📌 **`proxies` / `proxy-providers` 提到配置文件最顶部** —— 两份配置统一为
   `proxies → proxy-providers → proxy-groups → rule-providers → rules → dns → tun`：
   导入前必改的两处（占位节点、订阅地址）开箱就在第一屏，不用翻到文件末尾。
-- 🧩 **12 个应用组改为「订阅节点摊平」** —— ChatGPT / Gemini / Claude / AI / Spotify /
-  YouTubeMusic / YouTube / GitHub / Google / Microsoft / Telegram / Twitter 全部补
-  `use: [Airport]`，把订阅里的**节点**逐个拉进组当成员（首项仍是各自的默认取向）。
-  效果对齐蓝本的 `flatten: true`（Egern）/ `include-other-group`（Surge）：面板上直接选节点，
-  不用再点进 `Proxy` 组一层。实测印证：`use` 引入 3 个订阅节点后，组员 = `["Proxy", "T-Node-1",
-  "T-Node-2", "T-Node-3"]`。
-  ⚠️ mihomo **没有 `flatten` 字段**（那是 Egern 的概念），等价物就是 `use` ——
-  上一版误用 `include-all-proxies: true`，且把它插在 `proxies:` 与列表项之间，
-  把 12 个组写成了非法 YAML（`proxies:` 空值 + 悬空的 `- Proxy`），`routing.yaml` 无法加载。
+- 🧩 **12 个应用组的成员改为「分流组名」** —— ChatGPT / Gemini / Claude / AI / Spotify /
+  YouTubeMusic / YouTube / GitHub / Google / Microsoft / Telegram / Twitter 去掉
+  `use: [Airport]`，成员直接写 `Smart` + 7 个地区组 + `Node-A`；各组再前置自己的默认取向
+  （Claude 前置 `Taiwan`、Spotify / YouTubeMusic 前置 `USA`、Google 前置 `Gemini`、
+  Microsoft 前置 `DIRECT`、AI 前置 `Node-B`）。
+  对齐基准是蓝本 `flatten: true` **求值后的结果**，不是 flatten 这个行为本身：蓝本面板上
+  应用组的成员就是 `Proxy` 的成员表，逐组核对一致。节点只留在 `Smart` 与 7 个地区组内部。
+  实测印证（测试订阅挂 3 个节点）：`YouTube.all = ["Smart","Hong Kong","USA","Singapore",
+  "Taiwan","Japan","Korea","Other Regions","Node-A"]`（与 `Proxy.all` 同表），
+  而 `Smart.all = ["T-Node-1","T-Node-2","T-Node-3"]`。
+  ⚠️ 上一版按「摊平订阅节点」理解，把节点全塞进 12 个应用组，与蓝本对不上；
+  同期还把 `include-all-proxies` 插在 `proxies:` 与列表项之间，写成非法 YAML
+  （`proxies:` 空值 + 悬空的 `- Proxy`），`routing.yaml` 无法加载。本次一并改正。
+- ⚠️ **两条 mihomo 能力缺口，已写进 `routing.yaml` 策略组段首**（分流版 + 懒人版同）：
+  ① **没有 `smart` 组类型** —— 内核只有 `select` / `url-test` / `fallback` / `load-balance`
+  四种（源码 `adapter/outboundgroup/` 下无 smart 实现），故暂用 `url-test` 近似；
+  `Smart` 是沿用蓝本的**组名**，不是内核类型。
+  ② **没有节点权重机制** —— `url-test` 的专属字段只有 `tolerance`（切换容差，非权重），
+  `load-balance.strategy` 也只选分发算法、不带权重。蓝本那套低倍率优先
+  （Surge `policy-priority` / Egern `priorities`，软加权 0.15）在 mihomo 侧无从表达，
+  暂不引入 —— 唯一近似是把低倍率节点用 `filter` **硬筛**出来，那是硬过滤、行为不同。
 - 🌐 **规则集换到 GeoSite.dat 原生类别，全部移除 blackmatrix7** —— Gemini / Claude /
   YouTubeMusic / WeChat 四类原先挂在 blackmatrix7 的 classical YAML 上，而该仓应用类目的
   最后更新停在 **2025-06-17**（`Surge/Anthropic` 更是 2024-02-02），已明显滞后。

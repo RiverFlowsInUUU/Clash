@@ -46,93 +46,162 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Auto.png
   - name: ChatGPT
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/openai.png
   - name: Gemini
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/gemini-color.png
   - name: Claude
     type: select
-    use:
-      - Airport
     proxies:
       - Taiwan
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/claude-color.png
   - name: AI
     type: select
-    use:
-      - Airport
     proxies:
       - Node-B
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
   - name: Spotify
     type: select
-    use:
-      - Airport
     proxies:
       - USA
-      - Proxy
+      - Smart
+      - Hong Kong
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Spotify.png
   - name: YouTubeMusic
     type: select
-    use:
-      - Airport
     proxies:
       - USA
-      - Proxy
+      - Smart
+      - Hong Kong
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTubeMusic.png
   - name: YouTube
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTube.png
   - name: GitHub
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/GitHub.png
   - name: Google
     type: select
-    use:
-      - Airport
     proxies:
       - Gemini
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Google.png
   - name: Microsoft
     type: select
-    use:
-      - Airport
     proxies:
       - DIRECT
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Microsoft.png
   - name: Telegram
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Telegram.png
   - name: Twitter
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png
   - name: WeChat
     type: select

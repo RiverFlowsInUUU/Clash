@@ -70,18 +70,27 @@ proxy-providers:
 #   读配置时先看到"谁在用"，再看"节点从哪来"，不用来回跳。
 #
 # mihomo 与 Surge / Egern 的能力对照（这是本文件与蓝本最大的差异点，务必先读）：
-#   Surge smart / Egern smart  ≈  mihomo url-test（按延迟自动择优）
-#   Surge select / Egern select ≈  mihomo select（手动）
-#   Surge include-other-group="X" / Egern flatten:true  ≈  mihomo 的 `use` + `proxies: [组名]`
+#   Surge select / Egern select  ≈  mihomo `select`（手动）
+#   Surge `include-other-group="X"` / Egern `flatten: true`
+#         ≈  mihomo：把 X 的成员**逐条写进本组的 `proxies`**（组名可直接作成员）
+#   Surge smart / Egern smart    ≈  mihomo `url-test` —— **只是近似**，见下方两条缺口
 #
-# ⚠️ 一处**必须说清的能力缺口**：Surge 的 `policy-priority` / Egern 的 `priorities`
-#    能按「节点名里的倍率标记」给低倍率节点加权（软偏好：低倍率节点比最优慢 6.7 倍内
-#    仍胜出，超出才让位）。mihomo 的 url-test **没有**这个机制 —— 只有两种近似：
-#       A. 纯 url-test：按延迟择优，完全不看倍率（本文件的选择，最省心）；
-#       B. 给组加 `filter` 硬筛低倍率节点：只留「名字里带 0.x 倍率」的节点，但这是
-#          **硬过滤**不是软偏好 —— 低倍率节点延迟再高也不会让位给正常倍率节点。
-#    取舍：懒人版/分流版都以「省心」为先，选 A。想要低倍率优先，把对应 url-test 组
-#    补一行 `filter: "(?<![\\d.])0\\.\\d*[1-9]"` 即可（代价见 B）。
+# ⚠️ 缺口 ①：mihomo **没有 `smart` 组类型**。内核的组类型只有
+#    `select` / `url-test` / `fallback` / `load-balance`（源码 `adapter/outboundgroup/`
+#    下就这四个实现，没有 smart.go）。Surge `smart` / Egern `smart` 那套「首字节延迟 +
+#    TCP 重传丢包 + UDP 响应延迟三项打分」在这里没有对应物 ⇒ **暂时一律用 `url-test`**
+#    （纯延迟择优，最接近也最省心）。本文件里 `Smart` 只是沿用蓝本的**组名**，不是内核类型。
+#
+# ⚠️ 缺口 ②：mihomo **没有节点权重机制**。Surge 的 `policy-priority` / Egern 的
+#    `priorities` 能按「节点名里的倍率标记」给低倍率节点加权（软偏好：低倍率节点比最优
+#    慢 6.7 倍内仍胜出，超出才让位）。mihomo 侧 `url-test` 的专属字段只有一个
+#    `tolerance`（切换容差，防抖），**不是权重**；`load-balance` 的 `strategy` 也只是
+#    选分发算法（round-robin / consistent-hashing / sticky-sessions），同样不带权重。
+#    想要低倍率优先只剩一种硬办法：给组加 `filter: "(?<![\\d.])0\\.\\d*[1-9]"` 只留
+#    低倍率节点 —— 但那是**硬过滤**不是软偏好，低倍率节点延迟再高也不会让位给正常倍率节点，
+#    行为与蓝本不同。
+#    ⇒ 取舍：**暂时保持纯 `url-test`，不引入权重、也不硬筛**（懒人版/分流版都以「省心」为先）。
+#      日后确实要低倍率优先，再给对应组补那行 `filter`。
 # ============================================================================
 proxy-groups:
   # --- ① 总入口 -----------------------------------------------------------
@@ -101,8 +110,9 @@ proxy-groups:
       - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Proxy.png
 
-  # 全节点池：url-test 自动择优（≙ 蓝图的 smart 组）。
-  # `use: [Airport]` 把订阅节点拉进来逐个测速，而不是把「Airport」当一个组单位。
+  # 全节点池：url-test 自动择优（≙ 蓝图的 `Smart` 组名；mihomo 无 `smart` 类型，见段首）。
+  # `use: [Airport]` 把订阅里的**节点**逐个拉进来测速，而不是把「Airport」当一个组单位。
+  # 它是 `Proxy` 的首项，所以也是「应用组默认取向 = `Proxy` 首项」那几组的默认出口。
   - name: Smart
     type: url-test
     proxies: []
@@ -114,144 +124,213 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Auto.png
 
   # --- ② 应用组 -----------------------------------------------------------
-  # 成员 = 「订阅节点池 + 默认取向」：`use: [Airport]` 摊平订阅节点，
-  # `proxies` 里列出默认首项（有刻意取向时才写多个）。
+  # 成员 = **分流组名**，逐组等于蓝本 `flatten: true` 求值后的结果。
   #
-  # ⚠️ **mihomo 没有 `flatten` 字段**（flatten 是 Egern 的概念）。三者对照：
-  #      蓝本 Egern  `policies: [Proxy]` + `flatten: true`   ⇒ 把 Proxy 展开成全部节点
-  #      蓝本 Surge  `select, include-other-group="Proxy"`   ⇒ 复制 Proxy 的成员
-  #      mihomo      `use: [Airport]`                        ⇒ 订阅节点直接作为本组成员
-  #    效果一致：面板上直接选节点，不用再点进 Proxy 组一层。
-  #    `use` 拉进来的是订阅里的**节点**，不是把「Airport」当一个成员 —— 这就是摊平。
+  # 蓝本 Egern 写的是 `policies: [Proxy]` + `flatten: true`，而在面板上看到的成员
+  # 就是 `Proxy` 的成员表（`Smart` + 7 个地区组 + 占位节点 `Node-A`）—— 即展开的是
+  # 「组」，不是把订阅里的节点逐个摊进来。这一点已按蓝本求值结果核对，不是推测。
+  # mihomo 既没有 `flatten` 字段，也没有 `include-other-group`，**把这个结果逐条写进
+  # `proxies` 即可**（组名可以直接作为成员）。
+  #   ⇒ 应用组里出现的永远是「分流组」；订阅节点只存在于 `Smart` 与 7 个地区组内部。
   #
-  # 默认取向与蓝本逐组一致：
+  # 默认取向（＝`proxies` 首项）与蓝本逐组一致：
   #   Claude 默认 Taiwan（Claude 对台湾线路较友好）；
   #   Spotify / YouTubeMusic 默认 USA（解锁地区以美区为准）；
-  #   Google 默认 Gemini（Google 走 Gemini → Proxy）；
+  #   Google 默认 Gemini（Google 走 Gemini → 分流组池）；
   #   Microsoft 默认 DIRECT（微软服务直连优先，走代理反而慢）；
-  #   AI 默认 Node-B（占位节点），其后才是 Proxy；
-  #   其余（ChatGPT / Gemini / YouTube / GitHub / Telegram / Twitter）默认 Proxy。
+  #   AI 默认 Node-B（占位节点），其后才是分流组池；
+  #   其余（ChatGPT / Gemini / YouTube / GitHub / Telegram / Twitter）默认取 `Proxy`
+  #   的首项 `Smart`（url-test 自动择优）。
   #
   # 首项就是默认出口：填好订阅后无需再进面板切，即开即用。
 
   # OpenAI / Sora / ChatGPT
   - name: ChatGPT
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/openai.png
 
   # Google 的 AI 服务。独立成组是因为下面的 `Google` 组首项指向它。
   - name: Gemini
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/gemini-color.png
 
   # Anthropic / Claude —— 默认走台湾组。
   # ⚠️ 订阅里没有台湾节点时这一组会空，指向它的规则会断；导入后到面板确认一下。
   - name: Claude
     type: select
-    use:
-      - Airport
     proxies:
       - Taiwan
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/claude-color.png
 
   # 其余 AI 类域名（category-ai-chat-!cn 全家桶：grok / perplexity / mistral /
   # huggingface / cursor / midjourney …）。默认走本文件的 `Node-B`（第二条占位节点），
-  # 其后才是 `Proxy` 组。
+  # 其后是 `Proxy` 的成员组（`Smart` + 7 个地区组 + `Node-A`）。
   # ⇒ 只填两条节点、不导订阅时，`Proxy` / `AI` 两组照样有出口；
-  #   只导订阅不填节点时，来面板把本组切到订阅节点即可。
+  #   只导订阅不填节点时，来面板把本组切到 `Smart` 或某个地区组即可。
   - name: AI
     type: select
-    use:
-      - Airport
     proxies:
       - Node-B
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
 
   # Spotify —— 默认走 USA；Spotify 的解锁地区以美区为准。
   - name: Spotify
     type: select
-    use:
-      - Airport
     proxies:
       - USA
-      - Proxy
+      - Smart
+      - Hong Kong
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Spotify.png
 
   # YouTube Music —— 默认走 USA（与 Spotify 同）。
   # 用姊妹仓的专属图标（`YouTubeMusic.png`），不与下面的 YouTube 共用。
   - name: YouTubeMusic
     type: select
-    use:
-      - Airport
     proxies:
       - USA
-      - Proxy
+      - Smart
+      - Hong Kong
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTubeMusic.png
 
   # YouTube
   - name: YouTube
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTube.png
 
   # GitHub
   - name: GitHub
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/GitHub.png
 
-  # Google —— 首项是 `Gemini` 组 ⇒「Google 走 Gemini → Proxy」。
+  # Google —— 首项是 `Gemini` 组 ⇒「Google 走 Gemini → 分流组池」。
   - name: Google
     type: select
-    use:
-      - Airport
     proxies:
       - Gemini
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Google.png
 
   # Microsoft —— 首项是 `DIRECT`（微软服务直连优先，走代理反而慢）。
   - name: Microsoft
     type: select
-    use:
-      - Airport
     proxies:
       - DIRECT
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Microsoft.png
 
   # Telegram
   - name: Telegram
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Telegram.png
 
   # Twitter / X
   - name: Twitter
     type: select
-    use:
-      - Airport
     proxies:
-      - Proxy
+      - Smart
+      - Hong Kong
+      - USA
+      - Singapore
+      - Taiwan
+      - Japan
+      - Korea
+      - Other Regions
+      - Node-A
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png
 
   # --- ③ 开关 -------------------------------------------------------------
