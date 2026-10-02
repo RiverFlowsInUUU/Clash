@@ -57,13 +57,26 @@
   逐条解析 `geosite.dat`（1552 个类别）后改为：
   - `google-gemini`（46 条）→ `Gemini` 组；
   - `anthropic`（8 条）→ `Claude` 组；
-  - `tencent`（683 条）→ `WeChat` 组；
   - YouTube Music：`geosite.dat` 确无独立类别，改用一条内联 `DOMAIN-SUFFIX,music.youtube.com`
-    （它是 `youtube.com` 的子域，必须排在 `GEOSITE,youtube` 之前才不被抢走）。
-  ⇒ 分流版远程规则集 **7 份 → 3 份**（`jinx-white-guard` / `jinx-ads` / `AWAvenue-Ads`），
-  四类应用规则零远程依赖、跟着数据库日更。
+    （它是 `youtube.com` 的子域，必须排在 `GEOSITE,youtube` 之前才不被抢走）；
+  - WeChat：同样**没有独立类别**，先退到 `tencent`（683 条），随后换成远程 `.mrs`（见下条）。
+  ⇒ 分流版远程规则集 **7 份 → 3 份**（`jinx-white-guard` / `jinx-ads` / `AWAvenue-Ads`）。
   ⚠️ 教训：`geosite.dat` 的类别名是**全大写**（`GOOGLE-GEMINI` / `ANTHROPIC` / `TENCENT`），
   用小写比对会把已有类别误判成「不存在」—— 这正是上一版绕道第三方的根因。
+- 💬 **`WeChat` 组改用微信专属 `.mrs`（`Lanlan-WeChat`），不再用 `GEOSITE,tencent`** ——
+  `MetaCubeX/meta-rules-dat` 的 `geo/geosite` 目录共 1904 个类别，逐个核过：
+  `wechat` / `weixin` / `wx*` **一个都没有**；最接近的 `tencent`（682 条）是靠 `+.qq.com`
+  泛化兜住微信的，微信专属域名在里头只有 10 条 —— 走它等于把 QQ / 腾讯云 / 腾讯视频
+  一并拖进 `WeChat` 组。现改用 30 条纯微信域名的 `.mrs`：
+  - **源**：[Lanlan13-14/Rules](https://github.com/Lanlan13-14/Rules) · `rules/Domain/WeChat.mrs`。
+    横向比过 `Keviin560/Shunt_Rules`、`7ac9d42/Rules`（两家内容同源）、`ACL4SSR/ACL4SSR`
+    （只有 `.list`、不提供 `.mrs`）；选 `Lanlan13-14` 是因为它被第三方配置模板引用最广；
+  - **规则**：`- GEOSITE,tencent,WeChat` → `- RULE-SET,Lanlan-WeChat,WeChat`，位置不变
+    （仍排在 `GEOSITE,cn` 之前，微信域名同属 `cn` 类，靠前才能先被摘出来）；
+  - **实测**：`type: http` + `format: mrs` 加载后 `ruleCount = 30`、`behavior = Domain`、
+    `vehicle = HTTP`；远程规则集 3 份 → **4 份**。
+  ⚠️ 教训：找社区规则集别手工试三家就下「全社区没有」的结论 ——
+  `gh search code "WeChat.mrs"` 一行扫出全部候选，抽样必然漏。
 
 ### 已知取舍
 

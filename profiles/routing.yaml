@@ -257,6 +257,7 @@ proxy-groups:
   # --- ③ 开关 -------------------------------------------------------------
   # 微信直连：成员**只有 `DIRECT`**。真正作用是把微信从兜底里摘出来，
   # 避免它被 `MATCH` 送进代理。刻意不给其它出口（与蓝本的 `select, policies:[DIRECT]` 一致）。
+  # 命中来源 = `Lanlan-WeChat` 规则集（30 条纯微信域名，见 rule-providers 段）。
   - name: WeChat
     type: select
     proxies:
@@ -382,7 +383,7 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Final.png
 
 # ============================================================================
-# 规则集：分成三层，**远程只留 3 份**（自托管或上游活跃维护），能落地的全落 GEOSITE。
+# 规则集：分成三层，**远程 4 份**（自托管或上游活跃维护），能落地的全落 GEOSITE。
 #
 #   ① GEOSITE（内核数据库，最省流量）—— 能用的全部用它。
 #      数据源 = `MetaCubeX/meta-rules-dat` 官方 release 的 `geosite.dat`
@@ -390,19 +391,22 @@ proxy-groups:
 #      本文件用到的类别，均已在 `geosite.dat` 中**逐个实测存在**：
 #        openai / google-gemini / anthropic / category-ai-chat-!cn / spotify /
 #        youtube / github / google / microsoft / telegram / twitter /
-#        apple / tencent / cn / private
+#        apple / cn / private
 #   ② 内联 `DOMAIN-SUFFIX` —— 只有 GeoSite.dat 确实没有的类别才用它，目前仅 1 条：
 #        `music.youtube.com → YouTubeMusic`
 #      （geosite.dat 无独立 ytmusic 类；而 `music.youtube.com` 是 `youtube.com` 的
 #        子域、会被 `GEOSITE,youtube` 抢先命中，所以必须在它之前单独摘出来。）
-#   ③ 远程规则集（`rule-providers`，仅 3 份）：
+#   ③ 远程规则集（`rule-providers`，4 份）：
 #        `jinx-white-guard` / `jinx-ads` —— 自托管 Jinx 仓，功能域白名单与广告主清单；
-#        `AWAvenue-Ads` —— 上游直接提供 `.mrs` 二进制，省流量、解析快。
+#        `AWAvenue-Ads` / `Lanlan-WeChat` —— 上游直接提供 `.mrs` 二进制，省流量、解析快。
 #
 # ⚠️ 本文件曾用 `blackmatrix7/ios_rule_script` 承接 Gemini / Claude / YouTubeMusic /
 #    WeChat 四类，**已全部移除**：该仓的应用类目（AI / 媒体 / 社交）最后更新停在
 #    **2025-06-17**（其中 Anthropic 更是 2024-02-02），早已滞后。
-#    这四类现全部改由 GeoSite.dat 原生承接 —— 零远程依赖、跟着数据库日更。
+#    Gemini / Claude / YouTubeMusic 三类改由 GeoSite.dat 原生承接（零远程依赖、跟着日更）；
+#    WeChat 落在 `Lanlan-WeChat` —— 因为 geosite.dat **没有独立 wechat 类目**，
+#    只有 `tencent`（682 条，靠 `+.qq.com` 泛化兜住微信，会把 QQ / 腾讯云 / 腾讯视频
+#    一并收进来）。该 mrs 是 30 条纯微信域名，不含 `qq.com` 泛化。
 #
 # 全部落盘到本地、24 小时刷新一次，节点侧不依赖在线下载。
 # ============================================================================
@@ -431,12 +435,23 @@ rule-providers:
     url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
     path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
     interval: 86400
+  # 微信专属（.mrs 二进制，上游 Lanlan13-14/Rules）—— 30 条纯微信域名，
+  # 成员实测：weixin.qq.com / wx.qq.com / wechat.com / weixin.com / tenpay.com /
+  # servicewechat.com / qlogo.cn / qpic.cn / map.qq.com …，不含 `qq.com` 泛化。
+  # 选它而非 `GEOSITE,tencent` 的理由见上方 ③。
+  Lanlan-WeChat:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/WeChat.mrs
+    path: ./rule_provider/lanlan-wechat.mrs
+    interval: 86400
 
 # ============================================================================
 # 规则：自上而下匹配，第一条命中即决定去向。
 #   ① 白名单  ② 广告拦截 ×2  ③ 内网 ×2
 #   ④ 应用分流（AI 厂商 → 媒体 → 开发 → 社交）
-#   ⑤ Apple 全量直连  ⑥ 腾讯直连  ⑦ 国内域名 + 国内 IP  ⑧ 兜底
+#   ⑤ Apple 全量直连  ⑥ 微信直连  ⑦ 国内域名 + 国内 IP  ⑧ 兜底
 #
 # ⚠️ ① 必须留在 ② 之前 —— AWAvenue-Ads 与 jinx-ads 存在重叠域名，
 #    顺序颠倒会把白名单里的功能域误杀。
@@ -444,8 +459,8 @@ rule-providers:
 #    本地解析走的是加密解析器，不产生明文，代价只是首个请求多一次解析耗时。
 # ⚠️ 应用分流必须在国内直连之前 —— 否则「ChatGPT 但域名恰好被国内清单收录」的场景
 #    会被直连接走。越具体的越靠前。
-# ⚠️ ⑥ 的 `GEOSITE,tencent` 必须排在 ⑦ `GEOSITE,cn` 之前：腾讯域名同属 cn 类，
-#    靠前才能让它走 `WeChat` 组（出口同为直连，只是把「腾讯」从兜底里摘出来，
+# ⚠️ ⑥ 的 `RULE-SET,Lanlan-WeChat` 必须排在 ⑦ `GEOSITE,cn` 之前：微信域名同属 cn 类，
+#    靠前才能让它走 `WeChat` 组（出口同为直连，只是把微信从兜底里摘出来，
 #    并保留蓝本 `WeChat` 组的分工）。
 # ============================================================================
 rules:
@@ -484,8 +499,9 @@ rules:
   #    （懒人版是「系统服务直连」，分流版对齐蓝本做「全量 Apple 直连」：
   #     iCloud / App Store / 推送 / 定位全走直连，不吃代理流量。）
   - GEOSITE,apple,DIRECT
-  # ⑥ 微信直连 —— 把微信从兜底里摘出来，避免被 MATCH 送进代理
-  - GEOSITE,tencent,WeChat
+  # ⑥ 微信直连 —— 30 条纯微信域名（`Lanlan-WeChat` 规则集），把微信从兜底里摘出来、
+  #    避免被 MATCH 送进代理；且不再连带 QQ / 腾讯云 / 腾讯视频。
+  - RULE-SET,Lanlan-WeChat,WeChat
   # ⑦ 国内：域名集在前、IP 集在后，都直连
   #    GEOSITE,cn（111224 条）是国内域名直连的主承重墙，≙ 蓝图的 direct.txt
   - GEOSITE,cn,DIRECT

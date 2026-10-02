@@ -241,6 +241,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
     path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
     interval: 86400
+  Lanlan-WeChat:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/WeChat.mrs
+    path: ./rule_provider/lanlan-wechat.mrs
+    interval: 86400
 rules:
   - RULE-SET,jinx-white-guard,DIRECT
   - RULE-SET,jinx-ads,AD
@@ -260,7 +267,7 @@ rules:
   - GEOSITE,telegram,Telegram
   - GEOSITE,twitter,Twitter
   - GEOSITE,apple,DIRECT
-  - GEOSITE,tencent,WeChat
+  - RULE-SET,Lanlan-WeChat,WeChat
   - GEOSITE,cn,DIRECT
   - GEOIP,cn,DIRECT
   - MATCH,Final
