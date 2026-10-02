@@ -47,7 +47,7 @@ proxy-groups:
       - Node-A
     use:
       - Airport
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Proxy.png
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -57,12 +57,12 @@ proxy-groups:
       - Node-B
     use:
       - Airport
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/openai.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
   - name: AD
     type: select
     proxies:
       - REJECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/AdBlock.png
 
 # ============================================================================
 # 规则集：5 份，按「GEOSITE → MRS → 传统规则集」三级选型后落在本层的 3 份：

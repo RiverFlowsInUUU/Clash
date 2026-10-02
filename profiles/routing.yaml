@@ -60,7 +60,7 @@ proxy-groups:
       - Korea
       - Other Regions
       - Node-A
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Proxy.png
 
   # 全节点池：url-test 自动择优（≙ 蓝图的 smart 组）。
   # `use: [Airport]` 把订阅节点拉进来逐个测速，而不是把「Airport」当一个组单位。
@@ -72,7 +72,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Auto.png
 
   # --- ② 应用组 -----------------------------------------------------------
   # 每个应用组 = 「默认取向（有刻意取向时才写）+ 回退 `Proxy` 组」。
@@ -93,14 +93,14 @@ proxy-groups:
     type: select
     proxies:
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/openai.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/openai.png
 
   # Google 的 AI 服务。独立成组是因为下面的 `Google` 组首项指向它。
   - name: Gemini
     type: select
     proxies:
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/gemini.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/gemini-color.png
 
   # Anthropic / Claude —— 默认走台湾组。
   # ⚠️ 订阅里没有台湾节点时这一组会空，指向它的规则会断；导入后到面板确认一下。
@@ -109,7 +109,7 @@ proxy-groups:
     proxies:
       - Taiwan
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/claude.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/claude-color.png
 
   # 其余 AI 类域名（category-ai-chat-!cn 全家桶：grok / perplexity / mistral /
   # huggingface / cursor / midjourney …）。默认走本文件的 `Node-B`（第二条占位节点），
@@ -121,7 +121,7 @@ proxy-groups:
     proxies:
       - Node-B
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/mistral.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
 
   # Spotify —— 默认走 USA；Spotify 的解锁地区以美区为准。
   - name: Spotify
@@ -129,30 +129,30 @@ proxy-groups:
     proxies:
       - USA
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Spotify.png
 
   # YouTube Music —— 默认走 USA（与 Spotify 同）。
-  # 用 Qure 的专属图标（`YouTube_Music.png`），不与下面的 YouTube 共用。
+  # 用姊妹仓的专属图标（`YouTubeMusic.png`），不与下面的 YouTube 共用。
   - name: YouTubeMusic
     type: select
     proxies:
       - USA
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube_Music.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTubeMusic.png
 
   # YouTube
   - name: YouTube
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTube.png
 
   # GitHub
   - name: GitHub
     type: select
     proxies:
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/github.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/GitHub.png
 
   # Google —— 首项是 `Gemini` 组 ⇒「Google 走 Gemini → Proxy」。
   - name: Google
@@ -160,7 +160,7 @@ proxy-groups:
     proxies:
       - Gemini
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Google.png
 
   # Microsoft —— 首项是 `DIRECT`（微软服务直连优先，走代理反而慢）。
   - name: Microsoft
@@ -168,21 +168,21 @@ proxy-groups:
     proxies:
       - DIRECT
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Microsoft.png
 
   # Telegram
   - name: Telegram
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Telegram.png
 
   # Twitter / X
   - name: Twitter
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png
 
   # --- ③ 开关 -------------------------------------------------------------
   # 微信直连：成员**只有 `DIRECT`**。真正作用是把微信从兜底里摘出来，
@@ -191,7 +191,7 @@ proxy-groups:
     type: select
     proxies:
       - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/WeChat.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/WeChat.png
 
   # 广告拦截开关。只有一个子策略 REJECT（与蓝本两内核一致）——
   # 想临时放行某个广告域名，在 rules 里加一条更靠前的 domain 规则指向
@@ -200,7 +200,7 @@ proxy-groups:
     type: select
     proxies:
       - REJECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/AdBlock.png
 
   # --- ④ 地区组 -----------------------------------------------------------
   # 每个地区组 = 「订阅节点」+「filter 正则只保留该地区」，url-test 自动择优。
@@ -222,7 +222,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/HK.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/HongKong.png
 
   # 美国（含主要城市名与机场三字码；`\bUSA?\b` 匹配 US / USA）
   - name: USA
@@ -234,7 +234,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/UnitedStates.png
 
   # 日本
   - name: Japan
@@ -246,7 +246,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Japan.png
 
   # 中国台湾
   - name: Taiwan
@@ -258,7 +258,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Taiwan.png
 
   # 新加坡
   - name: Singapore
@@ -270,7 +270,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Singapore.png
 
   # 韩国
   - name: Korea
@@ -282,7 +282,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Korea.png
 
   # 其它地区 —— 用**负向断言**排除上面 6 个地区的全部关键词。
   # 末尾那串 `倍率|剩余|到期|流量|官网|订阅|测试|有效|禁止|邮箱|客服|地址|网站|群组`
@@ -299,7 +299,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/WorldMap.png
 
   # --- ⑤ 兜底 -------------------------------------------------------------
   # `MATCH` 规则指向本组，而不是直接写 `Proxy` —— 这样面板上还能改兜底去向。
@@ -309,7 +309,7 @@ proxy-groups:
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Final.png
 
 # ============================================================================
 # 规则集：按「GEOSITE → 传统规则集」三级选型（与任务要求一致）：

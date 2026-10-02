@@ -31,6 +31,14 @@
 - ✈️ **占位节点协议由 vless 改为 hysteria2** —— 与 Self-Configuration 双内核的占位节点同协议
   （`password` ≙ Egern 的 `auth` ≙ Surge 的 `password`），占位节点数 1 → 2
   （Node-A 归 Proxy、Node-B 归 AI）。
+- 🖼️ **策略组图标统一引用姊妹仓的 `icons/`** —— 27 处（分流 24 + 懒人 3）从
+  Qure / lobe-icons 的外链改为 [Self-Configuration · icons](https://github.com/RiverFlowsInUUU/Self-Configuration/tree/main/icons)
+  （29 个图标，与两仓组名一一对应）。换的三个原因：
+  ① 原先外链里 `UnitedStates.png` / `WorldMap.png` 两个文件名在 Qure 目录**不存在**（实测 404，
+  面板上显示破图），正确名是 `United_States.png` / `World_Map.png`；
+  ② lobe-icons 没有 `grok` / `gemini-color` / `claude-color` 这类，隔壁仓现成；
+  ③ 两仓图标同源，风格统一，且省掉一份外部依赖。
+  ⚠️ 教训：外部图标 URL 必须逐个 HEAD 实测 —— **404 在面板上表现为破图，语法校验发现不了**。
 
 ### 已知取舍
 

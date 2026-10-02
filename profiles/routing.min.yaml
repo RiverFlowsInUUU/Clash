@@ -11,7 +11,7 @@ proxy-groups:
       - Korea
       - Other Regions
       - Node-A
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Proxy.png
   - name: Smart
     type: url-test
     proxies: []
@@ -20,83 +20,83 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Auto.png
   - name: ChatGPT
     type: select
     proxies:
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/openai.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/openai.png
   - name: Gemini
     type: select
     proxies:
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/gemini.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/gemini-color.png
   - name: Claude
     type: select
     proxies:
       - Taiwan
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/claude.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/claude-color.png
   - name: AI
     type: select
     proxies:
       - Node-B
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/mistral.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
   - name: Spotify
     type: select
     proxies:
       - USA
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Spotify.png
   - name: YouTubeMusic
     type: select
     proxies:
       - USA
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube_Music.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTubeMusic.png
   - name: YouTube
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/YouTube.png
   - name: GitHub
     type: select
     proxies:
       - Proxy
-    icon: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/github.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/GitHub.png
   - name: Google
     type: select
     proxies:
       - Gemini
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Google.png
   - name: Microsoft
     type: select
     proxies:
       - DIRECT
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Microsoft.png
   - name: Telegram
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Telegram.png
   - name: Twitter
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png
   - name: WeChat
     type: select
     proxies:
       - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/WeChat.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/WeChat.png
   - name: AD
     type: select
     proxies:
       - REJECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/AdBlock.png
   - name: Hong Kong
     type: url-test
     proxies: []
@@ -106,7 +106,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/HK.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/HongKong.png
   - name: USA
     type: url-test
     proxies: []
@@ -116,7 +116,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/UnitedStates.png
   - name: Japan
     type: url-test
     proxies: []
@@ -126,7 +126,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Japan.png
   - name: Taiwan
     type: url-test
     proxies: []
@@ -136,7 +136,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Taiwan.png
   - name: Singapore
     type: url-test
     proxies: []
@@ -146,7 +146,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Singapore.png
   - name: Korea
     type: url-test
     proxies: []
@@ -156,7 +156,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Korea.png
   - name: Other Regions
     type: url-test
     proxies: []
@@ -166,12 +166,12 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/WorldMap.png
   - name: Final
     type: select
     proxies:
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Final.png
 rule-providers:
   jinx-white-guard:
     type: http
