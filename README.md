@@ -108,6 +108,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.m
 | | 路径 | 内容 |
 |:--:|:-----|:-----|
 | 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2 + 自用版 ×2（各带注释 / 纯配置） |
+| 🔗 | [`override/`](override/my_clash.js) | JS 覆写脚本：把任意订阅改造成自用版结构 |
 | 🖼️ | [Self-Configuration · icons](https://github.com/RiverFlowsInUUU/Self-Configuration/tree/main/icons) | 策略组图标（引用姊妹仓，两仓组名一一对应） |
 | 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |

@@ -1,0 +1,101 @@
+# 覆写脚本
+
+对**任意订阅**做整体覆写，使其结构与 [`profiles/my_clash.yaml`](../profiles/my_clash.yaml) 一致。
+
+## 文件
+
+| 文件 | 作用 |
+|:-----|:-----|
+| [`my_clash.js`](my_clash.js) | JS 覆写脚本（Mihomo Party / Mihomo Purity 等支持 JS 覆写的客户端） |
+
+## 与静态模板的区别
+
+静态模板用 `use: [Airport]` 引入订阅；脚本改用 **`include-all-proxies: true`**，
+让订阅里已有的 `proxies` **直接成为各组成员** —— 于是不再需要单独占一个订阅槽位。
+
+```
+静态模板：  proxy-groups → use: [Airport] → proxy-providers.Airport.url
+覆写脚本：  proxy-groups → include-all-proxies: true → 订阅自身的 proxies
+```
+
+> 若订阅除 `proxies` 外还带 `proxy-providers`，脚本会自动改用 `include-all`
+> （= proxies + providers），避免 provider 里的节点成为孤儿。
+
+## 覆写内容
+
+| 项 | 处理 |
+|:---|:-----|
+| `proxies` | **保留**（订阅的节点原样） |
+| `proxy-groups` | **整体替换**为 23 组 |
+| `rule-providers` | **合并** 20 份（13 geosite `.mrs` + 4 geoip `.mrs` + 3 自定义） |
+| `rules` | **整体替换**为 26 条 |
+| `dns` | **整体替换**（含双层广告拦截） |
+| 入站端口 | **不覆盖**，交给客户端决定 |
+
+## 双层广告拦截
+
+```
+广告域名查询
+    ↓
+① fake-ip-filter: "rule-set:AWAvenue-Ads" / "rule-set:jinx-ads-delta"
+   → 跳过 fake-ip
+    ↓
+② nameserver-policy: rcode://success
+   → 返回空回答，DNS 层拦截
+    ↓
+③ rules: RULE-SET,xxx,AD[REJECT]
+   → 连接层兜底（IP 直连 / DoH / 缓存）
+```
+
+⚠️ **必要条件**：`nameserver-policy` 里返回 `rcode` 的域名，**必须同时在 `fake-ip-filter` 中列一遍**。
+否则 `withFakeIP` 中间件对 A / AAAA 查询直接返回假 IP（见内核 `dns/middleware.go`，
+`withFakeIP` 先于 `withResolver` 返回），请求永远到不了 `nameserver-policy`。
+另：广告 policy 必须写在 `rule-set:private,cn` **之前**，否则先命中 `cn` 拿不到空回答。
+
+机制先例见 [mihomo Discussion #668](https://github.com/MetaCubeX/mihomo/discussions/668)。
+
+## 用法
+
+### Mihomo Party / Mihomo Purity
+
+1. 复制 `my_clash.js` 的 raw 直连地址；
+2. 客户端「覆写」页面粘贴导入；
+3. 订阅管理 → 目标订阅 → 编辑信息 → 覆写 → 选择该脚本。
+
+### 本地验证
+
+脚本输出 `config` 对象，可用 Node 模拟后交给内核校验：
+
+```bash
+node -e "
+const fs=require('fs');
+eval(fs.readFileSync('override/my_clash.js','utf8'));
+const out = main({ proxies:[/* ... */], rules:['MATCH,DIRECT'] });
+fs.writeFileSync('out.json', JSON.stringify(out));
+"
+# JSON → YAML 后:
+mihomo -t -d . -f test.yaml
+```
+
+## 实测
+
+本地内核 v1.19.32，模拟 5 节点订阅（港/日/新/台/美）：
+
+```
+Smart            all=['🇭🇰 香港01','🇯🇵 日本01','🇸🇬 新加坡01','🇹🇼 台湾01','🇺🇸 美国01']
+HongKong         all=['🇭🇰 香港01']
+United States    all=['🇺🇸 美国01']
+Japan            all=['🇯🇵 日本01']
+Taiwan           all=['🇹🇼 台湾01']
+Singapore        all=['🇸🇬 新加坡01']
+```
+
+DNS（手工构造查询）：
+
+| 域名 | rcode | answer | 结果 |
+|:-----|:--:|:--:|:-----|
+| `ad.doubleclick.net` | 0 | 0 | ★ 拦截 |
+| `ad.qq.com` | 0 | 0 | ★ 拦截 |
+| `ucc.umeng.com` | 0 | 0 | ★ 拦截 |
+| `www.baidu.com` | 0 | 1 | `198.18.0.4` |
+| `www.google.com` | 0 | 1 | `198.18.0.5` |

@@ -43,6 +43,18 @@
   增补「自用版」小节（双层拦截机制、全 MRS 取舍、两条必要约束）与分流顺序差异说明；
   顶部 badge 与「文件结构」表同步更新为三类配置。
 
+### 新增
+
+- 🔗 **JS 覆写脚本 `override/my_clash.js`** —— 对**任意订阅**做整体覆写，使其结构等同于
+  `profiles/my_clash.yaml`（23 组 / 20 规则集 / 26 规则 / 双层广告拦截）。
+  与静态模板的唯一机制差异：
+  - 静态模板用 `use: [Airport]` 引入订阅；脚本改用 **`include-all-proxies: true`**，
+    让订阅自身的 `proxies` **直接成为各组成员**，因此无需额外的订阅槽位；
+  - 订阅若同时带 `proxy-providers`，脚本自动切换为 `include-all`（= proxies + providers），
+    避免 provider 内节点成为孤儿；
+  - 入站端口（`port` / `mixed-port`）不覆盖，交由客户端决定；`proxies` 保留。
+  - 附 [`override/README.md`](override/README.md) 说明用法与实测读数。
+
 ### 说明
 
 - ⚠️ `global-client-fingerprint` 已在 mihomo v1.19+ 移除（本地 `-t` 报
