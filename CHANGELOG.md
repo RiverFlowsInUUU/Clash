@@ -65,6 +65,14 @@
   同时逐组比对脚本与静态模板的 23 个图标，并 HEAD 实测全部 URL —— 23/23 可访问。
   ⚠️ 教训（与 2026-10-02 那次同因）：外部图标 URL 必须逐个实测，
   **404 在面板上表现为破图，内核语法校验发现不了**。
+- 🖼️ **图标收归本仓库 `icons/`** —— 原先自用版从 Qure / edigitalagency / AIsouler 等**外部源**
+  直链图标（3 个来源、4 处外链），与懒人版 / 分流版「统一引用姊妹仓」的约定不一致，且外部源
+  随时可能失效。现改为：从姊妹仓 [Self-Configuration](https://github.com/RiverFlowsInUUU/Self-Configuration/tree/main/icons)
+  同步 30 个图标到本仓 `icons/`，并补齐 3 个自用版独有的（`Emby` / `Apple` / `AppleUpdate`），
+  共 33 个；`profiles/my_clash.yaml` 与 `override/my_clash.js` 的 23 处图标全部改指本仓库。
+  - 顺带压缩 `AppleUpdate.png`（1254² 165 KB → 256² 29 KB）；
+  - 实测脚本与静态模板 23/23 图标一致，且 URL 与本地文件逐一对上。
+
 - 📝 **`README.md` 自用版小节增补脚本入口** —— 改为「两种用法」并列：① 静态配置
   （`profiles/my_clash.min.yaml`）② 覆写脚本（`override/my_clash.js`），
   并加一行说明二者节点来源差异（`use: [Airport]` vs `include-all-proxies`）。

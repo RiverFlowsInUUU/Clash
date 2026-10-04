@@ -68,7 +68,7 @@ proxy-groups:
       - Japan
       - Singapore
       - United States
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
 
   # 故障转移：MAX → Smart → Select 依次回退
   - name: Fallback
@@ -79,7 +79,7 @@ proxy-groups:
       - Select
     url: https://www.gstatic.com/generate_204
     interval: 300
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
 
   # 全池自动择优（url-test，面板隐藏）
   # filter 排除订阅里可能附带的「直连」类节点
@@ -92,7 +92,7 @@ proxy-groups:
     interval: 300
     tolerance: 50
     hidden: true
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
 
   # 全池手动选择
   - name: Select
@@ -100,7 +100,7 @@ proxy-groups:
     use:
       - Airport
     filter: ^((?!(直连)).)*$
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
 
   # Claude / Anthropic 专用
   - name: Anthropic
@@ -108,7 +108,7 @@ proxy-groups:
     proxies:
       - Taiwan
       - Select
-    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Rule/refs/heads/main/claude-color.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/claude-color.png
 
   # AI 全家桶兜底
   - name: AI
@@ -121,7 +121,7 @@ proxy-groups:
       - United States
       - Proxy
       - Smart
-    icon: https://www.edigitalagency.com.au/wp-content/uploads/new-ChatGPT-icon-white-png-medium-size.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png
 
   # 自建 Emby 媒体服务器
   - name: Emby
@@ -131,7 +131,7 @@ proxy-groups:
       - Smart
       - United States
       - Taiwan
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Emby.png
 
   # Google 全家桶
   - name: Google
@@ -144,7 +144,7 @@ proxy-groups:
       - Japan
       - Singapore
       - United States
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Google.png
 
   # YouTube
   - name: YouTube
@@ -156,7 +156,7 @@ proxy-groups:
       - Japan
       - Singapore
       - United States
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/YouTube.png
 
   # YouTube Music
   - name: YouTube Music
@@ -169,7 +169,7 @@ proxy-groups:
       - Singapore
       - United States
       - Select
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube_Music.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/YouTubeMusic.png
 
   # Spotify
   - name: Spotify
@@ -180,7 +180,7 @@ proxy-groups:
       - Taiwan
       - Japan
       - Singapore
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Spotify.png
 
   # 微软服务（默认 DIRECT）
   - name: Microsoft
@@ -193,7 +193,7 @@ proxy-groups:
       - Singapore
       - United States
       - Select
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Microsoft.png
 
   # Telegram
   - name: Telegram
@@ -206,7 +206,7 @@ proxy-groups:
       - Singapore
       - United States
       - Select
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Telegram.png
 
   # Apple 服务（默认 DIRECT）
   - name: Apple
@@ -214,7 +214,7 @@ proxy-groups:
     proxies:
       - DIRECT
       - Proxy
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Apple.png
 
   # 兜底：未命中任何规则
   - name: Final
@@ -228,7 +228,7 @@ proxy-groups:
       - United States
       - Select
       - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Final.png
 
   # 地区组 · 香港
   - name: HongKong
@@ -239,7 +239,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/HongKong.png
 
   # 地区组 · 日本
   - name: Japan
@@ -250,7 +250,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Japan.png
 
   # 地区组 · 新加坡
   - name: Singapore
@@ -261,7 +261,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Singapore.png
 
   # 地区组 · 台湾
   - name: Taiwan
@@ -272,7 +272,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Taiwan.png
 
   # 地区组 · 美国
   - name: United States
@@ -283,7 +283,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/UnitedStates.png
 
   # Apple 系统更新（默认 REJECT）
   - name: Apple Update
@@ -292,7 +292,7 @@ proxy-groups:
       - REJECT
       - PASS
       - DIRECT
-    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Rule/main/appleupdateicon.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AppleUpdate.png
 
   # 广告拦截（默认 REJECT；DNS 层已先拦）
   - name: AD
@@ -301,7 +301,7 @@ proxy-groups:
       - REJECT
       - PASS
       - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AdBlock.png
 
   # 优质/低倍率节点筛选（面板隐藏）
   - name: MAX
@@ -313,7 +313,7 @@ proxy-groups:
     interval: 300
     tolerance: 50
     hidden: true
-    icon: https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/RoundRobin.svg
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
 
 
 # ── DNS ─────────────────────────────────────────────────────────────────────
