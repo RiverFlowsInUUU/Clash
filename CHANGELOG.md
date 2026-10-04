@@ -4,6 +4,53 @@
 
 ---
 
+## 2026-10-04
+
+### 新增
+
+- 🧬 **进阶版配置落地** —— `profiles/my_clash.yaml`（带注释）/ `profiles/my_clash.min.yaml`（纯配置），
+  由自用路由器（OpenWrt + mihomo）实测配置整理而成：剥离全部私有节点后保留分流骨架，
+  **24 个策略组**（含 `Smart` / `Select` 全池择优与手动选择、`MAX` 倍率筛选、7 组地区与 12 个应用组）、
+  **20 份规则集**、**26 条规则**，只留 1 个订阅槽位 `Airport`（换 `url` 即用，无内联节点）。
+  与懒人版 / 分流版并列为第三类，定位是「进阶 · 自用」。
+
+### 变更
+
+- 🛑 **广告拦截前移到 DNS 层（进阶版）** —— 双层机制，任一单用均无效：
+  - `dns.nameserver-policy` 对 `rule-set:AWAvenue-Ads` / `rule-set:jinx-ads-delta`
+    返回 `rcode://success`（空回答），广告域名**在解析阶段就断掉**，连接不再建立；
+  - 同一批集合**必须同时出现在 `dns.fake-ip-filter`** —— 否则 `withFakeIP` 中间件对
+    A / AAAA 查询直接返回假 IP（`dns/middleware.go` 中 `withFakeIP` 先于 `withResolver`
+    返回），请求永远到不了 `nameserver-policy`。此坑有社区先例：
+    [Discussion #668](https://github.com/MetaCubeX/mihomo/discussions/668)；
+  - 顺序约束：广告 policy 必须写在 `rule-set:private,cn` **之前**，否则先命中 `cn`；
+  - 规则层 `RULE-SET,xxx,AD`（`AD` 组默认 `REJECT`）**保留为兜底** ——
+    DNS 拦截覆盖不到 IP 直连、DoH / DoT 与客户端缓存命中；
+  - 实测（本地内核 v1.19.32，手工构造 DNS 查询）：`ad.doubleclick.net` / `ad.qq.com` /
+    `ucc.umeng.com` / `abtest-ch.snssdk.com` 均返回 `rcode=0` 且 **answer=0**；
+    对照 `www.baidu.com` / `www.google.com` 正常返回 `198.18.0.x`。
+- 🧩 **规则集全面转为 MRS（进阶版）** —— 17 条 `GEOSITE,xxx` / `GEOIP,xxx` 改为
+  `RULE-SET,xxx`，新增 13 份 geosite `.mrs` + 4 份 geoip `.mrs` 的 provider 定义（源为
+  `cdn.jsdelivr.net`，国内可直连）。⇒ `rules` 不再引用 `GEOSITE` / `GEOIP`，`GeoSite.dat`
+  与 `GeoIP.dat` 不再是运行时必需。
+  - 选型依据（实测而非推测）：13 个分类逐一与 Loyalsoldier `geosite.dat` 反解比对，
+    条目数最大差异为 `cn` 的 340/111361（0.3%），其余多数为 0 或 ±2；
+  - `jinx-ads-delta` 虽声明 `behavior: classical`，实测内容为 3740 条 `DOMAIN-SUFFIX` +
+    149 条 `DOMAIN-REGEX`、**0 条 IP 规则**，故在 DNS 阶段可 100% 生效
+    （内核会打印 `only matching it contain domain rule` 警告，属预期行为）。
+- 📝 **`README.md` 增补进阶版章节** —— 「两全其美」之后单开一节，说明双层广告拦截机制、
+  全 MRS 取舍与两条必要约束；顶部 badge 与「文件结构」表同步更新为三类配置。
+
+### 说明
+
+- ⚠️ `global-client-fingerprint` 已在 mihomo v1.19+ 移除（本地 `-t` 报
+  `configuration is removed`），进阶版**未包含**该键，指纹请在代理条目上直接写
+  `client-fingerprint`。
+- ⚠️ 进阶版沿用 OpenClash 侧「源配置」的结构习惯（含 `geox-url` 段），
+  独立运行时该段可整段删除。
+
+---
+
 ## 2026-10-02
 
 ### 新增

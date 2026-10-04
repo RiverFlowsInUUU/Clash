@@ -5,7 +5,7 @@
 *让 DNS 无处可漏*
 
 [![Clash](https://img.shields.io/badge/Clash-Meta%20%7C%20mihomo-1f6feb?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
-[![Profiles](https://img.shields.io/badge/Profiles-lazy%20%7C%20routing-0969da?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
+[![Profiles](https://img.shields.io/badge/Profiles-lazy%20%7C%20routing%20%7C%20my__clash-0969da?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![Rules](https://img.shields.io/badge/Rules-GEOSITE%20%2B-8250df?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![DNS](https://img.shields.io/badge/DNS-Zero%20Leak-2ea043?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![License](https://img.shields.io/badge/License-MIT-dfb317?style=flat-square)](LICENSE)
@@ -42,6 +42,25 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/routing.mi
 
 > 🪶 懒人版含 1 个订阅槽位（`Airport`，换 `url` 即用）与 2 条节点占位，长期沿用无版本号。
 > 🧭 分流版按应用 + 按地区选路，组结构与选路见 [DetailsReadme](DetailsReadme/DetailsReadme.md)。
+
+## 🧬 进阶版 · DNS 层广告拦截 + 全 MRS
+
+```
+https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.min.yaml
+```
+
+个人自用配置整理而成，适合想同时拿到「更早的广告拦截」与「零 geosite 依赖」的人。
+
+| | 做法 | 相比懒人版 / 分流版 |
+|:--|:-----|:-----|
+| 🛑 **广告拦截前移** | `fake-ip-filter` 让广告域名跳过 fake-ip，`nameserver-policy` 对其返回 `rcode://success` | 广告**在 DNS 层就被拦死**，连接根本建立不起来；规则层 `AD` 组保留作兜底（IP 直连 / DoH / 缓存解析） |
+| 🧩 **规则集全 MRS** | 20 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` | 不再需要 `GeoSite.dat`（约 11 MB）、`GeoIP.dat`，也不再吃整包更新流量 |
+| ✈️ **单订阅槽位** | 只留 1 个 `Airport`，无内联节点 | 换 `url` 即用 |
+
+> ⚠️ 双层广告拦截有个**必要条件**：`nameserver-policy` 里返回 `rcode` 的域名，**必须同时在 `fake-ip-filter` 中列一遍**。
+> 否则 `withFakeIP` 中间件对 A / AAAA 查询直接返回假 IP，请求永远到不了 `nameserver-policy`。
+> 另：广告 policy 必须写在 `rule-set:private,cn` **之前**，否则先命中 `cn` 就拿不到空回答。
+> 机制推导见 [Discussion #668](https://github.com/MetaCubeX/mihomo/discussions/668)。
 
 ## 📋 分流顺序
 
@@ -80,7 +99,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/routing.mi
 
 | | 路径 | 内容 |
 |:--:|:-----|:-----|
-| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2（各带注释 / 纯配置） |
+| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2 + 进阶版 ×2（各带注释 / 纯配置） |
 | 🖼️ | [Self-Configuration · icons](https://github.com/RiverFlowsInUUU/Self-Configuration/tree/main/icons) | 策略组图标（引用姊妹仓，两仓组名一一对应） |
 | 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |
