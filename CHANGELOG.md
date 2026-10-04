@@ -54,6 +54,17 @@
     避免 provider 内节点成为孤儿；
   - 入站端口（`port` / `mixed-port`）不覆盖，交由客户端决定；`proxies` 保留。
   - 附 [`override/README.md`](override/README.md) 说明用法与实测读数。
+
+### 修复
+
+- 🖼️ **脚本中 `Anthropic` / `AI` 两个组的图标 404** —— 两处 URL 与静态模板不一致，
+  实测均返回 404（面板上表现为破图）：
+  - `Anthropic`：`appleanthropic.png` → `claude-color.png`
+  - `AI`：`new-ChatGPT-icon-black-background-png-2600x2600.png` → `new-ChatGPT-icon-white-png-medium-size.png`
+
+  同时逐组比对脚本与静态模板的 23 个图标，并 HEAD 实测全部 URL —— 23/23 可访问。
+  ⚠️ 教训（与 2026-10-02 那次同因）：外部图标 URL 必须逐个实测，
+  **404 在面板上表现为破图，内核语法校验发现不了**。
 - 📝 **`README.md` 自用版小节增补脚本入口** —— 改为「两种用法」并列：① 静态配置
   （`profiles/my_clash.min.yaml`）② 覆写脚本（`override/my_clash.js`），
   并加一行说明二者节点来源差异（`use: [Airport]` vs `include-all-proxies`）。

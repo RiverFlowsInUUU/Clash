@@ -93,13 +93,13 @@ function main(config) {
       name: "Anthropic",
       type: "select",
       proxies: ["Taiwan", "Select"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Rule/refs/heads/main/appleanthropic.png",
+      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Rule/refs/heads/main/claude-color.png",
     },
     {
       name: "AI",
       type: "select",
       proxies: ["Taiwan", "Select", "Japan", "Singapore", "United States", "Proxy", "Smart"],
-      icon: "https://www.edigitalagency.com.au/wp-content/uploads/new-ChatGPT-icon-black-background-png-2600x2600.png",
+      icon: "https://www.edigitalagency.com.au/wp-content/uploads/new-ChatGPT-icon-white-png-medium-size.png",
     },
     {
       name: "Emby",
