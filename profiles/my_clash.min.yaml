@@ -51,7 +51,8 @@ proxy-groups:
   type: url-test
   use:
   - Airport
-  filter: ^((?!(直连)).)*$
+  filter: ^((?!(直连|DIRECT)).)*$
+  exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
   url: https://www.gstatic.com/generate_204
   interval: 300
   tolerance: 50
@@ -61,7 +62,8 @@ proxy-groups:
   type: select
   use:
   - Airport
-  filter: ^((?!(直连)).)*$
+  filter: ^((?!(直连|DIRECT)).)*$
+  exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
   icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
 - name: Anthropic
   type: select
@@ -173,7 +175,7 @@ proxy-groups:
   type: url-test
   use:
   - Airport
-  filter: (?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$
+  filter: (?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|美)).)*$
   url: https://www.gstatic.com/generate_204
   interval: 300
   tolerance: 50
@@ -240,7 +242,6 @@ proxy-groups:
   icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
 dns:
   enable: true
-  listen: 0.0.0.0:7874
   ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16

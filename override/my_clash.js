@@ -27,14 +27,26 @@ function main(config) {
   // ── 0. 兜底：确保关键字段存在 ──────────────────────────────────────────
   if (!config.proxies) config.proxies = [];
   if (!config["proxy-groups"]) config["proxy-groups"] = [];
-  if (!config["rule-providers"]) config["rule-providers"] = {};
 
-  // 排除「直连」类节点（与静态模板的 nodirect 一致）
+  // 规则集整体重建：订阅自带的 rule-providers 一律丢弃，
+  // 只保留本脚本定义的 20 份（避免残留无用 provider 与命名冲突）。
+  config["rule-providers"] = {};
+
+  // 节点筛选（官方 groupbase.go 的 GetProxies 中依次应用）：
+  //   filter          —— 正向保留，作用于 include-all-proxies
+  //   exclude-filter  —— 反向排除，作用于 include-all-proxies
+  //   exclude-type    —— 按节点类型排除，仅作用于 proxies 字段
+  // 这里用 filter 排掉「直连」类，用 exclude-filter 排掉机场常见的
+  // 「剩余流量 / 套餐到期 / 官网」等信息节点（它们不可用，会污染测速池）。
   const NODIRECT = "^((?!(直连|DIRECT)).)*$";
+  const NOJUNK = "剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB";
 
   // 通用健康检查参数
   const HC_URL = "https://www.gstatic.com/generate_204";
   const HC_INT = 300;
+
+  // 图标基址（本仓库自带 icons/，与姊妹仓 Self-Configuration 同源）
+  const ICON = "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/";
 
   // 节点来源开关：
   //   include-all-proxies 引入内联 proxies（订阅转换后的常见形态）；
@@ -59,7 +71,7 @@ function main(config) {
         "Fallback", "MAX", "Smart", "Select",
         "HongKong", "Taiwan", "Japan", "Singapore", "United States",
       ],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png",
+      icon: ICON + "Proxy.png",
     },
     {
       name: "Fallback",
@@ -67,93 +79,93 @@ function main(config) {
       proxies: ["MAX", "Smart", "Select"],
       url: HC_URL,
       interval: HC_INT,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png",
+      icon: ICON + "Auto.png",
     },
     {
       name: "Smart",
       type: "url-test",
       ...allNodes,
       filter: NODIRECT,
+      "exclude-filter": NOJUNK,
       url: HC_URL,
       interval: HC_INT,
       tolerance: 50,
-      "exclude-type": "Direct",
       hidden: true,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png",
+      icon: ICON + "Auto.png",
     },
     {
       name: "Select",
       type: "select",
       ...allNodes,
       filter: NODIRECT,
-      "exclude-type": "Direct",
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png",
+      "exclude-filter": NOJUNK,
+      icon: ICON + "Auto.png",
     },
     {
       name: "Anthropic",
       type: "select",
       proxies: ["Taiwan", "Select"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/claude-color.png",
+      icon: ICON + "claude-color.png",
     },
     {
       name: "AI",
       type: "select",
       proxies: ["Taiwan", "Select", "Japan", "Singapore", "United States", "Proxy", "Smart"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png",
+      icon: ICON + "grok.png",
     },
     {
       name: "Emby",
       type: "select",
       proxies: ["Select", "Smart", "United States", "Taiwan"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Emby.png",
+      icon: ICON + "Emby.png",
     },
     {
       name: "Google",
       type: "select",
       proxies: ["AI", "Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Google.png",
+      icon: ICON + "Google.png",
     },
     {
       name: "YouTube",
       type: "select",
       proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/YouTube.png",
+      icon: ICON + "YouTube.png",
     },
     {
       name: "YouTube Music",
       type: "select",
       proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/YouTubeMusic.png",
+      icon: ICON + "YouTubeMusic.png",
     },
     {
       name: "Spotify",
       type: "select",
       proxies: ["United States", "HongKong", "Taiwan", "Japan", "Singapore"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Spotify.png",
+      icon: ICON + "Spotify.png",
     },
     {
       name: "Microsoft",
       type: "select",
       proxies: ["DIRECT", "Proxy", "Taiwan", "Japan", "Singapore", "United States", "Select"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Microsoft.png",
+      icon: ICON + "Microsoft.png",
     },
     {
       name: "Telegram",
       type: "select",
       proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Telegram.png",
+      icon: ICON + "Telegram.png",
     },
     {
       name: "Apple",
       type: "select",
       proxies: ["DIRECT", "Proxy"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Apple.png",
+      icon: ICON + "Apple.png",
     },
     {
       name: "Final",
       type: "select",
       proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States", "Select", "DIRECT"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Final.png",
+      icon: ICON + "Final.png",
     },
     {
       name: "HongKong",
@@ -163,7 +175,7 @@ function main(config) {
       url: HC_URL,
       interval: HC_INT,
       tolerance: 50,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/HongKong.png",
+      icon: ICON + "HongKong.png",
     },
     {
       name: "Japan",
@@ -173,7 +185,7 @@ function main(config) {
       url: HC_URL,
       interval: HC_INT,
       tolerance: 50,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Japan.png",
+      icon: ICON + "Japan.png",
     },
     {
       name: "Singapore",
@@ -183,7 +195,7 @@ function main(config) {
       url: HC_URL,
       interval: HC_INT,
       tolerance: 50,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Singapore.png",
+      icon: ICON + "Singapore.png",
     },
     {
       name: "Taiwan",
@@ -193,7 +205,7 @@ function main(config) {
       url: HC_URL,
       interval: HC_INT,
       tolerance: 50,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Taiwan.png",
+      icon: ICON + "Taiwan.png",
     },
     {
       name: "United States",
@@ -203,19 +215,19 @@ function main(config) {
       url: HC_URL,
       interval: HC_INT,
       tolerance: 50,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/UnitedStates.png",
+      icon: ICON + "UnitedStates.png",
     },
     {
       name: "Apple Update",
       type: "select",
       proxies: ["REJECT", "PASS", "DIRECT"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AppleUpdate.png",
+      icon: ICON + "AppleUpdate.png",
     },
     {
       name: "AD",
       type: "select",
       proxies: ["REJECT", "PASS", "DIRECT"],
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AdBlock.png",
+      icon: ICON + "AdBlock.png",
     },
     {
       name: "MAX",
@@ -226,7 +238,7 @@ function main(config) {
       interval: HC_INT,
       tolerance: 50,
       hidden: true,
-      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png",
+      icon: ICON + "Auto.png",
     },
   ];
 
@@ -325,7 +337,6 @@ function main(config) {
   // 且 nameserver-policy 中广告项必须写在 rule-set:private,cn 之前。
   config.dns = {
     enable: true,
-    listen: "0.0.0.0:7874",
     ipv6: true,
     "enhanced-mode": "fake-ip",
     "fake-ip-range": "198.18.0.1/16",

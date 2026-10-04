@@ -55,6 +55,26 @@
   - 入站端口（`port` / `mixed-port`）不覆盖，交由客户端决定；`proxies` 保留。
   - 附 [`override/README.md`](override/README.md) 说明用法与实测读数。
 
+### 变更
+
+- 🔧 **脚本与静态模板同步优化（4 项）** —— 均先核对官方文档 / 内核源码再改：
+  - 🧹 **新增 `exclude-filter` 排除「信息节点」** —— 机场订阅普遍附带
+    「剩余流量 / 套餐到期 / 官网」等不可用节点，原先只靠 `filter` 排除「直连」，
+    这些信息节点会进入 `Smart` / `Select` 的 `url-test` 池、污染择优结果。
+    现补 `exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB`
+    （官方文档：`exclude-filter` 作用于「引入代理集合」与「引入所有出站代理」；
+    内核 `groupbase.go` 的 `GetProxies()` 中作用于最终合并后的成员列表）。
+    实测：3 个信息节点全部被排除。
+  - 🗑️ **规则集改为整体重建** —— 脚本原先对订阅自带的 `rule-providers` 做「合并」，
+    会残留无用 provider。现改为 `config["rule-providers"] = {}` 后只写入本脚本的 20 份。
+  - 🔇 **DNS 不再硬编码 `listen`** —— 原写死 `0.0.0.0:7874`，可能与客户端自身 DNS 端口
+    冲突（官方默认值为空，即不监听）。现两处均不设该字段，交由客户端决定。
+  - 🎨 **脚本图标 URL 提取为 `ICON` 常量** —— 23 处完整 URL 收敛为
+    `const ICON = ".../Clash/main/icons/"`，纯可读性改动。
+- 🔄 **顺带统一脚本与静态模板的 3 处 `filter` 差异** —— `Smart` / `Select` 的
+  `filter` 补上 `DIRECT`（订阅里可能存在名为 `DIRECT` 的节点）；`HongKong` 的
+  负向排除去掉 `深`（避免误伤「深港」类中转节点命名）。
+
 ### 修复
 
 - 🖼️ **脚本中 `Anthropic` / `AI` 两个组的图标 404** —— 两处 URL 与静态模板不一致，
