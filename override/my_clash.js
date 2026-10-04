@@ -249,7 +249,7 @@ function main(config) {
   // 13 个 geosite 域分类
   [
     "apple-update", "spotify", "private", "anthropic", "category-ai-chat-!cn",
-    "github", "youtube", "google", "microsoft", "apple", "telegram", "gfw", "cn",
+    "github", "youtube", "google", "microsoft", "apple", "telegram", "cn",
   ].forEach(function (c) {
     rp[c] = {
       type: "http",
@@ -323,7 +323,6 @@ function main(config) {
     "RULE-SET,telegram,Telegram",
     "RULE-SET,geoip-google,Google",
     "RULE-SET,geoip-telegram,Telegram",
-    "RULE-SET,gfw,Proxy",
     "RULE-SET,cn,DIRECT",
     "RULE-SET,geoip-cn,DIRECT",
     "MATCH,Final",

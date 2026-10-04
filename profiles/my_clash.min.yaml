@@ -368,13 +368,6 @@ rule-providers:
     url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs
     path: ./rule_provider/telegram.mrs
     interval: 86400
-  gfw:
-    type: http
-    behavior: domain
-    format: mrs
-    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs
-    path: ./rule_provider/gfw.mrs
-    interval: 86400
   cn:
     type: http
     behavior: domain
@@ -454,7 +447,6 @@ rules:
 - RULE-SET,telegram,Telegram
 - RULE-SET,geoip-google,Google
 - RULE-SET,geoip-telegram,Telegram
-- RULE-SET,gfw,Proxy
 - RULE-SET,cn,DIRECT
 - RULE-SET,geoip-cn,DIRECT
 - MATCH,Final

@@ -72,7 +72,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.j
 | | 做法 |
 |:--|:-----|
 | 🛑 **广告拦截前移** | `fake-ip-filter` 让广告域名跳过 fake-ip，`nameserver-policy` 对其返回 `rcode://success`；广告**在 DNS 层就被拦死**，连接根本建立不起来。规则层 `AD` 组保留作兜底（IP 直连 / DoH / 缓存解析） |
-| 🧩 **规则集全 MRS** | 20 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` |
+| 🧩 **规则集全 MRS** | 19 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` |
 | ⚡ **自动择优 + 故障转移** | `Smart`（全池 url-test）· `Select`（手动）· `MAX`（倍率筛选）· `Fallback`（逐级回退） |
 | 🔗 **节点来源（二选一）** | 静态版：`use: [Airport]`（换 `url` 即用）；脚本版：`include-all-proxies`，订阅节点**直接入组** |
 
