@@ -55,17 +55,33 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.m
 
 自用配置整理而成，面向想同时拿到「更早的广告拦截」与「零 geosite 依赖」的人。
 
+提供**两种用法**，输出结构完全一致，按需选一：
+
+**① 静态配置** · 下载后改 `Airport.url` 即用
+
+```
+https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.min.yaml
+```
+
+**② 覆写脚本** · 挂到**任意订阅**上，自动改造（无需额外订阅槽位）
+
+```
+https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.js
+```
+
 | | 做法 |
 |:--|:-----|
 | 🛑 **广告拦截前移** | `fake-ip-filter` 让广告域名跳过 fake-ip，`nameserver-policy` 对其返回 `rcode://success`；广告**在 DNS 层就被拦死**，连接根本建立不起来。规则层 `AD` 组保留作兜底（IP 直连 / DoH / 缓存解析） |
 | 🧩 **规则集全 MRS** | 20 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` |
-| ✈️ **单订阅槽位** | 只留 1 个 `Airport`，无内联节点，换 `url` 即用 |
 | ⚡ **自动择优 + 故障转移** | `Smart`（全池 url-test）· `Select`（手动）· `MAX`（倍率筛选）· `Fallback`（逐级回退） |
+| 🔗 **节点来源（二选一）** | 静态版：`use: [Airport]`（换 `url` 即用）；脚本版：`include-all-proxies`，订阅节点**直接入组** |
 
 > ⚠️ 双层广告拦截有个**必要条件**：`nameserver-policy` 里返回 `rcode` 的域名，**必须同时在 `fake-ip-filter` 中列一遍**。
 > 否则 `withFakeIP` 中间件对 A / AAAA 查询直接返回假 IP，请求永远到不了 `nameserver-policy`。
 > 另：广告 policy 必须写在 `rule-set:private,cn` **之前**，否则先命中 `cn` 就拿不到空回答。
 > 机制推导见 [Discussion #668](https://github.com/MetaCubeX/mihomo/discussions/668)。
+>
+> 📖 脚本用法与实测读数见 [`override/`](override/README.md)。
 
 ## 📋 分流顺序
 

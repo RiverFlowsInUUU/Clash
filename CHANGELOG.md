@@ -54,6 +54,9 @@
     避免 provider 内节点成为孤儿；
   - 入站端口（`port` / `mixed-port`）不覆盖，交由客户端决定；`proxies` 保留。
   - 附 [`override/README.md`](override/README.md) 说明用法与实测读数。
+- 📝 **`README.md` 自用版小节增补脚本入口** —— 改为「两种用法」并列：① 静态配置
+  （`profiles/my_clash.min.yaml`）② 覆写脚本（`override/my_clash.js`），
+  并加一行说明二者节点来源差异（`use: [Airport]` vs `include-all-proxies`）。
 
 ### 说明
 
