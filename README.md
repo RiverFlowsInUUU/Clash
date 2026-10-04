@@ -12,7 +12,7 @@
 
 </div>
 
-## 📥 两全其美，皆合心意
+## 📥 三全其美，各取所需
 
 🪶 **懒人版** · 至简 · 省心
 
@@ -26,36 +26,41 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/routing.min.yaml
 ```
 
-## 🧭 井然有序
-
-懒人版 3 组、分流版 24 组，自上而下：
-
-| 组 | 🪶 懒人版 | 🧭 分流版 |
-|:---|:---:|:---:|
-| 🚀 `Proxy` | ✅ | ✅ |
-| 🧠 `Smart` | - | ✅ |
-| 🤖 `AI` | ✅ | ✅ |
-| 🛑 `AD` | ✅ | ✅ |
-| 📱 应用组（ChatGPT / Gemini / Claude / Spotify …） | - | ✅ ×12 |
-| 🌍 地区组（香港 / 美国 / 日本 …） | - | ✅ ×7 |
-| 🧩 `Final` | - | ✅ |
-
-> 🪶 懒人版含 1 个订阅槽位（`Airport`，换 `url` 即用）与 2 条节点占位，长期沿用无版本号。
-> 🧭 分流版按应用 + 按地区选路，组结构与选路见 [DetailsReadme](DetailsReadme/DetailsReadme.md)。
-
-## 🧬 进阶版 · DNS 层广告拦截 + 全 MRS
+🧬 **自用版** · 前置拦截 · 全 MRS
 
 ```
 https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.min.yaml
 ```
 
-个人自用配置整理而成，适合想同时拿到「更早的广告拦截」与「零 geosite 依赖」的人。
+## 🧭 井然有序
 
-| | 做法 | 相比懒人版 / 分流版 |
-|:--|:-----|:-----|
-| 🛑 **广告拦截前移** | `fake-ip-filter` 让广告域名跳过 fake-ip，`nameserver-policy` 对其返回 `rcode://success` | 广告**在 DNS 层就被拦死**，连接根本建立不起来；规则层 `AD` 组保留作兜底（IP 直连 / DoH / 缓存解析） |
-| 🧩 **规则集全 MRS** | 20 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` | 不再需要 `GeoSite.dat`（约 11 MB）、`GeoIP.dat`，也不再吃整包更新流量 |
-| ✈️ **单订阅槽位** | 只留 1 个 `Airport`，无内联节点 | 换 `url` 即用 |
+懒人版 3 组、分流版 24 组、自用版 23 组，自上而下：
+
+| 组 | 🪶 懒人版 | 🧭 分流版 | 🧬 自用版 |
+|:---|:---:|:---:|:---:|
+| 🚀 `Proxy` | ✅ | ✅ | ✅ |
+| 🧠 `Smart` | - | ✅ | ✅ |
+| 🧩 `Select` / `Fallback` / `MAX` | - | - | ✅ ×3 |
+| 🤖 `AI` | ✅ | ✅ | ✅ |
+| 🛑 `AD` | ✅ | ✅ | ✅ |
+| 📱 应用组（ChatGPT / Gemini / Claude / Spotify …） | - | ✅ ×12 | ✅ ×11 |
+| 🌍 地区组（香港 / 美国 / 日本 …） | - | ✅ ×7 | ✅ ×5 |
+| 🧩 `Final` | - | ✅ | ✅ |
+
+> 🪶 懒人版含 1 个订阅槽位（`Airport`，换 `url` 即用）与 2 条节点占位，长期沿用无版本号。
+> 🧭 分流版按应用 + 按地区选路，组结构与选路见 [DetailsReadme](DetailsReadme/DetailsReadme.md)。
+> 🧬 自用版见下方说明。
+
+## 🧬 自用版 · DNS 层广告拦截 + 全 MRS
+
+自用配置整理而成，面向想同时拿到「更早的广告拦截」与「零 geosite 依赖」的人。
+
+| | 做法 |
+|:--|:-----|
+| 🛑 **广告拦截前移** | `fake-ip-filter` 让广告域名跳过 fake-ip，`nameserver-policy` 对其返回 `rcode://success`；广告**在 DNS 层就被拦死**，连接根本建立不起来。规则层 `AD` 组保留作兜底（IP 直连 / DoH / 缓存解析） |
+| 🧩 **规则集全 MRS** | 20 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` |
+| ✈️ **单订阅槽位** | 只留 1 个 `Airport`，无内联节点，换 `url` 即用 |
+| ⚡ **自动择优 + 故障转移** | `Smart`（全池 url-test）· `Select`（手动）· `MAX`（倍率筛选）· `Fallback`（逐级回退） |
 
 > ⚠️ 双层广告拦截有个**必要条件**：`nameserver-policy` 里返回 `rcode` 的域名，**必须同时在 `fake-ip-filter` 中列一遍**。
 > 否则 `withFakeIP` 中间件对 A / AAAA 查询直接返回假 IP，请求永远到不了 `nameserver-policy`。
@@ -80,6 +85,9 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.m
 
 ⚠️ 白名单必须留在两条广告清单**之前** —— 两份黑名单存在重叠域名，顺序颠倒会把它们误杀。
 
+> 🧬 自用版同一顺序，额外含：`Emby` 自建服务器域名（白名单后）、
+> `geoip-google` / `geoip-telegram` IP 兜底（域名规则之后），以及 `Apple Update` 组。
+
 ## 🌐 隐私至上 · 无 DNS 泄露
 
 不依赖系统 DNS 设置 —— 明文查询在这一层就断掉。
@@ -99,7 +107,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.m
 
 | | 路径 | 内容 |
 |:--:|:-----|:-----|
-| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2 + 进阶版 ×2（各带注释 / 纯配置） |
+| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2 + 自用版 ×2（各带注释 / 纯配置） |
 | 🖼️ | [Self-Configuration · icons](https://github.com/RiverFlowsInUUU/Self-Configuration/tree/main/icons) | 策略组图标（引用姊妹仓，两仓组名一一对应） |
 | 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |
