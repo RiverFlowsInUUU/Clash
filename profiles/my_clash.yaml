@@ -70,13 +70,13 @@ proxy-groups:
       - United States
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
 
-  # 故障转移：Nodes → MAX → Smart 依次回退
+  # 故障转移：MAX → Smart → Select 依次回退
   - name: Fallback
     type: fallback
     proxies:
-      - Nodes
       - MAX
       - Smart
+      - Select
     url: https://www.gstatic.com/generate_204
     interval: 300
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png
@@ -284,18 +284,6 @@ proxy-groups:
     interval: 300
     tolerance: 50
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
-
-  # 节点聚合（Smart / Select / MAX 择优）
-  - name: Nodes
-    type: url-test
-    proxies:
-      - Smart
-      - Select
-      - MAX
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    tolerance: 50
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Airport.png
 
   # Apple 系统更新（默认 REJECT）
   - name: Apple Update

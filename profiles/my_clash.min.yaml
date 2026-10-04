@@ -41,9 +41,9 @@ proxy-groups:
 - name: Fallback
   type: fallback
   proxies:
-  - Nodes
   - MAX
   - Smart
+  - Select
   url: https://www.gstatic.com/generate_204
   interval: 300
   icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png
@@ -214,16 +214,6 @@ proxy-groups:
   interval: 300
   tolerance: 50
   icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
-- name: Nodes
-  type: url-test
-  proxies:
-  - Smart
-  - Select
-  - MAX
-  url: https://www.gstatic.com/generate_204
-  interval: 300
-  tolerance: 50
-  icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Airport.png
 - name: Apple Update
   type: select
   proxies:
