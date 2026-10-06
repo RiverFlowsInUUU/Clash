@@ -69,6 +69,8 @@ function main(config) {
 
   // 图标基址（本仓库自带 icons/，与姊妹仓 Self-Configuration 同源）
   const ICON = "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/";
+  // 本仓 raw 基址（自托管清单 rules/ 用）
+  const RAW = "https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/";
 
   // 节点来源开关：
   //   include-all-proxies 引入内联 proxies（订阅转换后的常见形态）；
@@ -328,16 +330,33 @@ function main(config) {
     interval: 86400,
   };
 
+  // 本仓自托管清单（上游无对应集，或属自用枚举）—— 与姊妹仓 Self-Configuration
+  // 同构，但**自托管不跨项目引用**，改内容只需动本仓 rules/ 目录。
+  rp["emby"] = {
+    type: "http",
+    behavior: "classical",
+    format: "text",
+    url: RAW + "rules/emby.list",
+    path: "./rule_provider/emby.list",
+    interval: 86400,
+  };
+  rp["apple-system"] = {
+    type: "http",
+    behavior: "classical",
+    format: "text",
+    url: RAW + "rules/apple_system.list",
+    path: "./rule_provider/apple_system.list",
+    interval: 86400,
+  };
+
   // ── 3. 分流规则 ────────────────────────────────────────────────────────
   config.rules = [
     "RULE-SET,jinx-white-guard,DIRECT",
     "RULE-SET,AWAvenue-Ads,AD",
     "RULE-SET,jinx-ads-delta,AD",
     "RULE-SET,apple-update,Apple Update",
-    "DOMAIN-SUFFIX,okemby.org,Emby",
-    "DOMAIN-SUFFIX,lilyemby.com,Emby",
-    "DOMAIN-SUFFIX,lilyemby.app,Emby",
-    "DOMAIN-SUFFIX,bangumi.ca,Emby",
+    "RULE-SET,apple-system,DIRECT",
+    "RULE-SET,emby,Emby",
     "RULE-SET,geoip-private,DIRECT,no-resolve",
     "RULE-SET,private,DIRECT",
     "RULE-SET,anthropic,Claude",

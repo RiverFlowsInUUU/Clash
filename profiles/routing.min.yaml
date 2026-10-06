@@ -343,15 +343,27 @@ rule-providers:
     url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-ads.yaml
     path: ./rule_provider/jinx-ads-delta.yaml
     interval: 86400
+  emby:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/emby.list
+    path: ./rule_provider/emby.list
+    interval: 86400
+  apple-system:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.list
+    path: ./rule_provider/apple_system.list
+    interval: 86400
 rules:
   - RULE-SET,jinx-white-guard,DIRECT
   - RULE-SET,AWAvenue-Ads,AD
   - RULE-SET,jinx-ads-delta,AD
   - RULE-SET,apple-update,Apple Update
-  - DOMAIN-SUFFIX,okemby.org,Emby
-  - DOMAIN-SUFFIX,lilyemby.com,Emby
-  - DOMAIN-SUFFIX,lilyemby.app,Emby
-  - DOMAIN-SUFFIX,bangumi.ca,Emby
+  - RULE-SET,apple-system,DIRECT
+  - RULE-SET,emby,Emby
   - RULE-SET,geoip-private,DIRECT,no-resolve
   - RULE-SET,private,DIRECT
   - RULE-SET,anthropic,Claude
@@ -428,19 +440,4 @@ tun:
   auto-route: true
   auto-detect-interface: true
   strict-route: true
-mixed-port: 7890
-allow-lan: false
-bind-address: '*'
-mode: rule
-log-level: info
-ipv6: true
-unified-delay: true
-tcp-concurrent: true
-find-process-mode: strict
-external-controller: 127.0.0.1:9090
-geox-url:
-  geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat
-  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
-  mmdb: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb
-geo-auto-update: true
-geo-update-interval: 48
+proxies: []

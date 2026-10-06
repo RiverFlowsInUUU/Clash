@@ -1,8 +1,8 @@
 # ============================================================================
 #  routing · 分流版（由 override/my_clash.js 生成）
 # ============================================================================
-#  本文件由覆写脚本 override/my_clash.js 生成，规则与策略组结构与脚本
-#  覆写后的订阅一致（23 个策略组 / 20 份规则集 / 26 条规则）。
+#  本文件由覆写脚本 override/my_clash.js 生成，策略组与规则结构与脚本
+#  覆写后的订阅一致（23 个策略组 / 22 份规则集 / 24 条规则）。
 #
 # ⚠️ 导入前要改一处：
 #    `proxy-providers.Airport.url` —— 换成你自己的订阅地址。
@@ -20,7 +20,11 @@
 #      低倍率  0.xxx —— 0 开头必是倍率
 #      高倍率  数值 >=1 且必须紧跟 倍 / 倍率 / x / X / *
 #      其余    视为无倍率标记 -> Auto
-#    于是「巴西 09 2倍」归 High，而序号「09」「香港 01」不会被误判。
+#
+# 📦 本仓自托管规则集（rules/ 目录，format: text）：
+#      emby.list          4 条自用枚举域名 → Emby
+#      apple_system.list  18 条 Apple 系统域 → DIRECT（Surge 内置 SYSTEM 快照）
+#    与姊妹仓 Self-Configuration 同构，但自托管不跨项目引用。
 #
 # 🔁 节点来源：订阅节点由 `Airport` provider 拉取，各策略组用
 #    `include-all`（proxies + providers）引入，无需手动列节点。
@@ -376,15 +380,27 @@ rule-providers:
     url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-ads.yaml
     path: ./rule_provider/jinx-ads-delta.yaml
     interval: 86400
+  emby:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/emby.list
+    path: ./rule_provider/emby.list
+    interval: 86400
+  apple-system:
+    type: http
+    behavior: classical
+    format: text
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.list
+    path: ./rule_provider/apple_system.list
+    interval: 86400
 rules:
   - RULE-SET,jinx-white-guard,DIRECT
   - RULE-SET,AWAvenue-Ads,AD
   - RULE-SET,jinx-ads-delta,AD
   - RULE-SET,apple-update,Apple Update
-  - DOMAIN-SUFFIX,okemby.org,Emby
-  - DOMAIN-SUFFIX,lilyemby.com,Emby
-  - DOMAIN-SUFFIX,lilyemby.app,Emby
-  - DOMAIN-SUFFIX,bangumi.ca,Emby
+  - RULE-SET,apple-system,DIRECT
+  - RULE-SET,emby,Emby
   - RULE-SET,geoip-private,DIRECT,no-resolve
   - RULE-SET,private,DIRECT
   - RULE-SET,anthropic,Claude
@@ -461,19 +477,4 @@ tun:
   auto-route: true
   auto-detect-interface: true
   strict-route: true
-mixed-port: 7890
-allow-lan: false
-bind-address: '*'
-mode: rule
-log-level: info
-ipv6: true
-unified-delay: true
-tcp-concurrent: true
-find-process-mode: strict
-external-controller: 127.0.0.1:9090
-geox-url:
-  geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat
-  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
-  mmdb: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb
-geo-auto-update: true
-geo-update-interval: 48
+proxies: []
