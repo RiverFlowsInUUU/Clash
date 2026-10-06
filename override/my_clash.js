@@ -128,106 +128,80 @@ function main(config) {
     {
       name: "Claude",
       type: "select",
-      // SC 的 Claude 带 flatten:true —— 面板上是「台湾节点 + 全节点」；Mihomo 无 flatten，
-      // 故保留 Taiwan 组作首选（url-test 自动选最快台湾节点），再展平全部节点还原面板效果。
-      proxies: ["Taiwan"],
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      // 对齐 SC 的 Claude：首选台湾，其后回落到 Proxy（展开即全部节点）
+      proxies: ["Taiwan", "Proxy"],
       icon: ICON + "claude-color.png",
     },
     {
       name: "AI",
       type: "select",
-      // SC 的 AI 组带 flatten:true，面板上直接展开为节点列表；Mihomo 无 flatten，
-      // 因此这里直接吃全节点来还原同样的面板效果（口径与 Smart/Select 一致）。
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      // 对齐 SC 的 AI：无首选地区，直接由 Proxy 展开
+      proxies: ["Proxy"],
       icon: ICON + "grok.png",
     },
     {
       name: "YouTube",
       type: "select",
-      // SC 的 YouTube 无首选地区，仅 include-other-group="Proxy" + flatten；Mihomo 无 flatten，故展平全节点还原面板效果。
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      // SC 的 YouTube 无首选，仅 Proxy —— 子节点为「首选 + Proxy」两条，与 SC 同形。
+      proxies: ["Proxy"],
       icon: ICON + "YouTube.png",
     },
 
     {
       name: "Emby",
       type: "select",
-      // SC 的 Emby 无首选地区，仅 include-other-group="Proxy" + flatten；Mihomo 无 flatten，故展平全节点还原面板效果。
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      // 对齐 SC 的 Emby：无首选地区，直接由 Proxy 展开
+      proxies: ["Proxy"],
       icon: ICON + "Emby.png",
     },
 
     {
       name: "Google",
       type: "select",
-      // SC 的 Google 首选 Gemini；Clash 侧未拆出 Gemini 组，以 AI 承担同语义首选，
-      // 再展平全节点还原 SC 的 flatten 面板效果。
+      // SC 的 Google 首选 Gemini；本仓未拆 Gemini 组，以 AI 承担 —— 子节点为「首选 + Proxy」两条，与 SC 同形。
       proxies: ["AI"],
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      proxies: ["AI", "Proxy"],
       icon: ICON + "Google.png",
     },
 
     {
       name: "Telegram",
       type: "select",
-      // SC 的 Telegram 无首选地区，仅 include-other-group="Proxy" + flatten；Mihomo 无 flatten，故展平全节点还原面板效果。
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      // SC 的 Telegram 无首选，仅 Proxy —— 子节点为「首选 + Proxy」两条，与 SC 同形。
+      proxies: ["Proxy"],
       icon: ICON + "Telegram.png",
     },
 
     {
       name: "YouTube Music",
       type: "select",
-      // SC 的 YouTube Music 首选 United States；Mihomo 无 flatten，故展平全节点还原面板效果。
-      proxies: ["United States"],
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      // 对齐 SC 的 YouTube Music：首选 United States，其后回落到 Proxy（展开即全部节点）
+      proxies: ["United States", "Proxy"],
       icon: ICON + "YouTubeMusic.png",
     },
 
     {
       name: "Spotify",
       type: "select",
-      // SC 的 Spotify 首选 United States；Mihomo 无 flatten，故展平全节点还原面板效果。
-      proxies: ["United States"],
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      // 与其它应用组保持一致口径：首选地区 + Proxy（含 Other Regions）
+      proxies: ["United States", "Proxy"],
       icon: ICON + "Spotify.png",
     },
 
     {
       name: "Twitter",
       type: "select",
-      // SC 的 Twitter 无首选地区，仅 include-other-group="Proxy" + flatten；Mihomo 无 flatten，故展平全节点还原面板效果。
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
-      icon: ICON + "Twitter.png",
+      // SC 的 Twitter 无首选，仅 Proxy —— 子节点为「首选 + Proxy」两条，与 SC 同形。
+      proxies: ["Proxy"],
+      icon: ICON + "Auto.png",
     },
 
     {
       name: "Microsoft",
       type: "select",
-      // SC 的 Microsoft 首选 DIRECT；Mihomo 无 flatten，故展平全节点还原面板效果。
+      // SC 的 Microsoft 首选 DIRECT —— 子节点为「首选 + Proxy」两条，与 SC 同形。
       proxies: ["DIRECT"],
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      proxies: ["DIRECT", "Proxy"],
       icon: ICON + "Microsoft.png",
     },
     {
