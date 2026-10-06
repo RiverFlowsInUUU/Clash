@@ -4,7 +4,7 @@
 //
 //  作用
 //    对任意 mihomo 订阅配置做整体覆写，使其与本仓库 profiles/my_clash.yaml 一致：
-//      · 23 个策略组（Smart / Select / MAX / Fallback + 6 地区组 + 12 应用组）
+//      · 21 个策略组（Smart / Select + 6 地区组 + 12 应用组）
 //      · 20 份规则集（17 份 MRS + 3 份 yaml）+ 26 条规则
 //      · DNS 双层广告拦截（fake-ip-filter + nameserver-policy rcode://success）
 //      · 订阅内的节点直接成为组内成员 —— 不再需要 Airport 订阅组
@@ -41,6 +41,28 @@ function main(config) {
   const NODIRECT = "^((?!(直连|DIRECT)).)*$";
   const NOJUNK = "剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB";
 
+  // 倍率解析：从节点名里抓出「低倍率」数字（0.01 / 0.1 / 0.5 …）。
+  //  判据沿用姊妹仓 Self-Configuration 的 policy-priority 正则：必须以 `0.` 开头、
+  //  末位非零、且前面不能紧跟数字或小数点 —— 这样「0.1倍 / 0.1倍率 / 0.1x / 0.5」都能抓到，
+  //  而「香港 01」「1.5GB」「剩余流量」不会误伤。抓不到就返回 null（视为正常倍率）。
+  function rateOf(name) {
+    var m = String(name || "").match(/(?:^|[^\d.])(0\.\d*[1-9])/);
+    return m ? parseFloat(m[1]) : null;
+  }
+
+  // 按倍率从小到大排出节点顺序（倍率低的优先用；无倍率的排最后）。
+  //  同倍率内保持订阅原顺序，不做额外打乱 —— 顺序即 fallback 的优先级。
+  function sortedByRate(names) {
+    return names.slice().sort(function (a, b) {
+      var ra = rateOf(a), rb = rateOf(b);
+      if (ra === null && rb === null) return 0;
+      if (ra === null) return 1;
+      if (rb === null) return -1;
+      if (ra !== rb) return ra - rb;
+      return 0;
+    });
+  }
+
   // 通用健康检查参数
   const HC_URL = "https://www.gstatic.com/generate_204";
   const HC_INT = 300;
@@ -58,6 +80,18 @@ function main(config) {
   const allNodes = {};
   allNodes[ALL_KEY] = true;
 
+  // 可用节点名（套用与策略组相同的过滤口径：排掉直连类与机场信息节点）
+  var usable = (config.proxies || [])
+    .map(function (p) { return p && p.name; })
+    .filter(function (n) {
+      if (!n) return false;
+      if (!new RegExp(NODIRECT).test(n)) return false;
+      if (new RegExp(NOJUNK).test(n)) return false;
+      return true;
+    });
+  // 按倍率升序 —— Smart 组的成员顺序即 fallback 的优先级
+  var smartOrder = sortedByRate(usable);
+
   // ── 1. 策略组 ─────────────────────────────────────────────────────────
   // 说明：
   //   · 用 include-all-proxies 引入订阅的全部节点（等价于静态模板的 use: [Airport]）
@@ -68,28 +102,19 @@ function main(config) {
       name: "Proxy",
       type: "select",
       proxies: [
-        "Fallback", "MAX", "Smart", "Select",
+        "Smart", "Select",
         "Hong Kong", "Taiwan", "Japan", "Singapore", "United States",
       ],
       icon: ICON + "Proxy.png",
     },
     {
-      name: "Fallback",
-      type: "fallback",
-      proxies: ["MAX", "Smart", "Select"],
-      url: HC_URL,
-      interval: HC_INT,
-      icon: ICON + "Auto.png",
-    },
-    {
       name: "Smart",
-      type: "url-test",
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
+      type: "fallback",
+      // 成员顺序 = 倍率优先级：0.01 → 0.1 → 0.5 → 正常倍率。
+      // 顺序由脚本按节点名动态算出（见 sortedByRate），不写死正则分档。
+      proxies: smartOrder.length ? smartOrder : ["Select"],
       url: HC_URL,
       interval: HC_INT,
-      tolerance: 50,
       hidden: true,
       icon: ICON + "Auto.png",
     },
@@ -246,17 +271,6 @@ function main(config) {
       interval: HC_INT,
       tolerance: 50,
       icon: ICON + "WorldMap.png",
-    },
-    {
-      name: "MAX",
-      type: "url-test",
-      ...allNodes,
-      filter: "^(?=.*(0\\.1|0\\.01))((?!剩余|流量|到期|有效).)*$",
-      url: HC_URL,
-      interval: HC_INT,
-      tolerance: 50,
-      hidden: true,
-      icon: ICON + "Auto.png",
     },
   ];
 
