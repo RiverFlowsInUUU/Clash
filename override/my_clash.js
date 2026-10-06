@@ -129,9 +129,10 @@ function main(config) {
     {
       name: "AI",
       type: "select",
-      // 对齐 SC 的 AI：无首选地区，直接由 Proxy 展开
+      // 通用 AI 兜底组：无首选地区，回落到 Proxy。
+      // 图标用 openai（与 Self-Configuration 的 ChatGPT 同款；该仓 AI 组用 grok，此处按本仓口径取 openai）
       proxies: ["Proxy"],
-      icon: ICON + "grok.png",
+      icon: ICON + "openai.png",
     },
     {
       name: "YouTube",
