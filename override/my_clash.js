@@ -4,7 +4,7 @@
 //
 //  作用
 //    对任意 mihomo 订阅配置做整体覆写，使其与本仓库 profiles/my_clash.yaml 一致：
-//      · 21 个策略组（Smart / Select + 6 地区组 + 12 应用组）
+//      · 20 个策略组（Smart + 6 地区组 + 12 应用组）
 //      · 20 份规则集（17 份 MRS + 3 份 yaml）+ 26 条规则
 //      · DNS 双层广告拦截（fake-ip-filter + nameserver-policy rcode://success）
 //      · 订阅内的节点直接成为组内成员 —— 不再需要 Airport 订阅组
@@ -102,7 +102,7 @@ function main(config) {
       name: "Proxy",
       type: "select",
       proxies: [
-        "Smart", "Select",
+        "Smart",
         "Hong Kong", "Taiwan", "Japan", "Singapore", "United States",
       ],
       icon: ICON + "Proxy.png",
@@ -112,19 +112,12 @@ function main(config) {
       type: "fallback",
       // 成员顺序 = 倍率优先级：0.01 → 0.1 → 0.5 → 正常倍率。
       // 顺序由脚本按节点名动态算出（见 sortedByRate），不写死正则分档。
-      proxies: smartOrder.length ? smartOrder : ["Select"],
+      proxies: smartOrder.length ? smartOrder : ["DIRECT"],
       url: HC_URL,
       interval: HC_INT,
       icon: ICON + "Auto.png",
     },
-    {
-      name: "Select",
-      type: "select",
-      ...allNodes,
-      filter: NODIRECT,
-      "exclude-filter": NOJUNK,
-      icon: ICON + "Static.png",
-    },
+
     {
       name: "Claude",
       type: "select",
