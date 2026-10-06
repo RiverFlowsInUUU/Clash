@@ -123,7 +123,7 @@ function main(config) {
       ...allNodes,
       filter: NODIRECT,
       "exclude-filter": NOJUNK,
-      icon: ICON + "Auto.png",
+      icon: ICON + "Static.png",
     },
     {
       name: "Anthropic",
