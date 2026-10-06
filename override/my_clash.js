@@ -200,7 +200,8 @@ function main(config) {
     {
       name: "Apple Update",
       type: "select",
-      proxies: ["REJECT", "PASS", "DIRECT"],
+      // 对齐 SC：首选 DIRECT，备选 REJECT（可在面板切到拒绝以阻止 OTA 自动下载）
+      proxies: ["DIRECT", "REJECT"],
       icon: ICON + "Apple.png",
     },
 
