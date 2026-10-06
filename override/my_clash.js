@@ -4,8 +4,8 @@
 //
 //  作用
 //    对任意 mihomo 订阅配置做整体覆写，使其与本仓库 profiles/my_clash.yaml 一致：
-//      · 23 个策略组（Smart / Select / MAX / Fallback + 5 地区组 + 11 应用组）
-//      · 20 份 MRS 规则集 + 26 条规则
+//      · 24 个策略组（Smart / Select / MAX / Fallback + 5 地区组 + 12 应用组）
+//      · 20 份规则集（17 份 MRS + 3 份 yaml）+ 26 条规则
 //      · DNS 双层广告拦截（fake-ip-filter + nameserver-policy rcode://success）
 //      · 订阅内的节点直接成为组内成员 —— 不再需要 Airport 订阅组
 //
@@ -156,6 +156,12 @@ function main(config) {
       icon: ICON + "Telegram.png",
     },
     {
+      name: "Twitter",
+      type: "select",
+      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
+      icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png",
+    },
+    {
       name: "Apple",
       type: "select",
       proxies: ["DIRECT", "Proxy"],
@@ -254,7 +260,8 @@ function main(config) {
   // 13 个 geosite 域分类
   [
     "apple-update", "spotify", "private", "anthropic", "category-ai-chat-!cn",
-    "github", "youtube", "google", "microsoft", "apple", "telegram", "cn",
+    "github", "youtube", "google", "microsoft", "apple", "telegram", "twitter",
+    "cn",
   ].forEach(function (c) {
     rp[c] = {
       type: "http",
@@ -323,6 +330,7 @@ function main(config) {
     "RULE-SET,youtube,YouTube",
     "RULE-SET,google,Google",
     "RULE-SET,spotify,Spotify",
+    "RULE-SET,twitter,Twitter",
     "RULE-SET,microsoft,Microsoft",
     "RULE-SET,apple,DIRECT",
     "RULE-SET,telegram,Telegram",
