@@ -164,7 +164,8 @@ function main(config) {
     {
       name: "Final",
       type: "select",
-      proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States", "Select", "DIRECT"],
+      hidden: true,
+      proxies: ["Proxy"],
       icon: ICON + "Final.png",
     },
     {
@@ -177,26 +178,7 @@ function main(config) {
       tolerance: 50,
       icon: ICON + "HongKong.png",
     },
-    {
-      name: "Japan",
-      type: "url-test",
-      ...allNodes,
-      filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$",
-      url: HC_URL,
-      interval: HC_INT,
-      tolerance: 50,
-      icon: ICON + "Japan.png",
-    },
-    {
-      name: "Singapore",
-      type: "url-test",
-      ...allNodes,
-      filter: "(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$",
-      url: HC_URL,
-      interval: HC_INT,
-      tolerance: 50,
-      icon: ICON + "Singapore.png",
-    },
+
     {
       name: "Taiwan",
       type: "url-test",
@@ -207,6 +189,29 @@ function main(config) {
       tolerance: 50,
       icon: ICON + "Taiwan.png",
     },
+
+    {
+      name: "Japan",
+      type: "url-test",
+      ...allNodes,
+      filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$",
+      url: HC_URL,
+      interval: HC_INT,
+      tolerance: 50,
+      icon: ICON + "Japan.png",
+    },
+
+    {
+      name: "Singapore",
+      type: "url-test",
+      ...allNodes,
+      filter: "(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$",
+      url: HC_URL,
+      interval: HC_INT,
+      tolerance: 50,
+      icon: ICON + "Singapore.png",
+    },
+
     {
       name: "United States",
       type: "url-test",
