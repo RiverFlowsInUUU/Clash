@@ -125,13 +125,7 @@ function main(config) {
       proxies: ["Taiwan", "Proxy"],
       icon: ICON + "claude-color.png",
     },
-    {
-      name: "Gemini",
-      type: "select",
-      // 对齐 SC 的 Gemini：首选 United States，其后回落到 Proxy
-      proxies: ["United States", "Proxy"],
-      icon: ICON + "gemini-color.png",
-    },
+
     {
       name: "AI",
       type: "select",
@@ -156,7 +150,7 @@ function main(config) {
     {
       name: "Google",
       type: "select",
-      proxies: ["Gemini", "Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
+      proxies: ["AI", "Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "Google.png",
     },
 
