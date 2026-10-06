@@ -1,16 +1,13 @@
-proxies:
-  - name: Node-A
-    type: hysteria2
-    server: 203.0.113.10
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-  - name: Node-B
-    type: hysteria2
-    server: 203.0.113.11
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
+proxy-providers:
+  Airport:
+    type: http
+    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
+    path: ./proxy_provider/Airport.yaml
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
 proxy-groups:
   - name: Proxy
     type: select
@@ -24,12 +21,12 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
   - name: Smart
     type: fallback
-    proxies:
-      - Node-A
-      - Node-B
     url: https://www.gstatic.com/generate_204
     interval: 300
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
+    include-all: true
+    filter: ^((?!(直连|DIRECT)).)*$
+    exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
   - name: Claude
     type: select
     proxies:
@@ -403,29 +400,3 @@ tun:
   auto-route: true
   auto-detect-interface: true
   strict-route: true
-mixed-port: 7890
-allow-lan: false
-bind-address: '*'
-mode: rule
-log-level: info
-ipv6: true
-unified-delay: true
-tcp-concurrent: true
-find-process-mode: strict
-external-controller: 127.0.0.1:9090
-geox-url:
-  geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat
-  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
-  mmdb: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb
-geo-auto-update: true
-geo-update-interval: 48
-proxy-providers:
-  Airport:
-    type: http
-    url: https://sub.example.com/api/v1/client/subscribe?token=REPLACE_WITH_YOUR_TOKEN
-    path: ./proxy_provider/Airport.yaml
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
