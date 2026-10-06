@@ -126,7 +126,7 @@ function main(config) {
       icon: ICON + "Static.png",
     },
     {
-      name: "Anthropic",
+      name: "Claude",
       type: "select",
       // 对齐 SC 的 Claude：首选台湾，其后回落到 Proxy（展开即全部节点）
       proxies: ["Taiwan", "Proxy"],
@@ -349,7 +349,7 @@ function main(config) {
     "DOMAIN-SUFFIX,bangumi.ca,Emby",
     "RULE-SET,geoip-private,DIRECT,no-resolve",
     "RULE-SET,private,DIRECT",
-    "RULE-SET,anthropic,Anthropic",
+    "RULE-SET,anthropic,Claude",
     "RULE-SET,category-ai-chat-!cn,AI",
     "DOMAIN-SUFFIX,music.youtube.com,YouTube Music",
     "RULE-SET,github,Proxy",
