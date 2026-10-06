@@ -292,7 +292,7 @@ function main(config) {
     type: "http",
     behavior: "classical",
     format: "yaml",
-    url: "https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-white-guard.yaml",
+    url: "https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-direct.yaml",
     path: "./rule_provider/jinx-white-guard.yaml",
     interval: 86400,
   };
