@@ -21,12 +21,40 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
   - name: Smart
     type: fallback
+    proxies:
+      - MAX
+      - Auto
+      - HIGH
     url: https://www.gstatic.com/generate_204
     interval: 300
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
+  - name: MAX
+    type: url-test
     include-all: true
-    filter: ^((?!(直连|DIRECT)))*$
+    filter: '^(?=.*(?:^|[^\d.])(0\.\d*[1-9]))((?!直连|DIRECT).)*$'
     exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    hidden: true
+  - name: Auto
+    type: url-test
+    include-all: true
+    filter: '^(?!.*(?:^|[^\d.])(0\.\d*[1-9]))(?!.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    hidden: true
+  - name: HIGH
+    type: url-test
+    include-all: true
+    filter: '^(?=.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    hidden: true
   - name: Claude
     type: select
     proxies:
@@ -129,7 +157,7 @@ proxy-groups:
   - name: Hong Kong
     type: url-test
     include-all: true
-    filter: (?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|美)).)*$
+    filter: '(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|美)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -137,7 +165,7 @@ proxy-groups:
   - name: Taiwan
     type: url-test
     include-all: true
-    filter: (?=.*(台|TW|(?i)Taiwan|Tai))^((?!(港|韩|新|美|日)).)*$
+    filter: '(?=.*(台|TW|(?i)Taiwan|Tai))^((?!(港|韩|新|美|日)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -145,7 +173,7 @@ proxy-groups:
   - name: Japan
     type: url-test
     include-all: true
-    filter: (?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$
+    filter: '(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -153,7 +181,7 @@ proxy-groups:
   - name: Singapore
     type: url-test
     include-all: true
-    filter: (?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$
+    filter: '(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -161,7 +189,7 @@ proxy-groups:
   - name: United States
     type: url-test
     include-all: true
-    filter: (?=.*(美|US|(?i)States|America))^((?!(港|台|韩|新|日)).)*$
+    filter: '(?=.*(美|US|(?i)States|America))^((?!(港|台|韩|新|日)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -169,7 +197,7 @@ proxy-groups:
   - name: Other Regions
     type: url-test
     include-all: true
-    filter: ^(?!(.*(港|HK|Hong|台|TW|Taiwan|Tai|日|JP|Japan|新加坡|坡|狮城|SG|Singapore|美|US|States|America|洛杉矶|硅谷|西雅图|纽约|东京|大阪|LAX|SJC|SFO|SEA|ORD|JFK|DFW|IAD|PHX|ATL|BOS|MIA|NRT|HND|KIX|FUK|TPE|SIN)))(?!(.*(剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB|倍率|测试|有效|禁止|邮箱|客服|地址|网站|群组))).+$
+    filter: '^(?!(.*(港|HK|Hong|台|TW|Taiwan|Tai|日|JP|Japan|新加坡|坡|狮城|SG|Singapore|美|US|States|America|洛杉矶|硅谷|西雅图|纽约|东京|大阪|LAX|SJC|SFO|SEA|ORD|JFK|DFW|IAD|PHX|ATL|BOS|MIA|NRT|HND|KIX|FUK|TPE|SIN)))(?!(.*(剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB|倍率|测试|有效|禁止|邮箱|客服|地址|网站|群组))).+$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -385,9 +413,9 @@ dns:
     - +.srv.nintendo.net
     - +.stun.playstation.net
     - +.xboxlive.com
-    - stun.*
-    - time.*.com
-    - ntp.*.com
+    - 'stun.*'
+    - 'time.*.com'
+    - 'ntp.*.com'
     - +.pool.ntp.org
     - +.market.xiaomi.com
     - rule-set:AWAvenue-Ads

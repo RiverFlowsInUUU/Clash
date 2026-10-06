@@ -2,16 +2,22 @@
 #  routing · 分流版（由 override/my_clash.js 生成）
 # ============================================================================
 #  本文件由覆写脚本 override/my_clash.js 直接生成，结构与脚本覆写后的订阅
-#  **逐位一致**（20 个策略组 / 20 份规则集 / 26 条规则）。
+#  **逐位一致**（23 个策略组 / 20 份规则集 / 26 条规则）。
 #
 # ⚠️ 导入前要改一处：
 #    `proxy-providers.Airport.url` —— 换成你自己的订阅地址。
 #    不换的话所有走代理的流量不通（占位地址是 example.com，不是真实服务）。
 #
+# 🧠 Smart 三档（本模板专属，脚本侧无此结构）：
+#    Smart 为 fallback，依次回落到三个隐藏的 url-test 子组 ——
+#      MAX  倍率 < 1  的节点（0.01 / 0.1 / 0.5 …）· 最省钱，优先用
+#      Auto 正常倍率节点（节点名无倍率标记）
+#      HIGH 倍率 > 1  的节点（1.5 / 2.0 …）· 最贵，兜底
+#    子组靠 filter 在运行时筛节点，故不依赖生成期可见节点名 ——
+#    这正是 provider 订阅下脚本倍率排序做不到、而模板能做的原因。
+#
 # 🔁 节点来源：订阅节点由 `Airport` provider 拉取，各策略组用
 #    `include-all`（proxies + providers）引入，无需手动列节点。
-#    若你改用内联节点（写在 `proxies` 下），删掉 provider 即可，
-#    Smart 组会自动按节点名里的倍率排序（0.01 → 0.1 → 0.5 → 正常）。
 #
 # 💡 想让**自己的订阅**也长成这样而不改本文件？
 #    直接用 override/my_clash.js 挂到订阅上，输出结构与本文件一致。
@@ -42,12 +48,40 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
   - name: Smart
     type: fallback
+    proxies:
+      - MAX
+      - Auto
+      - HIGH
     url: https://www.gstatic.com/generate_204
     interval: 300
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
+  - name: MAX
+    type: url-test
     include-all: true
-    filter: ^((?!(直连|DIRECT)))*$
+    filter: '^(?=.*(?:^|[^\d.])(0\.\d*[1-9]))((?!直连|DIRECT).)*$'
     exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    hidden: true
+  - name: Auto
+    type: url-test
+    include-all: true
+    filter: '^(?!.*(?:^|[^\d.])(0\.\d*[1-9]))(?!.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    hidden: true
+  - name: HIGH
+    type: url-test
+    include-all: true
+    filter: '^(?=.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    hidden: true
   - name: Claude
     type: select
     proxies:
@@ -150,7 +184,7 @@ proxy-groups:
   - name: Hong Kong
     type: url-test
     include-all: true
-    filter: (?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|美)).)*$
+    filter: '(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|美)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -158,7 +192,7 @@ proxy-groups:
   - name: Taiwan
     type: url-test
     include-all: true
-    filter: (?=.*(台|TW|(?i)Taiwan|Tai))^((?!(港|韩|新|美|日)).)*$
+    filter: '(?=.*(台|TW|(?i)Taiwan|Tai))^((?!(港|韩|新|美|日)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -166,7 +200,7 @@ proxy-groups:
   - name: Japan
     type: url-test
     include-all: true
-    filter: (?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$
+    filter: '(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -174,7 +208,7 @@ proxy-groups:
   - name: Singapore
     type: url-test
     include-all: true
-    filter: (?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$
+    filter: '(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -182,7 +216,7 @@ proxy-groups:
   - name: United States
     type: url-test
     include-all: true
-    filter: (?=.*(美|US|(?i)States|America))^((?!(港|台|韩|新|日)).)*$
+    filter: '(?=.*(美|US|(?i)States|America))^((?!(港|台|韩|新|日)).)*$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -190,7 +224,7 @@ proxy-groups:
   - name: Other Regions
     type: url-test
     include-all: true
-    filter: ^(?!(.*(港|HK|Hong|台|TW|Taiwan|Tai|日|JP|Japan|新加坡|坡|狮城|SG|Singapore|美|US|States|America|洛杉矶|硅谷|西雅图|纽约|东京|大阪|LAX|SJC|SFO|SEA|ORD|JFK|DFW|IAD|PHX|ATL|BOS|MIA|NRT|HND|KIX|FUK|TPE|SIN)))(?!(.*(剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB|倍率|测试|有效|禁止|邮箱|客服|地址|网站|群组))).+$
+    filter: '^(?!(.*(港|HK|Hong|台|TW|Taiwan|Tai|日|JP|Japan|新加坡|坡|狮城|SG|Singapore|美|US|States|America|洛杉矶|硅谷|西雅图|纽约|东京|大阪|LAX|SJC|SFO|SEA|ORD|JFK|DFW|IAD|PHX|ATL|BOS|MIA|NRT|HND|KIX|FUK|TPE|SIN)))(?!(.*(剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB|倍率|测试|有效|禁止|邮箱|客服|地址|网站|群组))).+$'
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -406,9 +440,9 @@ dns:
     - +.srv.nintendo.net
     - +.stun.playstation.net
     - +.xboxlive.com
-    - stun.*
-    - time.*.com
-    - ntp.*.com
+    - 'stun.*'
+    - 'time.*.com'
+    - 'ntp.*.com'
     - +.pool.ntp.org
     - +.market.xiaomi.com
     - rule-set:AWAvenue-Ads
