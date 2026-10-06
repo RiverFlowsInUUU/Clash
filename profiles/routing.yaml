@@ -1,8 +1,8 @@
 # ============================================================================
 #  routing · 分流版（由 override/my_clash.js 生成）
 # ============================================================================
-#  本文件由覆写脚本 override/my_clash.js 直接生成，结构与脚本覆写后的订阅
-#  **逐位一致**（23 个策略组 / 20 份规则集 / 26 条规则）。
+#  本文件由覆写脚本 override/my_clash.js 生成，规则与策略组结构与脚本
+#  覆写后的订阅一致（23 个策略组 / 20 份规则集 / 26 条规则）。
 #
 # ⚠️ 导入前要改一处：
 #    `proxy-providers.Airport.url` —— 换成你自己的订阅地址。
@@ -10,17 +10,23 @@
 #
 # 🧠 Smart 三档（本模板专属，脚本侧无此结构）：
 #    Smart 为 fallback，依次回落到三个隐藏的 url-test 子组 ——
-#      MAX  倍率 < 1  的节点（0.01 / 0.1 / 0.5 …）· 最省钱，优先用
-#      Auto 正常倍率节点（节点名无倍率标记）
-#      HIGH 倍率 > 1  的节点（1.5 / 2.0 …）· 最贵，兜底
+#      Low Mult.   倍率 < 1 的节点（0.01 / 0.1 / 0.5 …）· 最省钱，优先
+#      Auto        正常倍率节点（节点名无倍率标记）
+#      High Mult.  倍率 > 1 的节点（1.5倍 / 2倍 / 3.0x …）· 最贵，兜底
 #    子组靠 filter 在运行时筛节点，故不依赖生成期可见节点名 ——
 #    这正是 provider 订阅下脚本倍率排序做不到、而模板能做的原因。
+#
+# 🔎 倍率判据（消歧靠「倍率单位」）：
+#      低倍率  0.xxx —— 0 开头必是倍率
+#      高倍率  数值 >=1 且必须紧跟 倍 / 倍率 / x / X / *
+#      其余    视为无倍率标记 -> Auto
+#    于是「巴西 09 2倍」归 High，而序号「09」「香港 01」不会被误判。
 #
 # 🔁 节点来源：订阅节点由 `Airport` provider 拉取，各策略组用
 #    `include-all`（proxies + providers）引入，无需手动列节点。
 #
 # 💡 想让**自己的订阅**也长成这样而不改本文件？
-#    直接用 override/my_clash.js 挂到订阅上，输出结构与本文件一致。
+#    直接用 override/my_clash.js 挂到订阅上。
 #
 # 📌 本文件没有版本号，是长期沿用的「分流版」入口。
 # ============================================================================
@@ -49,13 +55,13 @@ proxy-groups:
   - name: Smart
     type: fallback
     proxies:
-      - MAX
+      - Low Mult.
       - Auto
-      - HIGH
+      - High Mult.
     url: https://www.gstatic.com/generate_204
     interval: 300
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
-  - name: MAX
+  - name: Low Mult.
     type: url-test
     include-all: true
     filter: '^(?=.*(?:^|[^\d.])(0\.\d*[1-9]))((?!直连|DIRECT).)*$'
@@ -67,16 +73,16 @@ proxy-groups:
   - name: Auto
     type: url-test
     include-all: true
-    filter: '^(?!.*(?:^|[^\d.])(0\.\d*[1-9]))(?!.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    filter: '^(?!.*(?:^|[^\d.])(0\.\d*[1-9]))(?!.*(?:^|[^\d.])([1-9]\d*(?:\.\d+)?\s*(?:倍率|倍|x|X|\*)))((?!直连|DIRECT).)*$'
     exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
     hidden: true
-  - name: HIGH
+  - name: High Mult.
     type: url-test
     include-all: true
-    filter: '^(?=.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    filter: '^(?=.*(?:^|[^\d.])([1-9]\d*(?:\.\d+)?\s*(?:倍率|倍|x|X|\*)))((?!直连|DIRECT).)*$'
     exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
     url: https://www.gstatic.com/generate_204
     interval: 300

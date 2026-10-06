@@ -22,13 +22,13 @@ proxy-groups:
   - name: Smart
     type: fallback
     proxies:
-      - MAX
+      - Low Mult.
       - Auto
-      - HIGH
+      - High Mult.
     url: https://www.gstatic.com/generate_204
     interval: 300
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Auto.png
-  - name: MAX
+  - name: Low Mult.
     type: url-test
     include-all: true
     filter: '^(?=.*(?:^|[^\d.])(0\.\d*[1-9]))((?!直连|DIRECT).)*$'
@@ -40,16 +40,16 @@ proxy-groups:
   - name: Auto
     type: url-test
     include-all: true
-    filter: '^(?!.*(?:^|[^\d.])(0\.\d*[1-9]))(?!.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    filter: '^(?!.*(?:^|[^\d.])(0\.\d*[1-9]))(?!.*(?:^|[^\d.])([1-9]\d*(?:\.\d+)?\s*(?:倍率|倍|x|X|\*)))((?!直连|DIRECT).)*$'
     exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
     hidden: true
-  - name: HIGH
+  - name: High Mult.
     type: url-test
     include-all: true
-    filter: '^(?=.*(?:^|[^\d.])([1-9]\d*\.\d*[1-9]))((?!直连|DIRECT).)*$'
+    filter: '^(?=.*(?:^|[^\d.])([1-9]\d*(?:\.\d+)?\s*(?:倍率|倍|x|X|\*)))((?!直连|DIRECT).)*$'
     exclude-filter: 剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB
     url: https://www.gstatic.com/generate_204
     interval: 300
