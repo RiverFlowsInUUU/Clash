@@ -114,52 +114,59 @@ function main(config) {
       icon: ICON + "grok.png",
     },
     {
+      name: "YouTube",
+      type: "select",
+      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
+      icon: ICON + "YouTube.png",
+    },
+
+    {
       name: "Emby",
       type: "select",
       proxies: ["Select", "Smart", "United States", "Taiwan"],
       icon: ICON + "Emby.png",
     },
+
     {
       name: "Google",
       type: "select",
       proxies: ["AI", "Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "Google.png",
     },
-    {
-      name: "YouTube",
-      type: "select",
-      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
-      icon: ICON + "YouTube.png",
-    },
-    {
-      name: "YouTube Music",
-      type: "select",
-      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
-      icon: ICON + "YouTubeMusic.png",
-    },
-    {
-      name: "Spotify",
-      type: "select",
-      proxies: ["United States", "Hong Kong", "Taiwan", "Japan", "Singapore"],
-      icon: ICON + "Spotify.png",
-    },
-    {
-      name: "Microsoft",
-      type: "select",
-      proxies: ["DIRECT", "Proxy", "Taiwan", "Japan", "Singapore", "United States", "Select"],
-      icon: ICON + "Microsoft.png",
-    },
+
     {
       name: "Telegram",
       type: "select",
       proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
       icon: ICON + "Telegram.png",
     },
+
+    {
+      name: "YouTube Music",
+      type: "select",
+      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
+      icon: ICON + "YouTubeMusic.png",
+    },
+
+    {
+      name: "Spotify",
+      type: "select",
+      proxies: ["United States", "Hong Kong", "Taiwan", "Japan", "Singapore"],
+      icon: ICON + "Spotify.png",
+    },
+
     {
       name: "Twitter",
       type: "select",
       proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
       icon: "https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Twitter.png",
+    },
+
+    {
+      name: "Microsoft",
+      type: "select",
+      proxies: ["DIRECT", "Proxy", "Taiwan", "Japan", "Singapore", "United States", "Select"],
+      icon: ICON + "Microsoft.png",
     },
     {
       name: "Final",
