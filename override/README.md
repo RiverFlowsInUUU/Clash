@@ -1,6 +1,6 @@
 # 覆写脚本
 
-对**任意订阅**做整体覆写，使其结构与 [`profiles/my_clash.yaml`](../profiles/my_clash.yaml) 一致。
+对**任意订阅**做整体覆写，使其结构与 [`profiles/routing.yaml`](../profiles/routing.yaml)（分流版）一致 —— 该文件即由本脚本生成。
 
 ## 文件
 
@@ -26,9 +26,9 @@
 | 项 | 处理 |
 |:---|:-----|
 | `proxies` | **保留**（订阅的节点原样） |
-| `proxy-groups` | **整体替换**为 23 组 |
-| `rule-providers` | **整体重建**为 19 份（12 geosite `.mrs` + 4 geoip `.mrs` + 3 自定义）；订阅自带的**一律丢弃** |
-| `rules` | **整体替换**为 25 条 |
+| `proxy-groups` | **整体替换**为 20 组 |
+| `rule-providers` | **整体重建**为 20 份（13 geosite `.mrs` + 4 geoip `.mrs` + 3 自定义）；订阅自带的**一律丢弃** |
+| `rules` | **整体替换**为 26 条 |
 | `dns` | **整体替换**（含双层广告拦截）；不设 `listen`，由客户端决定 |
 | 入站端口 | **不覆盖**，交给客户端决定 |
 

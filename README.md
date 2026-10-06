@@ -5,14 +5,14 @@
 *让 DNS 无处可漏*
 
 [![Clash](https://img.shields.io/badge/Clash-Meta%20%7C%20mihomo-1f6feb?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
-[![Profiles](https://img.shields.io/badge/Profiles-lazy%20%7C%20routing%20%7C%20my__clash-0969da?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
+[![Profiles](https://img.shields.io/badge/Profiles-lazy%20%7C%20routing-0969da?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![Rules](https://img.shields.io/badge/Rules-GEOSITE%20%2B-8250df?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![DNS](https://img.shields.io/badge/DNS-Zero%20Leak-2ea043?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![License](https://img.shields.io/badge/License-MIT-dfb317?style=flat-square)](LICENSE)
 
 </div>
 
-## 📥 三全其美，各取所需
+## 📥 两者取一，各取所需
 
 🪶 **懒人版** · 至简 · 省心
 
@@ -26,44 +26,31 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.y
 https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/routing.min.yaml
 ```
 
-🧬 **自用版** · 前置拦截 · 全 MRS
-
-```
-https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.min.yaml
-```
 
 ## 🧭 井然有序
 
-懒人版 3 组、分流版 24 组、自用版 23 组，自上而下：
+懒人版 3 组、分流版 20 组，自上而下：
 
-| 组 | 🪶 懒人版 | 🧭 分流版 | 🧬 自用版 |
-|:---|:---:|:---:|:---:|
-| 🚀 `Proxy` | ✅ | ✅ | ✅ |
-| 🧠 `Smart` | - | ✅ | ✅ |
-| 🧩 `Select` / `Fallback` / `MAX` | - | - | ✅ ×3 |
-| 🤖 `AI` | ✅ | ✅ | ✅ |
-| 🛑 `AD` | ✅ | ✅ | ✅ |
-| 📱 应用组（ChatGPT / Gemini / Claude / Spotify …） | - | ✅ ×12 | ✅ ×11 |
-| 🌍 地区组（香港 / 美国 / 日本 …） | - | ✅ ×7 | ✅ ×5 |
-| 🧩 `Final` | - | ✅ | ✅ |
+| 组 | 🪶 懒人版 | 🧭 分流版 |
+|:---|:---:|:---:|
+| 🚀 `Proxy` | ✅ | ✅ |
+| 🧠 `Smart` | - | ✅ |
+| 🎯 `Select`（手动） | - | - |
+| 🤖 `AI` | ✅ | ✅ |
+| 🛑 `AD` | ✅ | ✅ |
+| 📱 应用组（Claude / AI / YouTube / Spotify …） | - | ✅ ×10 |
+| 🌍 地区组（香港 / 美国 / 日本 …） | - | ✅ ×6 |
+| 🧩 `Final` | - | - |
 
 > 🪶 懒人版含 1 个订阅槽位（`Airport`，换 `url` 即用）与 2 条节点占位，长期沿用无版本号。
 > 🧭 分流版按应用 + 按地区选路，组结构与选路见 [DetailsReadme](DetailsReadme/DetailsReadme.md)。
-> 🧬 自用版见下方说明。
 
-## 🧬 自用版 · DNS 层广告拦截 + 全 MRS
+## 🔗 覆写脚本 · 把任意订阅改造成分流版
 
-自用配置整理而成，面向想同时拿到「更早的广告拦截」与「零 geosite 依赖」的人。
+分流版配置 [`profiles/routing.yaml`](profiles/routing.yaml) 即由本脚本生成，
+两者结构**逐位一致**（20 个策略组 / 20 份规则集 / 26 条规则）。
 
-提供**两种用法**，输出结构完全一致，按需选一：
-
-**① 静态配置** · 下载后改 `Airport.url` 即用
-
-```
-https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/my_clash.min.yaml
-```
-
-**② 覆写脚本** · 挂到**任意订阅**上，自动改造（无需额外订阅槽位）
+想让**自己的订阅**也长成这样，不必手动改配置 —— 挂上脚本即可：
 
 ```
 https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.js
@@ -72,9 +59,9 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.j
 | | 做法 |
 |:--|:-----|
 | 🛑 **广告拦截前移** | `fake-ip-filter` 让广告域名跳过 fake-ip，`nameserver-policy` 对其返回 `rcode://success`；广告**在 DNS 层就被拦死**，连接根本建立不起来。规则层 `AD` 组保留作兜底（IP 直连 / DoH / 缓存解析） |
-| 🧩 **规则集全 MRS** | 19 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` |
-| ⚡ **自动择优 + 故障转移** | `Smart`（全池 url-test）· `Select`（手动）· `MAX`（倍率筛选）· `Fallback`（逐级回退） |
-| 🔗 **节点来源（二选一）** | 静态版：`use: [Airport]`（换 `url` 即用）；脚本版：`include-all-proxies`，订阅节点**直接入组** |
+| 🧩 **规则集全 MRS** | 20 份 `.mrs` / 远程集合，`rules` 不引用 `GEOSITE` / `GEOIP` |
+| ⚡ **倍率优先** | `Smart` 为 `fallback`，成员按节点名里的倍率升序排列（0.01 → 0.1 → 0.5 → 正常），脚本动态算出 |
+| 🔗 **节点来源** | `include-all-proxies`（订阅节点直接入组，无需额外槽位）；若订阅带 `proxy-providers` 则自动改用 `include-all` |
 
 > ⚠️ 双层广告拦截有个**必要条件**：`nameserver-policy` 里返回 `rcode` 的域名，**必须同时在 `fake-ip-filter` 中列一遍**。
 > 否则 `withFakeIP` 中间件对 A / AAAA 查询直接返回假 IP，请求永远到不了 `nameserver-policy`。
@@ -101,8 +88,6 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.j
 
 ⚠️ 白名单必须留在两条广告清单**之前** —— 两份黑名单存在重叠域名，顺序颠倒会把它们误杀。
 
-> 🧬 自用版同一顺序，额外含：`Emby` 自建服务器域名（白名单后）、
-> `geoip-google` / `geoip-telegram` IP 兜底（域名规则之后），以及 `Apple Update` 组。
 
 ## 🌐 隐私至上 · 无 DNS 泄露
 
@@ -123,8 +108,8 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.j
 
 | | 路径 | 内容 |
 |:--:|:-----|:-----|
-| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2 + 自用版 ×2（各带注释 / 纯配置） |
-| 🔗 | [`override/`](override/my_clash.js) | JS 覆写脚本：把任意订阅改造成自用版结构 |
+| 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2（各带注释 / 纯配置） |
+| 🔗 | [`override/`](override/my_clash.js) | JS 覆写脚本：把任意订阅改造成分流版结构 |
 | 🖼️ | [`icons/`](icons/) | 策略组图标（本仓自带，与姊妹仓 [Self-Configuration](https://github.com/RiverFlowsInUUU/Self-Configuration/tree/main/icons) 同源） |
 | 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |
