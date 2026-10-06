@@ -126,6 +126,13 @@ function main(config) {
       icon: ICON + "claude-color.png",
     },
     {
+      name: "Gemini",
+      type: "select",
+      // 对齐 SC 的 Gemini：首选 United States，其后回落到 Proxy
+      proxies: ["United States", "Proxy"],
+      icon: ICON + "gemini-color.png",
+    },
+    {
       name: "AI",
       type: "select",
       // 对齐 SC 的 AI：无首选地区，直接由 Proxy 展开
@@ -135,72 +142,61 @@ function main(config) {
     {
       name: "YouTube",
       type: "select",
-      // SC 的 YouTube 无首选，仅 Proxy —— 子节点为「首选 + Proxy」两条，与 SC 同形。
-      proxies: ["Proxy"],
+      proxies: ["Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "YouTube.png",
     },
 
     {
       name: "Emby",
       type: "select",
-      // 对齐 SC 的 Emby：无首选地区，直接由 Proxy 展开
-      proxies: ["Proxy"],
+      proxies: ["Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "Emby.png",
     },
 
     {
       name: "Google",
       type: "select",
-      // SC 的 Google 首选 Gemini；本仓未拆 Gemini 组，以 AI 承担 —— 子节点为「首选 + Proxy」两条，与 SC 同形。
-      proxies: ["AI"],
-      proxies: ["AI", "Proxy"],
+      proxies: ["Gemini", "Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "Google.png",
     },
 
     {
       name: "Telegram",
       type: "select",
-      // SC 的 Telegram 无首选，仅 Proxy —— 子节点为「首选 + Proxy」两条，与 SC 同形。
-      proxies: ["Proxy"],
+      proxies: ["Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "Telegram.png",
     },
 
     {
       name: "YouTube Music",
       type: "select",
-      // 对齐 SC 的 YouTube Music：首选 United States，其后回落到 Proxy（展开即全部节点）
-      proxies: ["United States", "Proxy"],
+      proxies: ["United States", "Hong Kong", "Taiwan", "Japan", "Singapore"],
       icon: ICON + "YouTubeMusic.png",
     },
 
     {
       name: "Spotify",
       type: "select",
-      // 与其它应用组保持一致口径：首选地区 + Proxy（含 Other Regions）
-      proxies: ["United States", "Proxy"],
+      proxies: ["United States", "Hong Kong", "Taiwan", "Japan", "Singapore"],
       icon: ICON + "Spotify.png",
     },
 
     {
       name: "Twitter",
       type: "select",
-      // SC 的 Twitter 无首选，仅 Proxy —— 子节点为「首选 + Proxy」两条，与 SC 同形。
-      proxies: ["Proxy"],
-      icon: ICON + "Auto.png",
+      proxies: ["Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
+      icon: ICON + "Twitter.png",
     },
 
     {
       name: "Microsoft",
       type: "select",
-      // SC 的 Microsoft 首选 DIRECT —— 子节点为「首选 + Proxy」两条，与 SC 同形。
-      proxies: ["DIRECT"],
       proxies: ["DIRECT", "Proxy"],
       icon: ICON + "Microsoft.png",
     },
     {
       name: "Apple Update",
       type: "select",
-      // 对齐 SC：首选 DIRECT，备选 REJECT（可在面板切到拒绝以阻止 OTA 自动下载）
       proxies: ["DIRECT", "REJECT"],
       icon: ICON + "Apple.png",
     },
