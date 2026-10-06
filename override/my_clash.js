@@ -128,13 +128,15 @@ function main(config) {
     {
       name: "Anthropic",
       type: "select",
-      proxies: ["Taiwan", "Select"],
+      // 对齐 SC 的 Claude：首选台湾，其后回落到 Proxy（展开即全部节点）
+      proxies: ["Taiwan", "Proxy"],
       icon: ICON + "claude-color.png",
     },
     {
       name: "AI",
       type: "select",
-      proxies: ["Taiwan", "Select", "Japan", "Singapore", "United States", "Proxy", "Smart"],
+      // 对齐 SC 的 AI：无首选地区，直接由 Proxy 展开
+      proxies: ["Proxy"],
       icon: ICON + "grok.png",
     },
     {
@@ -147,7 +149,8 @@ function main(config) {
     {
       name: "Emby",
       type: "select",
-      proxies: ["Select", "Smart", "United States", "Taiwan"],
+      // 对齐 SC 的 Emby：无首选地区，直接由 Proxy 展开
+      proxies: ["Proxy"],
       icon: ICON + "Emby.png",
     },
 
@@ -175,7 +178,8 @@ function main(config) {
     {
       name: "Spotify",
       type: "select",
-      proxies: ["United States", "Hong Kong", "Taiwan", "Japan", "Singapore"],
+      // 与其它应用组保持一致口径：首选地区 + Proxy（含 Other Regions）
+      proxies: ["United States", "Proxy"],
       icon: ICON + "Spotify.png",
     },
 
@@ -196,7 +200,7 @@ function main(config) {
       name: "Apple Update",
       type: "select",
       proxies: ["REJECT", "PASS", "DIRECT"],
-      icon: ICON + "AppleUpdate.png",
+      icon: ICON + "Apple.png",
     },
 
     {
