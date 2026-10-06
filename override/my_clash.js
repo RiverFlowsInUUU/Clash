@@ -4,7 +4,7 @@
 //
 //  作用
 //    对任意 mihomo 订阅配置做整体覆写，使其与本仓库 profiles/my_clash.yaml 一致：
-//      · 22 个策略组（Smart / Select / MAX / Fallback + 5 地区组 + 12 应用组）
+//      · 23 个策略组（Smart / Select / MAX / Fallback + 6 地区组 + 12 应用组）
 //      · 20 份规则集（17 份 MRS + 3 份 yaml）+ 26 条规则
 //      · DNS 双层广告拦截（fake-ip-filter + nameserver-policy rcode://success）
 //      · 订阅内的节点直接成为组内成员 —— 不再需要 Airport 订阅组
@@ -169,6 +169,20 @@ function main(config) {
       icon: ICON + "Microsoft.png",
     },
     {
+      name: "Apple Update",
+      type: "select",
+      proxies: ["REJECT", "PASS", "DIRECT"],
+      icon: ICON + "AppleUpdate.png",
+    },
+
+    {
+      name: "AD",
+      type: "select",
+      proxies: ["REJECT", "PASS", "DIRECT"],
+      icon: ICON + "AdBlock.png",
+    },
+
+    {
       name: "Hong Kong",
       type: "url-test",
       ...allNodes,
@@ -222,17 +236,16 @@ function main(config) {
       tolerance: 50,
       icon: ICON + "UnitedStates.png",
     },
+
     {
-      name: "Apple Update",
-      type: "select",
-      proxies: ["REJECT", "PASS", "DIRECT"],
-      icon: ICON + "AppleUpdate.png",
-    },
-    {
-      name: "AD",
-      type: "select",
-      proxies: ["REJECT", "PASS", "DIRECT"],
-      icon: ICON + "AdBlock.png",
+      name: "Other Regions",
+      type: "url-test",
+      ...allNodes,
+      filter: "^(?!(.*(港|HK|Hong|台|TW|Taiwan|Tai|日|JP|Japan|新加坡|坡|狮城|SG|Singapore|美|US|States|America|洛杉矶|硅谷|西雅图|纽约|东京|大阪|LAX|SJC|SFO|SEA|ORD|JFK|DFW|IAD|PHX|ATL|BOS|MIA|NRT|HND|KIX|FUK|TPE|SIN)))(?!(.*(剩余|流量|到期|过期|官网|订阅|重置|续费|Traffic|Expire|GB|倍率|测试|有效|禁止|邮箱|客服|地址|网站|群组))).+$",
+      url: HC_URL,
+      interval: HC_INT,
+      tolerance: 50,
+      icon: ICON + "WorldMap.png",
     },
     {
       name: "MAX",
