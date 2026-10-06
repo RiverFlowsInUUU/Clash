@@ -171,7 +171,8 @@ function main(config) {
     {
       name: "YouTube Music",
       type: "select",
-      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
+      // 对齐 SC 的 YouTube Music：首选 United States，其后回落到 Proxy（展开即全部节点）
+      proxies: ["United States", "Proxy"],
       icon: ICON + "YouTubeMusic.png",
     },
 
