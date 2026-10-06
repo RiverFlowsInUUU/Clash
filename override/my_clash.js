@@ -69,7 +69,7 @@ function main(config) {
       type: "select",
       proxies: [
         "Fallback", "MAX", "Smart", "Select",
-        "HongKong", "Taiwan", "Japan", "Singapore", "United States",
+        "Hong Kong", "Taiwan", "Japan", "Singapore", "United States",
       ],
       icon: ICON + "Proxy.png",
     },
@@ -122,25 +122,25 @@ function main(config) {
     {
       name: "Google",
       type: "select",
-      proxies: ["AI", "Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States"],
+      proxies: ["AI", "Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "Google.png",
     },
     {
       name: "YouTube",
       type: "select",
-      proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States"],
+      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "YouTube.png",
     },
     {
       name: "YouTube Music",
       type: "select",
-      proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
+      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
       icon: ICON + "YouTubeMusic.png",
     },
     {
       name: "Spotify",
       type: "select",
-      proxies: ["United States", "HongKong", "Taiwan", "Japan", "Singapore"],
+      proxies: ["United States", "Hong Kong", "Taiwan", "Japan", "Singapore"],
       icon: ICON + "Spotify.png",
     },
     {
@@ -152,7 +152,7 @@ function main(config) {
     {
       name: "Telegram",
       type: "select",
-      proxies: ["Proxy", "HongKong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
+      proxies: ["Proxy", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States", "Select"],
       icon: ICON + "Telegram.png",
     },
     {
@@ -169,7 +169,7 @@ function main(config) {
       icon: ICON + "Final.png",
     },
     {
-      name: "HongKong",
+      name: "Hong Kong",
       type: "url-test",
       ...allNodes,
       filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|美)).)*$",
