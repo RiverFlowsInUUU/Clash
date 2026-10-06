@@ -115,7 +115,6 @@ function main(config) {
       proxies: smartOrder.length ? smartOrder : ["Select"],
       url: HC_URL,
       interval: HC_INT,
-      hidden: true,
       icon: ICON + "Auto.png",
     },
     {
