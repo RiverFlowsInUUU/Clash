@@ -357,18 +357,6 @@ function main(config) {
     interval: 86400,
   };
 
-  // YouTube Music：引用 blackmatrix7 的 Clash 版清单（与 SC 引用的 Surge 版同源）。
-  // 命名沿用 SC 的 YTM。上游 Clash 版只含域名条目（USER-AGENT 条目未转译），
-  // 故与 SC 的 5 条相比少 4 条 App 识别项，域名覆盖一致。
-  rp["YTM"] = {
-    type: "http",
-    behavior: "classical",
-    format: "yaml",
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTubeMusic/YouTubeMusic.yaml",
-    path: "./rule_provider/YouTubeMusic.yaml",
-    interval: 86400,
-  };
-
   // ── 3. 分流规则 ────────────────────────────────────────────────────────
   config.rules = [
     "RULE-SET,Jinx-CN,DIRECT",
@@ -380,7 +368,9 @@ function main(config) {
     "RULE-SET,private,DIRECT",
     "RULE-SET,anthropic,Claude",
     "RULE-SET,category-ai-chat-!cn,AI",
-    "RULE-SET,YTM,YouTube Music",
+    // YouTube Music：bm7 的 Clash 版清单也只有 music.youtube.com 一条，
+    // 与硬编码等效且无增益，故保留内联写法（避免一次无谓的远程拉取）
+    "DOMAIN-SUFFIX,music.youtube.com,YouTube Music",
     "RULE-SET,github,Proxy",
     "RULE-SET,youtube,YouTube",
     "RULE-SET,emby,Emby",

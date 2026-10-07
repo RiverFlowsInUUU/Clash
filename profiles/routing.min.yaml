@@ -363,13 +363,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.yaml
     path: ./rule_provider/apple_system.yaml
     interval: 86400
-  YTM:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTubeMusic/YouTubeMusic.yaml
-    path: ./rule_provider/YouTubeMusic.yaml
-    interval: 86400
 rules:
   - RULE-SET,Jinx-CN,DIRECT
   - RULE-SET,Jinx-Ads,AD
@@ -380,7 +373,7 @@ rules:
   - RULE-SET,private,DIRECT
   - RULE-SET,anthropic,Claude
   - RULE-SET,category-ai-chat-!cn,AI
-  - RULE-SET,YTM,YouTube Music
+  - DOMAIN-SUFFIX,music.youtube.com,YouTube Music
   - RULE-SET,github,Proxy
   - RULE-SET,youtube,YouTube
   - RULE-SET,emby,Emby
