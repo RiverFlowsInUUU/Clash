@@ -89,7 +89,7 @@ proxy-groups:
       - Japan
       - Singapore
       - United States
-    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/openai.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png
   - name: YouTube
     type: select
     proxies:

@@ -152,9 +152,8 @@ function main(config) {
       name: "AI",
       type: "select",
       // 对齐 SC 的 AI：Smart 打头，其后 台湾 → 日本 → 新加坡 → 美国
-      // 图标用 openai（与 Self-Configuration 的 ChatGPT 同款；该仓 AI 组用 grok，此处按本仓口径取 openai）
       proxies: ["Smart", "Taiwan", "Japan", "Singapore", "United States"],
-      icon: ICON + "openai.png",
+      icon: ICON + "grok.png",
     },
     {
       name: "YouTube",
