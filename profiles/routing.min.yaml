@@ -59,7 +59,9 @@ proxy-groups:
     type: select
     proxies:
       - Taiwan
-      - Proxy
+      - Japan
+      - Singapore
+      - United States
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/claude-color.png
   - name: AI
     type: select

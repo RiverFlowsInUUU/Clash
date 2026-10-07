@@ -123,8 +123,8 @@ function main(config) {
     {
       name: "Claude",
       type: "select",
-      // 对齐 SC 的 Claude：首选台湾，其后回落到 Proxy（展开即全部节点）
-      proxies: ["Taiwan", "Proxy"],
+      // 依次回落：台湾 → 日本 → 新加坡 → 美国
+      proxies: ["Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "claude-color.png",
     },
 
