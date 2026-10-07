@@ -20,6 +20,11 @@
 #    「分流版」（按应用 + 按地区）见同目录 `routing.yaml`。
 # ============================================================================
 
+# 🔒 IPv6 显式关闭：不返回 AAAA 记录，双栈站点自动回落 IPv4，
+#    避免本机真实 IPv6 绕过 TUN 出网导致出口 IP 与节点不符（与分流版同口径）。
+
+ipv6: false
+
 # ============================================================================
 # ① proxies —— 节点。两条占位（与蓝图 lazy_v2.0.1 同构：Node-A 归 Proxy、
 #    Node-B 归 AI 但压备选位，不作默认出口）。`203.0.113.0/24` 是 RFC 5737 文档段，
@@ -90,7 +95,7 @@ proxy-groups:
       - Node-A
     use:
       - Airport
-    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/Proxy.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
@@ -101,12 +106,12 @@ proxy-groups:
       - Node-B
     use:
       - Airport
-    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/grok.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png
   - name: AD
     type: select
     proxies:
       - REJECT
-    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/icons/AdBlock.png
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AdBlock.png
 
 # ============================================================================
 # 规则集：5 份，按「GEOSITE → MRS → 传统规则集」三级选型后落在本层的 3 份：
@@ -130,33 +135,70 @@ rule-providers:
     url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
     path: ./rule_provider/AWAvenue-Ads-Rule-Clash.mrs
     interval: 86400
-  jinx-ads:
+  Jinx-Ads:
     type: http
     behavior: classical
     format: yaml
     url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-ads.yaml
-    path: ./rule_provider/jinx-ads-delta.yaml
+    path: ./rule_provider/Jinx-Ads.yaml
     interval: 86400
-  jinx-white-guard:
+  Jinx-CN:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-white-guard.yaml
-    path: ./rule_provider/jinx-white-guard.yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-direct.yaml
+    path: ./rule_provider/Jinx-CN.yaml
     interval: 86400
-  AI-Domains:
+  AI_Domains:
     type: http
     behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/rules/AI.list
-    path: ./rule_provider/AI-Domains.list
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/AI_Domains.yaml
+    path: ./rule_provider/AI_Domains.yaml
     interval: 86400
   apple-system:
     type: http
     behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Self-Configuration/main/rules/apple_system.list
-    path: ./rule_provider/apple-system.list
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.yaml
+    path: ./rule_provider/apple_system.yaml
+    interval: 86400
+
+  # ── MRS 规则集（原 GEOSITE / GEOIP 原生层，改为与分流版同口径的远程集）──
+  private:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs
+    path: ./rule_provider/private.mrs
+    interval: 86400
+  cn:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs
+    path: ./rule_provider/cn.mrs
+    interval: 86400
+  category-ai-chat-!cn:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-chat-!cn.mrs
+    path: ./rule_provider/category-ai-chat-!cn.mrs
+    interval: 86400
+  geoip-private:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/private.mrs
+    path: ./rule_provider/geoip-private.mrs
+    interval: 86400
+  geoip-cn:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.mrs
+    path: ./rule_provider/geoip-cn.mrs
     interval: 86400
 
 # ============================================================================
@@ -178,23 +220,23 @@ rule-providers:
 # ============================================================================
 rules:
   # ① 白名单 —— 抢在广告规则之前放行
-  - RULE-SET,jinx-white-guard,DIRECT
+  - RULE-SET,Jinx-CN,DIRECT
   # ② 广告拦截 —— 两条并列清单，同一出口 AD
-  - RULE-SET,jinx-ads,AD
+  - RULE-SET,Jinx-Ads,AD
   - RULE-SET,AWAvenue-Ads,AD
   # ③ 内网：私有 IP 段 + 私有域名，一律直连（≙ 蓝图 Lan.list + private.txt 两条）
-  - GEOIP,private,DIRECT
-  - GEOSITE,private,DIRECT
+  - RULE-SET,geoip-private,DIRECT,no-resolve
+  - RULE-SET,private,DIRECT
   # ④ Apple 系统服务（激活 / 推送 / 定位 / 配对）—— 全量 Apple 不在此列：
   #    懒人版只有一个出口，Apple 流量「部分直连、部分走代理」的完整切分是分流版的活
   - RULE-SET,apple-system,DIRECT
   # ⑤ AI 分流：通用 AI 类目兜底在前收散域名，伴生域/宽后缀随后整域收编
   #   （googleapis.com / googleusercontent.com 整域归 AI，不漏进国内或兜底）
-  - GEOSITE,category-ai-chat-!cn,AI
-  - RULE-SET,AI-Domains,AI
+  - RULE-SET,category-ai-chat-!cn,AI
+  - RULE-SET,AI_Domains,AI
   # ⑥ 国内：域名集在前、IP 集在后，都直连
-  - GEOSITE,cn,DIRECT
-  - GEOIP,cn,DIRECT
+  - RULE-SET,cn,DIRECT
+  - RULE-SET,geoip-cn,DIRECT,no-resolve
   # ⑦ 兜底：以上都没命中，走主出口（蓝图 2026-09-23 起：兜底一跳直连 Proxy，无 Final 中间组）
   - MATCH,Proxy
 

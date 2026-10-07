@@ -20,6 +20,12 @@
 https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/lazy.min.yaml
 ```
 
+不想改配置？用覆写脚本挂到自己的订阅上，输出与本文件一致：
+
+```
+https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash_lazy.js
+```
+
 🧭 **分流版** · 可控 · 随心
 
 ```
@@ -29,7 +35,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/profiles/routing.mi
 
 ## 🧭 井然有序
 
-懒人版 3 组、分流版 20 组，自上而下：
+懒人版 3 组、分流版 25 组，自上而下：
 
 | 组 | 🪶 懒人版 | 🧭 分流版 |
 |:---|:---:|:---:|
@@ -109,7 +115,7 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.j
 | | 路径 | 内容 |
 |:--:|:-----|:-----|
 | 📁 | [`profiles/`](profiles/) | 配置：懒人版 ×2 + 分流版 ×2（各带注释 / 纯配置） |
-| 🔗 | [`override/`](override/my_clash.js) | JS 覆写脚本：把任意订阅改造成分流版结构 |
+| 🔗 | [`override/`](override/my_clash.js) | JS 覆写脚本：分流版 `my_clash.js` + 懒人版 `my_clash_lazy.js`，把任意订阅改造成对应结构 |
 | 🖼️ | [`icons/`](icons/) | 策略组图标（本仓自带，与姊妹仓 [Self-Configuration](https://github.com/RiverFlowsInUUU/Self-Configuration/tree/main/icons) 同源） |
 | 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |

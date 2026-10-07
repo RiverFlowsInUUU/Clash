@@ -6,7 +6,11 @@
 
 | 文件 | 作用 |
 |:-----|:-----|
-| [`my_clash.js`](my_clash.js) | JS 覆写脚本（Mihomo Party / Mihomo Purity 等支持 JS 覆写的客户端） |
+| [`my_clash.js`](my_clash.js) | JS 覆写脚本 —— 改造成**分流版**结构（25 组 / 27 条规则） |
+| [`my_clash_lazy.js`](my_clash_lazy.js) | JS 覆写脚本 —— 改造成**懒人版**结构（3 组 / 11 条规则） |
+
+两者同一骨架，DNS / 过滤口径 / 图标基址 / IPv6 处理完全一致，差别只在
+策略组粒度与规则数量。要细分用 `my_clash.js`，要极简用 `my_clash_lazy.js`。
 
 ## 与静态模板的区别
 
