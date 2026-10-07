@@ -108,6 +108,7 @@ CI（`.github/workflows/ci.yml`）会在 push 与每周一自动跑 ③④⑤⑥
 | `tests/check_structure.py`   | 悬空引用、规则指向、广告拦截双条件、IPv6 |
 | `tests/check_min_pair.py`    | `.min` 与完整版配置本体一致 |
 | `tests/check_remote_urls.py` | 远程规则集 / 图标 URL 全部可达 |
+| `tests/check_secrets.py`     | 真实地址 / 凭据 / 订阅 token 不得入仓（详见 SECURITY.md） |
 
 共用工具在 `scripts/clash/_clash_common.py`：
 `find_node()`（Windows 下 subprocess 找不到 node）、

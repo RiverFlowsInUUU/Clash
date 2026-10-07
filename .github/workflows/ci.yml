@@ -33,6 +33,10 @@ jobs:
           pip install pyyaml
           node --version
 
+      - name: Secrets scan
+        # 本仓是公开模板仓，真实地址 / 密码 / 订阅 token 推上来就不可回收。
+        run: python skill/tests/check_secrets.py
+
       - name: Encoding gate (cp936)
         # Windows 中文环境（ACP=936）下子进程 stdout 走管道时 Python 用 cp936 编码 ——
         # 脚本 print 一个非 GBK 字符（✅/❌/⚠️）就 UnicodeEncodeError 并以**退出码 1** 结束，
