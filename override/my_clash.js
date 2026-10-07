@@ -352,11 +352,10 @@ function main(config) {
   // ── 3. 分流规则 ────────────────────────────────────────────────────────
   config.rules = [
     "RULE-SET,jinx-white-guard,DIRECT",
-    "RULE-SET,AWAvenue-Ads,AD",
     "RULE-SET,jinx-ads-delta,AD",
+    "RULE-SET,AWAvenue-Ads,AD",
     "RULE-SET,apple-update,Apple Update",
     "RULE-SET,apple-system,DIRECT",
-    "RULE-SET,emby,Emby",
     "RULE-SET,geoip-private,DIRECT,no-resolve",
     "RULE-SET,private,DIRECT",
     "RULE-SET,anthropic,Claude",
@@ -364,6 +363,7 @@ function main(config) {
     "DOMAIN-SUFFIX,music.youtube.com,YouTube Music",
     "RULE-SET,github,Proxy",
     "RULE-SET,youtube,YouTube",
+    "RULE-SET,emby,Emby",
     "RULE-SET,google,Google",
     "RULE-SET,spotify,Spotify",
     "RULE-SET,twitter,Twitter",
