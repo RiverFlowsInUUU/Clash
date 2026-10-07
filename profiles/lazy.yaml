@@ -6,7 +6,7 @@
 # 全部流量走一个出口。
 #
 # 🧬 结构蓝本 = Self-Configuration 仓库的 lazy_v2.0.1（Surge / Egern 双内核同款拓扑）：
-#    组分工、占位节点（Node-A → Proxy、Node-B → AI 备选出口）、规则次序逐项对齐；
+#    组分工、规则次序逐项对齐；
 #    Surge 的 pre-matching REJECT 与 Egern 的 dns.forward reject 在 mihomo 没有对应物，
 #    广告拦截统一落在规则层（AD 组，与 Egern 侧同形）。
 #
@@ -26,29 +26,16 @@
 ipv6: false
 
 # ============================================================================
-# ① proxies —— 节点。两条占位（与蓝图 lazy_v2.0.1 同构：Node-A 归 Proxy、
-#    Node-B 归 AI 但压备选位，不作默认出口）。`203.0.113.0/24` 是 RFC 5737 文档段，
-#    不会指向任何真实主机，
-#    请替换为你的真实信息；server 写成 IP 字面量 ⇒ 节点不产生「解析节点域名」这次查询。
-#    协议与蓝图两内核一致（hysteria2；Egern 的 `auth` ≙ Surge 的 `password`
-#    ≙ 此处 `password`）。只用订阅的话，两条整段删掉即可。
+# ① proxies —— 节点。**本段为空**：节点全部来自 `Airport` 订阅，
+#    只填一个订阅 URL 即可导入，不需要手工补节点。
+#    若你有自己的固定节点，可直接写在这里（`type` / `server` / `port` 等按需填），
+#    它们与订阅节点合并进各组。
 # ② proxy-providers —— 订阅槽位，见下。
 #
 # ⚡ 导入前至少填一项（两个都不填 ⇒ 所有走代理的流量不通）。
 # ============================================================================
-proxies:
-  - name: Node-A
-    type: hysteria2
-    server: 203.0.113.10
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-  - name: Node-B
-    type: hysteria2
-    server: 203.0.113.11
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
+# 节点全部来自 `Airport` 订阅 —— 本段为空，只填一个订阅 URL 即可导入。
+proxies: []
 
 # ============================================================================
 # 订阅槽位：把 url 换成你自己的订阅地址，`proxy-groups` 里靠 `use` 引用它。
@@ -78,11 +65,9 @@ proxy-providers:
 #          DIRECT 即可，别整组切走（那等于关掉全部拦截）。
 #
 # 组的节点来源由两块拼起来：
-#   · `proxies` —— `Proxy` 的占位节点 `Node-A`；`AI` 的默认出口 `Proxy`（组名可直接
-#                  当成员）与备选占位节点 `Node-B`；
+#   · `proxies` —— 空段；节点全部来自订阅
 #   · `use`     —— `proxy-providers` 里订阅 `Airport` 的全部节点。
-# ⚠️ `AI` 的默认出口由蓝本的 `Node-B` 改为 `Proxy`（url-test 自动择优）—— `Node-B`
-#    是 RFC 5737 文档段、实际不通，当默认出口等于默认断网，故降为备选。
+# `AI` 的默认出口是 `Proxy`（组名可直接当成员），随主出口自动择优。
 #
 # ⚠️ mihomo 里 `include-all: true` 会把 `use` 覆盖成「全部 provider」。只有一个
 #    provider 时两者等价；日后加了第二个 provider 又只想用其中一个，就去掉
@@ -91,8 +76,7 @@ proxy-providers:
 proxy-groups:
   - name: Proxy
     type: url-test
-    proxies:
-      - Node-A
+    proxies: []
     use:
       - Airport
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
@@ -103,7 +87,6 @@ proxy-groups:
     type: select
     proxies:
       - Proxy
-      - Node-B
     use:
       - Airport
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png

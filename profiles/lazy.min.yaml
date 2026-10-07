@@ -1,17 +1,5 @@
 ipv6: false
-proxies:
-  - name: Node-A
-    type: hysteria2
-    server: 203.0.113.10
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
-  - name: Node-B
-    type: hysteria2
-    server: 203.0.113.11
-    port: 52341
-    password: REPLACE_WITH_YOUR_PASSWORD
-    sni: REPLACE_WITH_YOUR_SNI
+proxies: []
 proxy-providers:
   Airport:
     type: http
@@ -25,8 +13,7 @@ proxy-providers:
 proxy-groups:
   - name: Proxy
     type: url-test
-    proxies:
-      - Node-A
+    proxies: []
     use:
       - Airport
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
@@ -37,7 +24,6 @@ proxy-groups:
     type: select
     proxies:
       - Proxy
-      - Node-B
     use:
       - Airport
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png

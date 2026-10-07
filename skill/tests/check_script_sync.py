@@ -57,9 +57,6 @@ PAIRS = [
 # 这是**有意**的差异：模板能用 filter 在运行时分档，脚本做不到（生成期看不到节点名）
 TEMPLATE_ONLY_GROUPS = {"Low Mult.", "Auto", "High Mult."}
 
-# 静态版多出的占位节点名：不参与子节点比对（脚本天然没有占位节点）
-PLACEHOLDER_NODES = {"Node-A", "Node-B"}
-
 # 已知且**有意**的差异：(组名, 说明)。命中则不判负，但仍打印提醒。
 # Smart 是唯一一处：模板靠 filter 在运行时分三档，脚本做不到（生成期看不到节点名），
 # 故脚本侧是单组 fallback、模板侧是三档 —— 这是内核机制决定的，不是漂移。
@@ -127,8 +124,8 @@ def main():
         for n in sorted(sg & pg):
             if n in TEMPLATE_ONLY_GROUPS:
                 continue
-            a = [x for x in (sgm.get(n) or []) if x not in PLACEHOLDER_NODES]
-            b = [x for x in (pgm.get(n) or []) if x not in PLACEHOLDER_NODES]
+            a = sgm.get(n) or []
+            b = pgm.get(n) or []
             if a != b:
                 if n in EXPECTED_DIFF:
                     notes.append("已知差异 %s: %s" % (n, EXPECTED_DIFF[n]))
