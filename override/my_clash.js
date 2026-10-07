@@ -313,20 +313,20 @@ function main(config) {
     path: "./rule_provider/AWAvenue-Ads-Rule-Clash.mrs",
     interval: 86400,
   };
-  rp["jinx-white-guard"] = {
+  rp["Jinx-CN"] = {
     type: "http",
     behavior: "classical",
     format: "yaml",
     url: "https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-direct.yaml",
-    path: "./rule_provider/jinx-white-guard.yaml",
+    path: "./rule_provider/Jinx-CN.yaml",
     interval: 86400,
   };
-  rp["jinx-ads-delta"] = {
+  rp["Jinx-Ads"] = {
     type: "http",
     behavior: "classical",
     format: "yaml",
     url: "https://raw.githubusercontent.com/RiverFlowsInUUU/Jinx/main/mihomo-ads.yaml",
-    path: "./rule_provider/jinx-ads-delta.yaml",
+    path: "./rule_provider/Jinx-Ads.yaml",
     interval: 86400,
   };
 
@@ -351,8 +351,8 @@ function main(config) {
 
   // ── 3. 分流规则 ────────────────────────────────────────────────────────
   config.rules = [
-    "RULE-SET,jinx-white-guard,DIRECT",
-    "RULE-SET,jinx-ads-delta,AD",
+    "RULE-SET,Jinx-CN,DIRECT",
+    "RULE-SET,Jinx-Ads,AD",
     "RULE-SET,AWAvenue-Ads,AD",
     "RULE-SET,apple-update,Apple Update",
     "RULE-SET,apple-system,DIRECT",
@@ -416,7 +416,7 @@ function main(config) {
 
     "nameserver-policy": {
       "rule-set:AWAvenue-Ads": "rcode://success",
-      "rule-set:jinx-ads-delta": "rcode://success",
+      "rule-set:Jinx-Ads": "rcode://success",
       "rule-set:private,cn": [
         "https://doh.18bit.cn/dns-query",
         "https://dns.alidns.com/dns-query",
@@ -440,7 +440,7 @@ function main(config) {
       "+.pool.ntp.org",
       "+.market.xiaomi.com",
       "rule-set:AWAvenue-Ads",
-      "rule-set:jinx-ads-delta",
+      "rule-set:Jinx-Ads",
     ],
   };
 
