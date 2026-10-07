@@ -356,6 +356,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/emby.yaml
     path: ./rule_provider/emby.yaml
     interval: 86400
+  AI_Domains:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/AI_Domains.yaml
+    path: ./rule_provider/AI_Domains.yaml
+    interval: 86400
   apple-system:
     type: http
     behavior: classical
@@ -373,6 +380,7 @@ rules:
   - RULE-SET,private,DIRECT
   - RULE-SET,anthropic,Claude
   - RULE-SET,category-ai-chat-!cn,AI
+  - RULE-SET,AI_Domains,AI
   - DOMAIN-SUFFIX,music.youtube.com,YouTube Music
   - RULE-SET,github,Proxy
   - RULE-SET,youtube,YouTube
