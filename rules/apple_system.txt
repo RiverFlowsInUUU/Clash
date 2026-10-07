@@ -1,5 +1,5 @@
 #########################################
-# apple_system.list
+# apple_system.txt
 # 本仓自托管的规则集：Apple 系统域（激活 / 推送 / 定位 / 配对）→ DIRECT。
 #
 # 内容 = Surge 官方内置规则集 SYSTEM 的 2026-09-24 时点快照
