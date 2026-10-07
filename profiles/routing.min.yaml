@@ -19,6 +19,7 @@ proxy-groups:
       - Japan
       - Singapore
       - United States
+      - Other Regions
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/Proxy.png
   - name: Smart
     type: fallback
@@ -157,7 +158,6 @@ proxy-groups:
     type: select
     proxies:
       - REJECT
-      - PASS
       - DIRECT
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AdBlock.png
   - name: Hong Kong

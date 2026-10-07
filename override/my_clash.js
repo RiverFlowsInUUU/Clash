@@ -107,9 +107,11 @@ function main(config) {
     {
       name: "Proxy",
       type: "select",
+      // 对齐 SC 的 Proxy：Smart + 6 个地区组（Other Regions 收尾，接住落单节点）
       proxies: [
         "Smart",
         "Hong Kong", "Taiwan", "Japan", "Singapore", "United States",
+        "Other Regions",
       ],
       icon: ICON + "Proxy.png",
     },
@@ -205,7 +207,9 @@ function main(config) {
     {
       name: "AD",
       type: "select",
-      proxies: ["REJECT", "PASS", "DIRECT"],
+      // 对齐 SC 的 AD：REJECT / DIRECT 二选一（不设 PASS ——
+      // PASS 语义为「绕过代理直连」，与二选一的拦截口径不符，易误操作）
+      proxies: ["REJECT", "DIRECT"],
       icon: ICON + "AdBlock.png",
     },
 
