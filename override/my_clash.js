@@ -131,9 +131,9 @@ function main(config) {
     {
       name: "AI",
       type: "select",
-      // 通用 AI 兜底组：无首选地区，回落到 Proxy。
+      // 依次回落：美国 → 台湾 → 日本 → 新加坡
       // 图标用 openai（与 Self-Configuration 的 ChatGPT 同款；该仓 AI 组用 grok，此处按本仓口径取 openai）
-      proxies: ["Proxy"],
+      proxies: ["United States", "Taiwan", "Japan", "Singapore"],
       icon: ICON + "openai.png",
     },
     {

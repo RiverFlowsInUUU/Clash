@@ -66,7 +66,10 @@ proxy-groups:
   - name: AI
     type: select
     proxies:
-      - Proxy
+      - United States
+      - Taiwan
+      - Japan
+      - Singapore
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/openai.png
   - name: YouTube
     type: select
