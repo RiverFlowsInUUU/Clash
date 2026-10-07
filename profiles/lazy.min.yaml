@@ -31,7 +31,6 @@ proxy-groups:
     type: select
     proxies:
       - REJECT
-      - DIRECT
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AdBlock.png
 rule-providers:
   AWAvenue-Ads:

@@ -92,11 +92,10 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png
   - name: AD
     type: select
-    # REJECT / DIRECT 二选一 —— 与分流版同口径。
-    # 只给 REJECT 的话，想在面板上临时关掉广告拦截（放行）就没有可选出口。
+    # 单成员 REJECT —— 与姊妹仓懒人版同口径（该仓 893b406 有意收敛）。
+    # 分流版才是 REJECT / DIRECT 二选一；懒人版定位极简，不留放行的口子。
     proxies:
       - REJECT
-      - DIRECT
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AdBlock.png
 
 # ============================================================================

@@ -87,8 +87,9 @@ function main(config) {
     {
       name: "AD",
       type: "select",
-      // 与静态模板及姊妹仓同口径：REJECT / DIRECT 二选一，不设 PASS
-      proxies: ["REJECT", "DIRECT"],
+      // 单成员 REJECT —— 与姊妹仓懒人版同口径（该仓 893b406 有意收敛）。
+      // 分流版脚本才是 REJECT / DIRECT 二选一。
+      proxies: ["REJECT"],
       icon: ICON + "AdBlock.png",
     },
   ];
