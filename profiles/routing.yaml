@@ -32,9 +32,14 @@
 # 💡 想让**自己的订阅**也长成这样而不改本文件？
 #    直接用 override/my_clash.js 挂到订阅上。
 #
+# 🔒 IPv6 显式关闭（ipv6: false + dns.ipv6: false）：不返回 AAAA 记录，
+#    双栈站点自动回落 IPv4，避免本机真实 IPv6 绕过 TUN 出网。
+#    与姊妹仓 Self-Configuration（双内核同为关闭）对齐。
+#
 # 📌 本文件没有版本号，是长期沿用的「分流版」入口。
 # ============================================================================
 
+ipv6: false
 proxy-providers:
   Airport:
     type: http
@@ -426,7 +431,7 @@ rules:
   - MATCH,Proxy
 dns:
   enable: true
-  ipv6: true
+  ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   respect-rules: true

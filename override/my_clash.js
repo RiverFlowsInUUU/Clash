@@ -26,6 +26,10 @@
 function main(config) {
   // ── 0. 兜底：确保关键字段存在 ──────────────────────────────────────────
   if (!config.proxies) config.proxies = [];
+
+  // IPv6 显式关闭（顶层开关）：与 dns.ipv6 配套，双栈站点一律回落 IPv4，
+  // 避免本机真实 IPv6 绕过 TUN 出网导致出口 IP 与节点不符。
+  config.ipv6 = false;
   if (!config["proxy-groups"]) config["proxy-groups"] = [];
 
   // 规则集整体重建：订阅自带的 rule-providers 一律丢弃，
@@ -385,7 +389,10 @@ function main(config) {
   // 且 nameserver-policy 中广告项必须写在 rule-set:private,cn 之前。
   config.dns = {
     enable: true,
-    ipv6: true,
+    // IPv6 显式关闭：不向客户端返回 AAAA 记录，双栈站点自动回落 IPv4。
+    // 否则本机真实 IPv6 会绕过 TUN 直接出网（站点测到的出口 IP 与节点不符）。
+    // 与姊妹仓 Self-Configuration（Surge / Egern 双内核同为 ipv6 = false）对齐。
+    ipv6: false,
     "enhanced-mode": "fake-ip",
     "fake-ip-range": "198.18.0.1/16",
     "respect-rules": true,
