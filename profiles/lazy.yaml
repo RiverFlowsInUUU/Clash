@@ -109,8 +109,11 @@ proxy-groups:
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/grok.png
   - name: AD
     type: select
+    # REJECT / DIRECT 二选一 —— 与分流版同口径。
+    # 只给 REJECT 的话，想在面板上临时关掉广告拦截（放行）就没有可选出口。
     proxies:
       - REJECT
+      - DIRECT
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/AdBlock.png
 
 # ============================================================================

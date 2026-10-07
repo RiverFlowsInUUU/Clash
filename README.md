@@ -6,9 +6,10 @@
 
 [![Clash](https://img.shields.io/badge/Clash-Meta%20%7C%20mihomo-1f6feb?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![Profiles](https://img.shields.io/badge/Profiles-lazy%20%7C%20routing-0969da?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
-[![Rules](https://img.shields.io/badge/Rules-GEOSITE%20%2B-8250df?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
+[![Rules](https://img.shields.io/badge/Rules-All%20MRS-8250df?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![DNS](https://img.shields.io/badge/DNS-Zero%20Leak-2ea043?style=flat-square)](https://github.com/RiverFlowsInUUU/Clash)
 [![License](https://img.shields.io/badge/License-MIT-dfb317?style=flat-square)](LICENSE)
+[![CI](https://github.com/RiverFlowsInUUU/Clash/actions/workflows/ci.yml/badge.svg)](https://github.com/RiverFlowsInUUU/Clash/actions/workflows/ci.yml)
 
 </div>
 
@@ -120,7 +121,8 @@ https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/override/my_clash.j
 | 📚 | [`docs/`](docs/) | 1 篇专题：规则集与来源 |
 | 📘 | [`DetailsReadme/`](DetailsReadme/DetailsReadme.md) | 完整技术文档 |
 | 🗓️ | [`CHANGELOG.md`](CHANGELOG.md) | 版本记录 |
-| 🧪 | `skill/` | 审计脚本 + 回归测试 |
+| 🧪 | [`skill/`](skill/SKILL.md) | 维护手册 + 4 项门禁（脚本/静态对拍 · 结构 · min 版一致 · 远程 URL 存活） |
+| ⚙️ | [`.github/`](.github/workflows/ci.yml) | CI：push 与每周一自动跑全部门禁 |
 
 路径为链接者可直接点开跳转；显示为行内代码者尚未创建。
 
