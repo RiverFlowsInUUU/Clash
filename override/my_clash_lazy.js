@@ -232,8 +232,11 @@ function main(config) {
       "https://dns.google/dns-query",
     ],
 
-    // 国内域名交回国内 DoH（懒人版不做 DNS 层广告拦截，广告走规则层 AD 组）
     "nameserver-policy": {
+      // 广告两项**必须排在** geosite:private,cn 之前 —— 否则先命中 cn 就拿不到空回答；
+      // 且必须同时在 fake-ip-filter 里列一遍（见下），否则拦截不生效。
+      "rule-set:AWAvenue-Ads": "rcode://success",
+      "rule-set:Jinx-Ads": "rcode://success",
       "geosite:private,cn": [
         "https://223.5.5.5/dns-query",
         "https://120.53.53.53/dns-query",
@@ -256,6 +259,9 @@ function main(config) {
       "ntp.*.com",
       "+.pool.ntp.org",
       "+.market.xiaomi.com",
+      // 广告清单：与 nameserver-policy 中的广告项一一对应
+      "rule-set:AWAvenue-Ads",
+      "rule-set:Jinx-Ads",
     ],
   };
 

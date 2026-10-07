@@ -296,6 +296,9 @@ dns:
     - "ntp.*.com"
     - "+.pool.ntp.org"
     - "+.market.xiaomi.com"
+    # 广告清单：必须与 nameserver-policy 中的广告项一一对应，否则 DNS 层拦截不生效
+    - "rule-set:AWAvenue-Ads"
+    - "rule-set:Jinx-Ads"
   # 引导解析器：只解析 DoH 端点自身的域名。内核要求必须是纯 IP，不能写域名。
   default-nameserver:
     - 223.5.5.5
@@ -312,8 +315,13 @@ dns:
   nameserver:
     - https://dns.cloudflare.com/dns-query
     - https://dns.google/dns-query
-  # 按域名换解析器：私有域 + 中国大陆域名交回国内 DoH
+  # 按域名换解析器。
+  # ⚠️ 广告两项**必须排在** `geosite:private,cn` 之前 —— 否则先命中 cn 就拿不到空回答。
+  # ⚠️ 广告域名还**必须在** `fake-ip-filter` 里再列一遍（见上），否则 withFakeIP 中间件
+  #    对 A / AAAA 查询直接返回假 IP，请求永远到不了本段。
   nameserver-policy:
+    "rule-set:AWAvenue-Ads": rcode://success
+    "rule-set:Jinx-Ads": rcode://success
     "geosite:private,cn":
       - https://223.5.5.5/dns-query
       - https://120.53.53.53/dns-query
