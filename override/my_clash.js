@@ -127,6 +127,20 @@ function main(config) {
     },
 
     {
+      name: "ChatGPT",
+      type: "select",
+      // 对齐 SC 的 ChatGPT：美国 → 台湾 → 日本 → 新加坡
+      proxies: ["United States", "Taiwan", "Japan", "Singapore"],
+      icon: ICON + "openai.png",
+    },
+    {
+      name: "Gemini",
+      type: "select",
+      // 对齐 SC 的 Gemini：美国 → 台湾 → 日本 → 新加坡
+      proxies: ["United States", "Taiwan", "Japan", "Singapore"],
+      icon: ICON + "gemini-color.png",
+    },
+    {
       name: "Claude",
       type: "select",
       // 依次回落：台湾 → 日本 → 新加坡 → 美国
@@ -137,9 +151,9 @@ function main(config) {
     {
       name: "AI",
       type: "select",
-      // 依次回落：美国 → 台湾 → 日本 → 新加坡
+      // 对齐 SC 的 AI：Smart 打头，其后 台湾 → 日本 → 新加坡 → 美国
       // 图标用 openai（与 Self-Configuration 的 ChatGPT 同款；该仓 AI 组用 grok，此处按本仓口径取 openai）
-      proxies: ["United States", "Taiwan", "Japan", "Singapore"],
+      proxies: ["Smart", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "openai.png",
     },
     {
@@ -159,7 +173,7 @@ function main(config) {
     {
       name: "Google",
       type: "select",
-      proxies: ["AI", "Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
+      proxies: ["Gemini", "Smart", "Hong Kong", "Taiwan", "Japan", "Singapore", "United States"],
       icon: ICON + "Google.png",
     },
 
@@ -284,11 +298,11 @@ function main(config) {
   const JS = "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo";
   const rp = config["rule-providers"];
 
-  // 13 个 geosite 域分类
+  // 15 个 geosite 域分类
   [
     "apple-update", "spotify", "private", "anthropic", "category-ai-chat-!cn",
     "github", "youtube", "google", "microsoft", "apple-cn", "telegram", "twitter",
-    "cn",
+    "cn", "openai", "google-gemini",
   ].forEach(function (c) {
     rp[c] = {
       type: "http",
@@ -377,6 +391,8 @@ function main(config) {
     "RULE-SET,apple-system,DIRECT",
     "RULE-SET,geoip-private,DIRECT,no-resolve",
     "RULE-SET,private,DIRECT",
+    "RULE-SET,openai,ChatGPT",
+    "RULE-SET,google-gemini,Gemini",
     "RULE-SET,anthropic,Claude",
     "RULE-SET,category-ai-chat-!cn,AI",
     "RULE-SET,AI_Domains,AI",

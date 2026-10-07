@@ -57,6 +57,22 @@ proxy-groups:
     interval: 300
     tolerance: 50
     hidden: true
+  - name: ChatGPT
+    type: select
+    proxies:
+      - United States
+      - Taiwan
+      - Japan
+      - Singapore
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/openai.png
+  - name: Gemini
+    type: select
+    proxies:
+      - United States
+      - Taiwan
+      - Japan
+      - Singapore
+    icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/gemini-color.png
   - name: Claude
     type: select
     proxies:
@@ -68,10 +84,11 @@ proxy-groups:
   - name: AI
     type: select
     proxies:
-      - United States
+      - Smart
       - Taiwan
       - Japan
       - Singapore
+      - United States
     icon: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/icons/openai.png
   - name: YouTube
     type: select
@@ -96,7 +113,7 @@ proxy-groups:
   - name: Google
     type: select
     proxies:
-      - AI
+      - Gemini
       - Smart
       - Hong Kong
       - Taiwan
@@ -300,6 +317,20 @@ rule-providers:
     url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs
     path: ./rule_provider/cn.mrs
     interval: 86400
+  openai:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/openai.mrs
+    path: ./rule_provider/openai.mrs
+    interval: 86400
+  google-gemini:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google-gemini.mrs
+    path: ./rule_provider/google-gemini.mrs
+    interval: 86400
   geoip-private:
     type: http
     behavior: ipcidr
@@ -378,6 +409,8 @@ rules:
   - RULE-SET,apple-system,DIRECT
   - RULE-SET,geoip-private,DIRECT,no-resolve
   - RULE-SET,private,DIRECT
+  - RULE-SET,openai,ChatGPT
+  - RULE-SET,google-gemini,Gemini
   - RULE-SET,anthropic,Claude
   - RULE-SET,category-ai-chat-!cn,AI
   - RULE-SET,AI_Domains,AI
