@@ -4,6 +4,85 @@
 
 ---
 
+## 2026-10-06
+
+### 变更
+
+- ⚡ **`Smart` 收敛为单组** —— 原 `MAX`（倍率筛选）/ `Fallback`（逐级回退）/ `Smart`
+  （全池 url-test）三组合一，改为一个 `fallback`，成员由脚本按节点名里的倍率
+  升序排列（`0.01` → `0.1` → `0.5` → 正常）。倍率判据沿用姊妹仓的
+  `(?<!\d.)0\.\d*[1-9]`，`0.1倍` / `0.1倍率` / `0.1x` / `0.5` 均可识别，
+  `香港 01`、`1.5GB` 不误伤。同时取消 `hidden`，显示在 `Proxy` 之后。
+- 🏷 **`Anthropic` 组更名 `Claude`**（对齐姊妹仓命名），`RULE-SET,anthropic` 指向同步更新。
+- 🗑 **删除 `Select` 分流组** 与 **`Final` 兜底组**（`MATCH` 改为直指 `Proxy`）。
+- 🖼 **图标同步姊妹仓** —— 更新 4 个过时图标（`Twitter` / `YouTubeMusic` /
+  `claude-color` / `openai`），新增 `Twitter-old.png`。
+
+### 修复
+
+- 🍎 **`Apple Update` 首选改为 `DIRECT`** 并移除 `PASS` —— 此前顺序为
+  `REJECT, PASS, DIRECT`（等于默认拒绝，系统更新下不动），现为 `DIRECT, REJECT`。
+- 🎵 **`YouTube Music` 首选改为 `United States`** —— 与姊妹仓及 `Spotify` 同口径。
+
+---
+
+## 2026-10-07
+
+### 新增
+
+- 🧠 **Smart 三档倍率分流（仅模板）** —— `Smart` 由全池 `url-test` 改为 `fallback`，
+  依次回落到三个隐藏的 `url-test` 子组：`Low Mult.`（<1 倍率）· `Auto`（正常倍率）·
+  `High Mult.`（>1 倍率）。子组靠 `filter` 在运行时筛节点，**不依赖生成期可见节点名** ——
+  这正是 provider 订阅下脚本倍率排序做不到、而模板能做的原因。
+  - 倍率判据（消歧靠「倍率单位」）：低倍率 `0.xxx`；高倍率数值 ≥1 且必须紧跟
+    `倍` / `倍率` / `x` / `X` / `*`；其余视为无倍率标记。于是「巴西 09 2倍」归 High，
+    而序号「09」「香港 01」不误伤。18 例回归测试全通过。
+- 📦 **本仓自托管规则集**（`rules/` 目录，`format: yaml`）——
+  - `emby.yaml`（4 条自用枚举域名 → Emby）
+  - `apple_system.yaml`（18 条 Apple 系统域 → DIRECT，Surge 内置 `SYSTEM` 快照）
+  - `AI_Domains.yaml`（272 条 AI 伴生域 → AI，与姊妹仓 `rules/AI.list` 同源）
+  - 自托管而非跨项目引用姊妹仓，理由与该仓注释一致：避免跨仓依赖。
+- 🤖 **ChatGPT / Gemini 策略组与规则**（对齐姊妹仓）——
+  - 两组均为 `美国 → 台湾 → 日本 → 新加坡`；
+  - 规则 `RULE-SET,openai,ChatGPT` / `RULE-SET,google-gemini,Gemini` 全部走 MRS。
+
+### 变更
+
+- 🧬 **分流版改为由脚本生成** —— `profiles/routing.yaml` 由 `override/my_clash.js`
+  直接生成，与脚本覆写后的订阅逐位一致；同步重生成 `.min.yaml`。
+  删除自用版 `my_clash.yaml` / `my_clash.min.yaml`，三版并列收敛为两版。
+- 🔁 **节点来源改为 provider** —— 订阅由 `Airport` provider 拉取，各策略组用
+  `include-all` 引入，去掉 Node-A / Node-B 占位节点。
+- 🗂 **规则集命名与次序对齐姊妹仓** —— `jinx-white-guard` → `Jinx-CN`、
+  `jinx-ads-delta` → `Jinx-Ads`；广告段次序改为 白名单 → `Jinx-Ads` → `AWAvenue-Ads`；
+  `Emby` 移至 `YouTube` 之后、`Google` 之前。
+- 📝 **自建集后缀统一** —— `.list`（Surge / Egern 惯例）→ `.txt` → 最终定为 `.yaml`
+  （与本仓 Jinx 两份一致），内容相应改为 `payload` 结构。
+- 🎨 **AI 组图标** —— 一度改用 `openai.png`，现改回 `grok.png`（与姊妹仓同款）。
+
+### 修复
+
+- 🔒 **显式关闭 IPv6** —— 顶层 `ipv6: false` + `dns.ipv6: false`。
+  此前 `dns.ipv6` 为 `true` 时会返回 AAAA 记录，而本机真实 IPv6 未被 TUN 完整接管，
+  双栈站点优先走 IPv6 ⇒ 出口 IP 与节点不符（表现为站点测到美国 IPv6）。
+  关闭后双栈站点自动回落 IPv4，与姊妹仓处理一致。
+- 🧩 **AD 组移除 `PASS`** —— 改为 `REJECT` / `DIRECT` 二选一，与姊妹仓同口径。
+  `PASS` 语义为「绕过代理直连」，与拦截二选一口径不符，易误操作。
+- 🌍 **Proxy 补 `Other Regions` 子节点** —— 收尾接住 5 个主流地区之外的落单节点。
+- 🔎 **补齐 AI 伴生域覆盖** —— 原引用 MetaCubeX `category-ai-chat-!cn`（188 条），
+  实测漏掉姊妹仓 `AI.list` 中的 93 条（两边重叠仅 178 条）。漏的主要是各家上游清单
+  都不收的认证 / 遥测 / 风控基础设施域（`auth0`、`statsig`、`arkoselabs`、
+  `apis.google.com`、`apple-relay` 等），伴生请求漏出 AI 组易触发风控。
+- ↩️ **YTM 维持内联** —— 曾改为引用 blackmatrix7 远程集，实测该 Clash 版同样只有
+  `music.youtube.com` 一条，无覆盖增益且多一次远程拉取，已换回内联写法。
+
+### 删除
+
+- 🗑 `Select` 分流组；`Final` 兜底组（由 `MATCH` 直指 `Proxy`）；
+  `MAX` / `Fallback` 组（由 Smart 三档取代）；自用版 `my_clash` 两份配置。
+
+---
+
 ## 2026-10-04
 
 ### 新增
