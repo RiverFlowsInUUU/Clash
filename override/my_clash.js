@@ -335,17 +335,17 @@ function main(config) {
   rp["emby"] = {
     type: "http",
     behavior: "classical",
-    format: "text",
-    url: RAW + "rules/emby.txt",
-    path: "./rule_provider/emby.txt",
+    format: "yaml",
+    url: RAW + "rules/emby.yaml",
+    path: "./rule_provider/emby.yaml",
     interval: 86400,
   };
   rp["apple-system"] = {
     type: "http",
     behavior: "classical",
-    format: "text",
-    url: RAW + "rules/apple_system.txt",
-    path: "./rule_provider/apple_system.txt",
+    format: "yaml",
+    url: RAW + "rules/apple_system.yaml",
+    path: "./rule_provider/apple_system.yaml",
     interval: 86400,
   };
 

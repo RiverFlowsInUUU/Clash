@@ -1,0 +1,16 @@
+# emby.yaml
+# 本仓自托管的规则集：Emby 相关域名 → Emby 分流组。
+# 
+# 为什么自托管而不是引用上游：
+#    上游没有现成的 Emby 集，且这几个域名属**自用枚举**（用户提供），
+#    不随任何第三方清单漂移 ⇒ 放本仓维护最直接，也避免跨项目引用。
+#
+# 条数：4（**本行为唯一真源**，改内容时同步改这里）
+# 格式：mihomo rule-provider（format: yaml / behavior: classical）
+# 落点：RULE-SET,emby,Emby
+
+payload:
+  - 'DOMAIN-SUFFIX,okemby.org'
+  - 'DOMAIN-SUFFIX,lilyemby.com'
+  - 'DOMAIN-SUFFIX,lilyemby.app'
+  - 'DOMAIN-SUFFIX,bangumi.ca'

@@ -21,9 +21,9 @@
 #      高倍率  数值 >=1 且必须紧跟 倍 / 倍率 / x / X / *
 #      其余    视为无倍率标记 -> Auto
 #
-# 📦 本仓自托管规则集（rules/ 目录，format: text）：
-#      emby.txt          4 条自用枚举域名 → Emby
-#      apple_system.txt  18 条 Apple 系统域 → DIRECT（Surge 内置 SYSTEM 快照）
+# 📦 本仓自托管规则集（rules/ 目录，format: yaml）：
+#      emby.yaml          4 条自用枚举域名 → Emby
+#      apple_system.yaml  18 条 Apple 系统域 → DIRECT（Surge 内置 SYSTEM 快照）
 #    与姊妹仓 Self-Configuration 同构，但自托管不跨项目引用。
 #
 # 🔁 节点来源：订阅节点由 `Airport` provider 拉取，各策略组用
@@ -383,16 +383,16 @@ rule-providers:
   emby:
     type: http
     behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/emby.txt
-    path: ./rule_provider/emby.txt
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/emby.yaml
+    path: ./rule_provider/emby.yaml
     interval: 86400
   apple-system:
     type: http
     behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.txt
-    path: ./rule_provider/apple_system.txt
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.yaml
+    path: ./rule_provider/apple_system.yaml
     interval: 86400
 rules:
   - RULE-SET,jinx-white-guard,DIRECT

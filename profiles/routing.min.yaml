@@ -346,16 +346,16 @@ rule-providers:
   emby:
     type: http
     behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/emby.txt
-    path: ./rule_provider/emby.txt
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/emby.yaml
+    path: ./rule_provider/emby.yaml
     interval: 86400
   apple-system:
     type: http
     behavior: classical
-    format: text
-    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.txt
-    path: ./rule_provider/apple_system.txt
+    format: yaml
+    url: https://raw.githubusercontent.com/RiverFlowsInUUU/Clash/main/rules/apple_system.yaml
+    path: ./rule_provider/apple_system.yaml
     interval: 86400
 rules:
   - RULE-SET,jinx-white-guard,DIRECT
